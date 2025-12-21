@@ -1,6 +1,9 @@
 # dependencies (bun install)
 node_modules
 
+# svelte-kit
+.svelte-kit
+
 # output
 out
 dist
