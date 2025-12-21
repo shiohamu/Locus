@@ -19,7 +19,10 @@
 	});
 </script>
 
-<h1>ノート一覧</h1>
+<div class="page-header">
+	<h1>ノート一覧</h1>
+	<a href="/notes/new" class="new-button">新規ノート作成</a>
+</div>
 
 {#if loading}
 	<p>読み込み中...</p>
@@ -28,5 +31,27 @@
 {:else}
 	<NoteList {notes} />
 {/if}
+
+<style>
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+
+	.new-button {
+		padding: 0.5rem 1rem;
+		background-color: #007bff;
+		color: white;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: background-color 0.2s;
+	}
+
+	.new-button:hover {
+		background-color: #0056b3;
+	}
+</style>
 
 

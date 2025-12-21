@@ -6,6 +6,7 @@
       "name": "locus",
       "devDependencies": {
         "@biomejs/biome": "^1.9.4",
+        "@libsql/client": "^0.14.0",
         "@types/bun": "latest",
       },
       "peerDependencies": {

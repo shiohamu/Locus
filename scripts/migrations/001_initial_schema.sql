@@ -61,11 +61,11 @@ CREATE TABLE IF NOT EXISTS links (
 );
 
 -- 全文検索用FTS5テーブル
+-- note_idはUNINDEXEDカラムとして保持し、JOINで使用可能にする
 CREATE VIRTUAL TABLE IF NOT EXISTS notes_fts USING fts5(
     note_id UNINDEXED,
     title,
-    content,
-    content_rowid=note_id
+    content
 );
 
 -- インデックス

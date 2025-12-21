@@ -3,6 +3,7 @@ import { getDb } from "./db.js";
 
 /**
  * 全文検索を実行する
+ * FTS5テーブルではnote_idはUNINDEXEDカラムとして保持されている
  */
 export async function searchNotes(
 	query: string,
@@ -13,10 +14,10 @@ export async function searchNotes(
 
 	const result = await db.execute({
 		sql: `SELECT nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at
-              FROM notes_core nc
-              INNER JOIN notes_fts nf ON nc.id = nf.note_id
+              FROM notes_fts
+              INNER JOIN notes_core nc ON nc.id = notes_fts.note_id
               WHERE notes_fts MATCH ? AND nc.deleted_at IS NULL
-              ORDER BY rank
+              ORDER BY notes_fts.rank
               LIMIT ? OFFSET ?`,
 		args: [query, limit, offset],
 	});
@@ -33,6 +34,8 @@ export async function searchNotes(
 
 /**
  * FTSインデックスを更新する
+ * FTS5テーブルではUPSERTが使えないため、DELETEしてからINSERTする
+ * note_idはUNINDEXEDカラムなので、WHERE句で使用可能
  */
 export async function updateFTS(
 	noteId: string,
@@ -40,10 +43,15 @@ export async function updateFTS(
 	content: string,
 ): Promise<void> {
 	const db = getDb();
+	// 既存のエントリを削除（note_idカラムを使用）
 	await db.execute({
-		sql: `INSERT INTO notes_fts (note_id, title, content) VALUES (?, ?, ?)
-              ON CONFLICT(note_id) DO UPDATE SET title = ?, content = ?`,
-		args: [noteId, title, content, title, content],
+		sql: `DELETE FROM notes_fts WHERE note_id = ?`,
+		args: [noteId],
+	});
+	// 新しいエントリを挿入
+	await db.execute({
+		sql: `INSERT INTO notes_fts (note_id, title, content) VALUES (?, ?, ?)`,
+		args: [noteId, title, content],
 	});
 }
 

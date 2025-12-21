@@ -44,3 +44,8 @@ docgen
 pyproject.toml
 uv.lock
 .venv
+
+# database
+apps/api/data/*.db
+apps/api/data/*.db-wal
+apps/api/data/*.db-shm

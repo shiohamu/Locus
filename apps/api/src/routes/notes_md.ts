@@ -7,6 +7,21 @@ import { updateFTS } from "../db/search.js";
 const app = new Hono();
 
 /**
+ * Markdownノート取得
+ * GET /notes/md/:id
+ */
+app.get("/:id", async (c) => {
+	const id = c.req.param("id");
+	const noteMD = await notesMDDb.getNoteMD(id);
+
+	if (!noteMD) {
+		return c.json({ error: "Markdown note not found" }, 404);
+	}
+
+	return c.json(noteMD);
+});
+
+/**
  * Markdownノート作成
  * POST /notes/md
  */

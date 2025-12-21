@@ -97,6 +97,13 @@ export async function createNoteMD(data: unknown) {
 }
 
 /**
+ * Markdownノート取得
+ */
+export async function getNoteMD(noteId: string) {
+	return apiRequest(`/notes/md/${noteId}`);
+}
+
+/**
  * Markdownノート更新
  */
 export async function updateNoteMD(id: string, data: unknown) {
