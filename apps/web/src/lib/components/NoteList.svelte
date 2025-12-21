@@ -21,40 +21,54 @@
 
 <style>
 	.note-list {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+		gap: 1.5rem;
 	}
 
 	.note-item {
 		display: block;
-		padding: 1rem;
-		border: 1px solid #ddd;
-		border-radius: 4px;
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		border-radius: 16px;
 		text-decoration: none;
 		color: inherit;
-		transition: background-color 0.2s;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 	}
 
 	.note-item:hover {
-		background-color: #f5f5f5;
+		transform: translateY(-4px);
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+		border-color: rgba(99, 102, 241, 0.3);
 	}
 
 	.note-item h3 {
-		margin: 0 0 0.5rem 0;
+		margin: 0 0 0.75rem 0;
+		font-size: 1.375rem;
+		font-weight: 600;
+		color: #1a1a1a;
+		line-height: 1.4;
 	}
 
 	.note-meta {
 		display: flex;
 		gap: 1rem;
 		font-size: 0.875rem;
-		color: #666;
+		color: #6b7280;
+		line-height: 1.5;
+		align-items: center;
 	}
 
 	.note-type {
-		padding: 0.25rem 0.5rem;
-		background-color: #e0e0e0;
-		border-radius: 4px;
+		padding: 0.375rem 0.75rem;
+		background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
+		border-radius: 8px;
+		font-weight: 500;
+		color: #6366f1;
+		font-size: 0.8125rem;
 	}
 </style>
 

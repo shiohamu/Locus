@@ -141,6 +141,13 @@ export async function addTagToNote(noteId: string, tagId: string) {
 }
 
 /**
+ * ノートに紐づくタグ一覧取得
+ */
+export async function getTagsByNote(noteId: string) {
+	return apiRequest(`/notes/${noteId}/tags`);
+}
+
+/**
  * ノートからタグ削除
  */
 export async function removeTagFromNote(noteId: string, tagId: string) {

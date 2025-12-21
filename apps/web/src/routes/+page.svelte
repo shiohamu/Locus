@@ -27,7 +27,7 @@
 {#if loading}
 	<p>読み込み中...</p>
 {:else if error}
-	<p style="color: red;">エラー: {error}</p>
+	<p class="error">エラー: {error}</p>
 {:else}
 	<NoteList {notes} />
 {/if}
@@ -37,20 +37,32 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin-bottom: 1rem;
+		margin-bottom: 2rem;
+		padding: 1.5rem;
+		background: rgba(255, 255, 255, 0.8);
+		backdrop-filter: blur(10px);
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
 	.new-button {
-		padding: 0.5rem 1rem;
-		background-color: #007bff;
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
 		color: white;
 		text-decoration: none;
-		border-radius: 4px;
-		transition: background-color 0.2s;
+		border-radius: 12px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		font-weight: 600;
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 	}
 
 	.new-button:hover {
-		background-color: #0056b3;
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+	}
+
+	.new-button:active {
+		transform: translateY(0);
 	}
 </style>
 

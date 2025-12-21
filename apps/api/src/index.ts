@@ -30,15 +30,37 @@ app.get("/tags", async (c) => {
 });
 app.post("/tags", async (c) => {
 	// タグ作成は直接実装
-	const body = await c.req.json<{ name: string; id?: string }>();
-	const id = body.id ?? crypto.randomUUID();
-	const tag = { id, name: body.name };
-	const existing = await tagsDb.getTagByName(body.name);
-	if (existing) {
-		return c.json({ error: "Tag already exists" }, 409);
+	try {
+		const body = await c.req.json<{ name: string; id?: string }>();
+
+		// バリデーション
+		if (!body || typeof body !== "object") {
+			return c.json({ error: "リクエストボディが不正です" }, 400);
+		}
+
+		if (!body.name || typeof body.name !== "string") {
+			return c.json({ error: "タグ名は文字列である必要があります" }, 400);
+		}
+
+		const name = body.name.trim();
+		if (name === "") {
+			return c.json({ error: "タグ名を入力してください" }, 400);
+		}
+
+		const id = body.id ?? crypto.randomUUID();
+		const tag = { id, name };
+		const existing = await tagsDb.getTagByName(name);
+		if (existing) {
+			return c.json({ error: "このタグは既に存在します" }, 409);
+		}
+		const created = await tagsDb.createTag(tag);
+		return c.json(created, 201);
+	} catch (e) {
+		if (e instanceof SyntaxError) {
+			return c.json({ error: "リクエストボディのJSON形式が不正です" }, 400);
+		}
+		throw e;
 	}
-	const created = await tagsDb.createTag(tag);
-	return c.json(created, 201);
 });
 app.route("/search", searchRoutes);
 app.route("/rss", rssRoutes);

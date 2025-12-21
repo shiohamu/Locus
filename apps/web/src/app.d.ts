@@ -9,6 +9,6 @@ declare global {
 	}
 }
 
-export {};
+export { };
 
 

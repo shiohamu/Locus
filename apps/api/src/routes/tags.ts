@@ -5,6 +5,16 @@ import * as tagsDb from "../db/tags.js";
 const app = new Hono();
 
 /**
+ * ノートに紐づくタグ一覧取得
+ * GET /notes/:id/tags
+ */
+app.get("/:id/tags", async (c) => {
+	const noteId = c.req.param("id");
+	const tags = await tagsDb.getTagsByNote(noteId);
+	return c.json(tags);
+});
+
+/**
  * ノートにタグ追加
  * POST /notes/:id/tags
  */
