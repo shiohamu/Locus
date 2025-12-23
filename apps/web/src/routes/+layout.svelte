@@ -1,9 +1,28 @@
 <script lang="ts">
+	import { onMount } from "svelte";
 	import Nav from "$lib/components/Nav.svelte";
+	import SyncStatus from "$lib/components/SyncStatus.svelte";
+
+	onMount(() => {
+		// Service Workerを登録
+		if ("serviceWorker" in navigator) {
+			navigator.serviceWorker
+				.register("/sw.js")
+				.then((registration) => {
+					console.log("Service Worker registered:", registration);
+				})
+				.catch((error) => {
+					console.error("Service Worker registration failed:", error);
+				});
+		}
+	});
 </script>
 
 <div class="app">
 	<Nav />
+	<div class="sync-container">
+		<SyncStatus />
+	</div>
 	<main>
 		<slot />
 	</main>
@@ -27,6 +46,13 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
+	}
+
+	.sync-container {
+		padding: 0.5rem 2rem;
+		max-width: 1200px;
+		width: 100%;
+		margin: 0 auto;
 	}
 
 	main {

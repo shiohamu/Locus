@@ -2,14 +2,17 @@
 	import { onMount } from "svelte";
 	import { page } from "$app/stores";
 	import { goto } from "$app/navigation";
-	import { getNote, getNoteMD, updateNoteMD, deleteNote } from "$lib/api";
+	import { marked } from "marked";
+	import { getNote, getNoteMD, updateNoteMD, deleteNote, getRSSItem } from "$lib/api";
 	import { nowTimestamp } from "$lib/utils";
-	import type { NoteCore, NoteMD } from "$lib/types";
+	import type { NoteCore, NoteMD, RSSItem } from "$lib/types";
 	import NoteEditor from "$lib/components/NoteEditor.svelte";
 	import NoteTags from "$lib/components/NoteTags.svelte";
+	import NoteLinks from "$lib/components/NoteLinks.svelte";
 
 	let note: NoteCore | null = null;
 	let noteMD: NoteMD | null = null;
+	let rssItem: RSSItem | null = null;
 	let editing = false;
 	let title = "";
 	let content = "";
@@ -17,6 +20,10 @@
 	let saving = false;
 	let deleting = false;
 	let error: string | null = null;
+	let showPreview = false;
+	let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+	let lastSavedTitle = "";
+	let lastSavedContent = "";
 
 	$: noteId = $page.params.id;
 
@@ -40,6 +47,11 @@
 					title = note.title;
 					content = noteMD.content;
 				}
+			} else if (note.type === "rss") {
+				rssItem = await getRSSItem(noteId);
+				if (rssItem) {
+					content = rssItem.content;
+				}
 			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : "ノートの読み込みに失敗しました";
@@ -48,10 +60,17 @@
 		}
 	}
 
-	async function handleSave() {
+	async function handleSave(silent = false) {
 		if (!note || !noteMD) return;
 
-		saving = true;
+		// 変更がない場合は保存しない
+		if (title.trim() === lastSavedTitle && content === lastSavedContent) {
+			return;
+		}
+
+		if (!silent) {
+			saving = true;
+		}
 		error = null;
 
 		try {
@@ -67,13 +86,34 @@
 			};
 
 			await updateNoteMD(noteId, { core: updatedCore, md: updatedMD });
-			editing = false;
-			await loadNote();
+			lastSavedTitle = title.trim();
+			lastSavedContent = content;
+
+			if (!silent) {
+				editing = false;
+				await loadNote();
+			}
 		} catch (e) {
 			error = e instanceof Error ? e.message : "ノートの更新に失敗しました";
 		} finally {
-			saving = false;
+			if (!silent) {
+				saving = false;
+			}
 		}
+	}
+
+	function scheduleAutoSave() {
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+		}
+
+		autoSaveTimer = setTimeout(() => {
+			handleSave(true);
+		}, 3000); // 3秒後に自動保存
+	}
+
+	$: if (editing && (title !== lastSavedTitle || content !== lastSavedContent)) {
+		scheduleAutoSave();
 	}
 
 	async function handleDelete() {
@@ -96,27 +136,44 @@
 		if (note && noteMD) {
 			title = note.title;
 			content = noteMD.content;
+			lastSavedTitle = note.title;
+			lastSavedContent = noteMD.content;
 			editing = true;
 		}
 	}
 
 	function cancelEdit() {
+		if (autoSaveTimer) {
+			clearTimeout(autoSaveTimer);
+			autoSaveTimer = null;
+		}
 		editing = false;
 		if (note && noteMD) {
 			title = note.title;
 			content = noteMD.content;
 		}
 	}
+
+	function formatDate(timestamp: number): string {
+		const date = new Date(timestamp * 1000);
+		return date.toLocaleString("ja-JP");
+	}
+
+	$: renderedContent = noteMD?.content
+		? marked.parse(noteMD.content)
+		: rssItem?.content
+			? marked.parse(rssItem.content)
+			: "";
 </script>
 
 {#if loading}
 	<p>読み込み中...</p>
 {:else if error}
 	<p class="error">エラー: {error}</p>
-{:else if note && noteMD}
+{:else if note && (noteMD || rssItem)}
 	<div class="note-page">
 		<div class="note-header">
-			{#if editing}
+			{#if editing && note.type === "md"}
 				<input
 					type="text"
 					bind:value={title}
@@ -128,7 +185,7 @@
 			{/if}
 
 			<div class="actions">
-				{#if editing}
+				{#if editing && note.type === "md"}
 					<button on:click={handleSave} disabled={saving}>
 						{saving ? "保存中..." : "保存"}
 					</button>
@@ -136,7 +193,9 @@
 						キャンセル
 					</button>
 				{:else}
-					<button on:click={startEdit}>編集</button>
+					{#if note.type === "md"}
+						<button on:click={startEdit}>編集</button>
+					{/if}
 					<button on:click={handleDelete} disabled={deleting}>
 						{deleting ? "削除中..." : "削除"}
 					</button>
@@ -144,15 +203,32 @@
 			</div>
 		</div>
 
-		{#if editing}
-			<NoteEditor bind:title bind:content />
+		{#if rssItem}
+			<div class="rss-meta">
+				<p class="rss-url">
+					<a href={rssItem.url} target="_blank" rel="noopener noreferrer">
+						{rssItem.url}
+					</a>
+				</p>
+				<p class="rss-date">
+					公開日時: {formatDate(rssItem.published_at)}
+				</p>
+			</div>
+		{/if}
+
+		{#if editing && note.type === "md"}
+			<NoteEditor bind:title bind:content bind:showPreview />
+			{#if saving}
+				<p class="auto-save-indicator">自動保存中...</p>
+			{/if}
 		{:else}
-			<div class="note-content">
-				<pre>{noteMD.content}</pre>
+			<div class="note-content markdown-preview">
+				{@html renderedContent}
 			</div>
 		{/if}
 
 		<NoteTags {noteId} />
+		<NoteLinks {noteId} />
 	</div>
 {/if}
 
@@ -251,14 +327,140 @@
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
-	.note-content pre {
-		white-space: pre-wrap;
-		word-wrap: break-word;
-		margin: 0;
-		font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+	.markdown-preview {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #1a1a1a;
+	}
+
+	.markdown-preview :global(h1),
+	.markdown-preview :global(h2),
+	.markdown-preview :global(h3),
+	.markdown-preview :global(h4),
+	.markdown-preview :global(h5),
+	.markdown-preview :global(h6) {
+		margin-top: 1.5em;
+		margin-bottom: 0.75em;
+		font-weight: 600;
+		color: #1a1a1a;
+	}
+
+	.markdown-preview :global(h1) {
+		font-size: 2em;
+		border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+		padding-bottom: 0.5em;
+	}
+
+	.markdown-preview :global(h2) {
+		font-size: 1.5em;
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		padding-bottom: 0.5em;
+	}
+
+	.markdown-preview :global(p) {
+		margin: 1em 0;
+	}
+
+	.markdown-preview :global(ul),
+	.markdown-preview :global(ol) {
+		margin: 1em 0;
+		padding-left: 2em;
+	}
+
+	.markdown-preview :global(li) {
+		margin: 0.5em 0;
+	}
+
+	.markdown-preview :global(code) {
+		background: rgba(99, 102, 241, 0.1);
+		padding: 0.2em 0.4em;
+		border-radius: 4px;
+		font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
+		font-size: 0.9em;
+	}
+
+	.markdown-preview :global(pre) {
+		background: rgba(99, 102, 241, 0.05);
+		padding: 1em;
+		border-radius: 8px;
+		overflow-x: auto;
+		margin: 1em 0;
+	}
+
+	.markdown-preview :global(pre code) {
+		background: none;
+		padding: 0;
+	}
+
+	.markdown-preview :global(blockquote) {
+		border-left: 4px solid rgba(99, 102, 241, 0.3);
+		padding-left: 1em;
+		margin: 1em 0;
+		color: #6b7280;
+	}
+
+	.markdown-preview :global(a) {
+		color: #6366f1;
+		text-decoration: none;
+	}
+
+	.markdown-preview :global(a:hover) {
+		text-decoration: underline;
+	}
+
+	.markdown-preview :global(table) {
+		border-collapse: collapse;
+		width: 100%;
+		margin: 1em 0;
+	}
+
+	.markdown-preview :global(th),
+	.markdown-preview :global(td) {
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		padding: 0.5em 1em;
+		text-align: left;
+	}
+
+	.markdown-preview :global(th) {
+		background: rgba(99, 102, 241, 0.1);
+		font-weight: 600;
+	}
+
+	.rss-meta {
+		margin-bottom: 1.5rem;
+		padding: 1rem 1.5rem;
+		background: rgba(255, 255, 255, 0.9);
+		backdrop-filter: blur(10px);
+		border-radius: 12px;
+		border: 1px solid rgba(0, 0, 0, 0.08);
+	}
+
+	.rss-url {
+		margin: 0 0 0.5rem 0;
+	}
+
+	.rss-url a {
+		color: #6366f1;
+		text-decoration: none;
+		word-break: break-all;
+	}
+
+	.rss-url a:hover {
+		text-decoration: underline;
+	}
+
+	.rss-date {
+		margin: 0;
+		font-size: 0.875rem;
+		color: #6b7280;
+	}
+
+	.auto-save-indicator {
+		margin-top: 0.5rem;
+		font-size: 0.875rem;
+		color: #6b7280;
+		font-style: italic;
+		text-align: right;
 	}
 </style>
 

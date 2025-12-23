@@ -115,4 +115,17 @@ export async function getTagsByNote(noteId: string): Promise<Tag[]> {
 	}));
 }
 
+/**
+ * タグを削除する
+ * 関連するnote_tagsも削除される（外部キー制約による）
+ */
+export async function deleteTag(id: string): Promise<void> {
+	const db = getDb();
+	await db.execute({
+		sql: `DELETE FROM tags WHERE id = ?`,
+		args: [id],
+	});
+}
+
+
 

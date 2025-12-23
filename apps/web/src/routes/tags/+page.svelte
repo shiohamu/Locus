@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 	import type { Tag } from "$lib/types";
-	import { getTags, createTag } from "$lib/api";
+	import { getTags, createTag, deleteTag } from "$lib/api";
 	import { generateId } from "$lib/utils";
 	import TagManager from "$lib/components/TagManager.svelte";
 
@@ -9,6 +9,7 @@
 	let loading = true;
 	let error: string | null = null;
 	let creating = false;
+	let deleting = false;
 
 	onMount(async () => {
 		await loadTags();
@@ -27,7 +28,6 @@
 	}
 
 	async function handleCreateTag(name: string | unknown) {
-		console.log("handleCreateTag called with:", name, typeof name);
 		error = null;
 		creating = true;
 
@@ -46,16 +46,34 @@
 		}
 
 		try {
-			console.log("Creating tag:", trimmedName);
 			const newTag = await createTag({ name: trimmedName });
-			console.log("Tag created:", newTag);
 			await loadTags();
 			return newTag;
 		} catch (e) {
-			console.error("Error creating tag:", e);
 			error = e instanceof Error ? e.message : "タグの作成に失敗しました";
 		} finally {
 			creating = false;
+		}
+	}
+
+	async function handleDeleteTag(tagId: string | unknown) {
+		error = null;
+		deleting = true;
+
+		// 型チェック
+		if (typeof tagId !== "string") {
+			error = "タグIDが不正です";
+			deleting = false;
+			return;
+		}
+
+		try {
+			await deleteTag(tagId);
+			await loadTags();
+		} catch (e) {
+			error = e instanceof Error ? e.message : "タグの削除に失敗しました";
+		} finally {
+			deleting = false;
 		}
 	}
 </script>
@@ -68,6 +86,12 @@
 	{#if error}
 		<p class="error">エラー: {error}</p>
 	{/if}
-	<TagManager {tags} {creating} on:create={(e) => handleCreateTag(e.detail)} />
+	<TagManager
+		{tags}
+		{creating}
+		{deleting}
+		on:create={(e) => handleCreateTag(e.detail)}
+		on:delete={(e) => handleDeleteTag(e.detail)}
+	/>
 {/if}
 

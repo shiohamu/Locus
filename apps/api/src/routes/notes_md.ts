@@ -3,6 +3,8 @@ import type { NoteMD, NoteCore } from "@locus/shared";
 import * as notesDb from "../db/notes.js";
 import * as notesMDDb from "../db/notes_md.js";
 import { updateFTS } from "../db/search.js";
+import * as linksDb from "../db/links.js";
+import { detectNoteLinks } from "../utils/link-detector.js";
 
 const app = new Hono();
 
@@ -39,6 +41,19 @@ app.post("/", async (c) => {
 
 	// FTSインデックスを更新
 	await updateFTS(body.core.id, body.core.title, body.md.content);
+
+	// リンクを検出して登録
+	const linkedNoteIds = detectNoteLinks(body.md.content);
+	for (const linkedNoteId of linkedNoteIds) {
+		// リンク先のノートが存在するか確認
+		const linkedNote = await notesDb.getNote(linkedNoteId);
+		if (linkedNote) {
+			await linksDb.createLink({
+				from_note_id: body.core.id,
+				to_note_id: linkedNoteId,
+			});
+		}
+	}
 
 	return c.json({ core: body.core, md: body.md }, 201);
 });
@@ -92,6 +107,27 @@ app.put("/:id", async (c) => {
 	const core = await notesDb.getNote(id);
 	if (core && noteMD) {
 		await updateFTS(core.id, core.title, noteMD.content);
+
+		// 既存のリンクを削除（このノートから出るリンク）
+		// 注意: この実装では、既存のリンクをすべて削除して再作成する
+		// より効率的な実装は、差分を計算して追加・削除を行う
+		const existingLinks = await linksDb.getLinksByNote(id);
+		for (const link of existingLinks.outgoing) {
+			await linksDb.deleteLink(link.from_note_id, link.to_note_id);
+		}
+
+		// 新しいリンクを検出して登録
+		const linkedNoteIds = detectNoteLinks(noteMD.content);
+		for (const linkedNoteId of linkedNoteIds) {
+			// リンク先のノートが存在するか確認
+			const linkedNote = await notesDb.getNote(linkedNoteId);
+			if (linkedNote) {
+				await linksDb.createLink({
+					from_note_id: id,
+					to_note_id: linkedNoteId,
+				});
+			}
+		}
 	}
 
 	return c.json({ core, md: noteMD });

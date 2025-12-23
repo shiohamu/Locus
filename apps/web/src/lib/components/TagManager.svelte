@@ -4,9 +4,11 @@
 
 	export let tags: Tag[];
 	export let creating = false;
+	export let deleting = false;
 
 	const dispatch = createEventDispatcher<{
 		create: string;
+		delete: string;
 	}>();
 
 	let newTagName = "";
@@ -31,14 +33,19 @@
 	function handleCreate() {
 		const trimmed = newTagName.trim();
 		if (!trimmed || creating) {
-			console.log("handleCreate: early return", { trimmed, creating });
 			return;
 		}
 
-		console.log("handleCreate: dispatching", trimmed);
 		lastCreatedTagName = trimmed;
 		// dispatchは同期的なので、親コンポーネントのハンドラーを呼び出す
 		dispatch("create", trimmed);
+	}
+
+	function handleDelete(tagId: string) {
+		if (!confirm("このタグを削除しますか？")) {
+			return;
+		}
+		dispatch("delete", tagId);
 	}
 </script>
 
@@ -66,7 +73,17 @@
 		{:else}
 			<div class="tags-list">
 				{#each tags as tag (tag.id)}
-					<span class="tag-item">{tag.name}</span>
+					<span class="tag-item">
+						{tag.name}
+						<button
+							class="delete-btn"
+							on:click={() => handleDelete(tag.id)}
+							disabled={deleting}
+							title="タグを削除"
+						>
+							×
+						</button>
+					</span>
 				{/each}
 			</div>
 		{/if}
@@ -144,6 +161,9 @@
 	}
 
 	.tag-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
 		padding: 0.5rem 1rem;
 		background: linear-gradient(135deg, #e0e7ff 0%, #c7d2fe 100%);
 		border-radius: 12px;
@@ -158,6 +178,34 @@
 	.tag-item:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+	}
+
+	.delete-btn {
+		background: none;
+		border: none;
+		color: #6366f1;
+		cursor: pointer;
+		font-size: 1.25rem;
+		line-height: 1;
+		padding: 0;
+		width: 1.5rem;
+		height: 1.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: all 0.2s;
+	}
+
+	.delete-btn:hover:not(:disabled) {
+		background-color: rgba(99, 102, 241, 0.15);
+		transform: scale(1.1);
+		color: #4f46e5;
+	}
+
+	.delete-btn:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 </style>
 

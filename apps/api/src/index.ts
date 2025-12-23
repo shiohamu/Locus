@@ -62,6 +62,16 @@ app.post("/tags", async (c) => {
 		throw e;
 	}
 });
+app.delete("/tags/:id", async (c) => {
+	// タグ削除
+	const id = c.req.param("id");
+	const existing = await tagsDb.getTag(id);
+	if (!existing) {
+		return c.json({ error: "Tag not found" }, 404);
+	}
+	await tagsDb.deleteTag(id);
+	return c.json({ message: "Tag deleted" });
+});
 app.route("/search", searchRoutes);
 app.route("/rss", rssRoutes);
 app.route("/sync", syncRoutes);

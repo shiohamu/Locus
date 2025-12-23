@@ -157,6 +157,15 @@ export async function removeTagFromNote(noteId: string, tagId: string) {
 }
 
 /**
+ * タグ削除
+ */
+export async function deleteTag(tagId: string) {
+	return apiRequest(`/tags/${tagId}`, {
+		method: "DELETE",
+	});
+}
+
+/**
  * ノートのリンク取得
  */
 export async function getNoteLinks(noteId: string) {
@@ -192,6 +201,32 @@ export async function createRSSFeed(feed: { url: string; title: string }) {
 		method: "POST",
 		body: JSON.stringify(feed),
 	});
+}
+
+/**
+ * RSSフィード削除
+ */
+export async function deleteRSSFeed(feedId: string) {
+	return apiRequest(`/rss/feeds/${feedId}`, {
+		method: "DELETE",
+	});
+}
+
+/**
+ * RSSフィード取得・更新
+ */
+export async function fetchRSSFeed(feedId?: string) {
+	return apiRequest("/rss/fetch", {
+		method: "POST",
+		body: JSON.stringify(feedId ? { feed_id: feedId } : {}),
+	});
+}
+
+/**
+ * RSSアイテム取得（ノートIDで取得）
+ */
+export async function getRSSItem(noteId: string) {
+	return apiRequest(`/rss/items/${noteId}`);
 }
 
 /**
