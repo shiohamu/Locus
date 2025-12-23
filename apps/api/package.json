@@ -4,7 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "bun src/server.ts",
-    "start": "bun src/server.ts"
+    "start": "bun src/server.ts",
+    "test": "bun test",
+    "test:watch": "bun test --watch"
   },
   "dependencies": {
     "@libsql/client": "^0.14.0",
