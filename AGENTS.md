@@ -1,49 +1,204 @@
-# AGENTS.md
+# AGENTS ドキュメント
 
-## 開発環境の指針
+自動生成日時: 2025-12-24 05:53:59
 
-* 本プロジェクトは **ローカルファースト** を前提とする。
-* ランタイムおよびパッケージ管理は **Bun** を使用する。
-* 依存関係のインストールは `bun install` を用いる。
-* 開発サーバーはプロジェクトルートで `bun dev` を実行する。
-* バックエンドは **Hono** を使用し、不要なフレームワークや抽象化は追加しない。
-* フロントエンドは **Svelte** を使用し、外部状態管理ライブラリの導入は避ける。
-* ファイル構成や命名は既存のものを尊重し、推測で変更しないこと。
+このドキュメントは、AIコーディングエージェントがプロジェクト内で効果的に作業するための指示とコンテキストを提供します。
 
-## テストに関する指示
+---
 
-* CI の内容は `.github/workflows` 配下を確認すること。
-* コミット前に必ず以下をローカルで実行する：
 
-  * `bun test`
-* TypeScript の型エラーはすべて解消すること（無視・回避は禁止）。
-* テストが失敗した場合は、テストを弱めるのではなく実装を修正すること。
-* 振る舞いを変更した場合は、必ずテストを追加または更新する。
-* ファイル移動や import 変更後は、再度テストを実行して退行がないことを確認する。
+<!-- MANUAL_START:description -->
+Locus は、Markdown ノートと RSS フィードを一つのローカルに保持した知識ベースへ統合し、双方向リンクで相互参照できるパーソナルナレッジシステムです。
+ユーザーは自分専用のノートを書き込みながら、インターネット上の情報をリアルタイムに取り込むことができます。また、全てのデータはローカルファイル（Markdown とメタデータ）として保存されるため、クラウドへの依存やプライバシーリスクを排除しつつ高速な検索とオフライン利用を実現します。
+<!-- MANUAL_END:description -->
 
-## PR / コミット指針
 
-* コミットは小さく、目的を一つに絞ること。
-* 無関係な変更を同一コミットに含めない。
-* すべてのテストが成功し、ビルド可能な状態でのみコミットする。
-* 明示的に要求されていない限り、見た目やフォーマットのみの変更は行わない。
-* 抽象化を増やすより、不要なコードを削除することを優先する。
+### 主な機能
 
-## ドキュメンテーション規則（重要）
+| 機能 | 内容 |
+|------|-----|
+| **Markdown エディタ** | VS Code ライクな編集体験。リアルタイムプレビュー、シンタックスハイライト、スニペットなどの拡張性を備える。 |
+| **RSS フィード統合** | ユーザーが登録したフィードから記事タイトルと本文を自動取得し、ノートとして保存。タグ付けやカテゴリ分けで整理可能。 |
+| **双方向リンク** | `[[ページ名]]` 形式のリンクにより、自動的に相互参照リストを生成。グラフビューで知識ネットワークを可視化できる。 |
+| **ローカル検索 & インデックス** | ElasticSearch ライクな全文検索エンジン（軽量版）を内蔵し、キーワードやリンク関係に基づく高速クエリが可能。 |
+| **プラグインアーキテクチャ** | TypeScript で実装されており、npm パッケージとして簡単に拡張・統合できる。例えば、画像の自動埋め込みや外部 API 連携などが追加しやすい設計。 |
+| **オフライン優先** | 全データはファイルシステム上（`.locus` ディレクトリ）に保存され、ネットワーク接続不可時でも完全機能を保持。同期機能も必要なら別途実装可能。 |
 
-* **公開 API、重要な関数、型、インターフェースには必ず TSDoc を記載すること。**
-* TSDoc には以下を含める：
+### 技術スタック
 
-  * 役割・目的の簡潔な説明
-  * 引数（`@param`）と戻り値（`@returns`）の意味
-  * 副作用や注意点があれば明記
-* 内部実装向けの自明なコードには過剰なコメントを付けない。
-* コメントは実装と矛盾しないよう、変更時は必ず更新する。
+- **言語**：TypeScript/JavaScript (ES2020+)
+- **ビルドツール**：tsc + esbuild
+- **パッケージマネージャー**：npm（`package.json` に依存関係を管理）
+- **データストア**：ローカルファイルシステム＋軽量インデックスライブラリ
+  （例: `lunr.js` や自前の B+ 木構造）
+- **UI/UX**：React + Electron（または Web 向け SPA）
 
-## 一般的なコーディングルール
+### 利用ケース
 
-* 読みやすく、地味で明示的なコードを書くこと。
-* 巧妙さよりも可読性と保守性を優先する。
-* 依存関係は最小限に保つ。
-* 既存のコードスタイル・パターンに必ず合わせる。
-* 求められていない説明文や雑談は出力しない（コードまたは必要なファイルのみ）。
+1. **研究者・学生** – 論文や講義ノートを Markdown でまとめ、関連するオンライン記事を RSS フィードから自動取得しつつ、双方向リンクで知識の相関性を可視化。
+2. **プロダクトマネージャー** – 製品ロードマップと市場情報を同一ベースに統合し、意思決定時に必要なデータへ瞬時アクセス。
+3. **ライター・ブロガー** – インスピレーションやリサーチ資料をオフラインで管理しつつ、執筆中の記事とリンクさせてコンテンツ構造を整える。
+
+### まとめ
+
+Locus は「知識＝ファイル＋相互参照」の哲学に基づき、ローカル第一・プライバシー保護型でありながらもウェブ情報との統合性と拡張性を兼ね備えたツールです。TypeScript で構築されたモジュラー設計は既存の開発ワークフローに容易に組み込め、エコシステムが成長するにつれてプラグインやテーマなどコミュニティドリブンな拡張を期待できます。
+**使用技術**: typescript, javascript
+## プロジェクト構造
+```
+├── apps//
+│   ├── api//
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── web//
+│       ├── package.json
+│       └── tsconfig.json
+├── docs/
+├── packages//
+│   └── shared//
+│       ├── package.json
+│       └── tsconfig.json
+├── scripts/
+├── AGENTS.md
+├── README.md
+├── biome.json
+├── package.json
+├── pyproject.toml
+└── tsconfig.json
+```
+## アーキテクチャ
+
+<!-- MANUAL_START:architecture -->
+<!-- MANUAL_END:architecture -->
+```mermaid
+graph TB
+    %% Auto-generated architecture diagram
+
+    subgraph locus [fa:fa-cube locus]
+        direction TB
+        subgraph apps [apps]
+            direction TB
+            subgraph apps_api [api]
+                direction TB
+                apps_api_src["src"]:::moduleStyle
+            end
+            class apps_api moduleStyle
+            subgraph apps_web [web]
+                direction TB
+                apps_web_src["src"]:::moduleStyle
+            end
+            class apps_web moduleStyle
+        end
+        class apps moduleStyle
+        scripts["scripts"]:::moduleStyle
+    end
+
+
+    classDef pythonStyle fill:#3776ab,stroke:#ffd43b,stroke-width:2px,color:#fff
+    classDef dockerStyle fill:#2496ed,stroke:#1d63ed,stroke-width:2px,color:#fff
+    classDef dbStyle fill:#336791,stroke:#6b9cd6,stroke-width:2px,color:#fff
+    classDef moduleStyle fill:#f9f9f9,stroke:#333,stroke-width:2px
+```
+
+## Services
+
+### locus
+- **Type**: typescript
+- **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
+- **Dependencies**: @biomejs/biome, @libsql/client, @types/bun
+
+---
+
+## 開発環境のセットアップ
+
+<!-- MANUAL_START:setup -->
+<!-- MANUAL_END:setup -->
+### 前提条件
+- Node.js 18以上
+
+### 依存関係のインストール
+#### TypeScript依存関係
+
+```bash
+npm install
+```
+
+### LLM環境のセットアップ
+#### ローカルLLMを使用する場合
+
+1. **ローカルLLMのインストール**
+
+   - Ollamaをインストール: https://ollama.ai/
+   - モデルをダウンロード: `ollama pull llama3`
+   - サービスを起動: `ollama serve`
+
+2. **ローカルLLM使用時の注意事項**
+   - モデルが起動していることを確認してください
+   - ローカルリソース（メモリ、CPU）を監視してください
+
+---
+
+
+## ビルドおよびテスト手順
+
+### ビルド手順
+```bash
+npm run lint
+npm run lint:fix
+npm run format
+npm run format:check
+npm run check
+# ... その他のコマンド
+```
+
+### テスト実行
+テストコマンドは設定されていません。
+## コマンド
+
+プロジェクトで利用可能なスクリプト:
+
+| コマンド | 説明 |
+| --- | --- |
+| `lint` | biome lint . |
+| `lint:fix` | biome lint --write . |
+| `format` | biome format --write . |
+| `format:check` | biome format . |
+| `check` | biome check . |
+| `check:fix` | biome check --write . |
+| `migrate` | bun run scripts/migrate.ts |
+| `dev:api` | bun run apps/api/src/server.ts |
+| `dev:web` | bun --cwd=apps/web run dev |
+| `dev` | bunx concurrently --names 'API,WEB' --prefix-colors 'blue,green' 'bun run dev:api' 'bun run dev:web' |
+---
+
+## コーディング規約
+
+<!-- MANUAL_START:other -->
+<!-- MANUAL_END:other -->
+
+---
+
+## プルリクエストの手順
+
+<!-- MANUAL_START:pr -->
+<!-- MANUAL_END:pr -->
+1. **ブランチの作成**
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+2. **変更のコミット**
+   - コミットメッセージは明確で説明的に
+   - 関連するIssue番号を含める
+
+3. **テストの実行**
+   ```bash
+   # テストコマンドを実行
+   ```
+
+4. **プルリクエストの作成**
+   - タイトル: `[種類] 簡潔な説明`
+   - 説明: 変更内容、テスト結果、関連Issueを記載
+
+---
+
+*このAGENTS.mdは自動生成されています。最終更新: 2025-12-24 05:53:59*

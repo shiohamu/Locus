@@ -1,0 +1,54 @@
+project_name: Locus
+version: '1.0'
+services:
+- name: locus
+  type: typescript
+  description: Locus is a local-first personal knowledge system that integrates Markdown
+    notes, RSS feeds, and bidirectional links into a unified knowledge space.
+  ports: []
+  dependencies:
+  - '@biomejs/biome'
+  - '@libsql/client'
+  - '@types/bun'
+  modules:
+  - name: apps
+    path: !!python/object/apply:pathlib._local.PosixPath
+    - apps
+    is_package: false
+    dependencies: []
+    submodules:
+    - name: api
+      path: !!python/object/apply:pathlib._local.PosixPath
+      - apps/api
+      is_package: false
+      dependencies: []
+      submodules:
+      - name: src
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src
+        is_package: false
+        dependencies: []
+        submodules: []
+    - name: web
+      path: !!python/object/apply:pathlib._local.PosixPath
+      - apps/web
+      is_package: false
+      dependencies: []
+      submodules:
+      - name: src
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/web/src
+        is_package: false
+        dependencies: []
+        submodules: []
+  - name: scripts
+    path: !!python/object/apply:pathlib._local.PosixPath
+    - scripts
+    is_package: false
+    dependencies: []
+    submodules: []
+  metadata:
+    version: 0.0.0
+    main: null
+    entry_file: package.json
+metadata: {}
