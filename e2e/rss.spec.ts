@@ -11,13 +11,14 @@ test.describe('RSS機能', () => {
 	});
 
 	test('RSSフィードを登録できる', async ({ page }) => {
-		const feedUrl = 'https://example.com/rss';
+		// UNIQUE制約エラーを回避するため、URLにタイムスタンプを追加
+		const feedUrl = `https://example.com/rss?t=${Date.now()}`;
 		const feedTitle = `Test Feed ${Date.now()}`;
 
 		await goToRSS(page);
 
 		// フィード登録フォームを表示
-		const newFeedButton = page.locator('button:has-text("新規登録"), button:has-text("追加")').first();
+		const newFeedButton = page.locator('button:has-text("フィードを追加"), button:has-text("新規登録"), button:has-text("追加")').first();
 		if (await newFeedButton.isVisible()) {
 			await newFeedButton.click();
 			await page.waitForTimeout(500);
@@ -35,11 +36,13 @@ test.describe('RSS機能', () => {
 			const submitButton = page.locator('button:has-text("登録"), button:has-text("作成")').first();
 			await submitButton.click();
 
-			// 登録完了を待つ
+			// 登録完了を待つ - "登録中..." が消えるのを待つ
+			await page.waitForSelector('button:has-text("登録中...")', { state: 'hidden', timeout: 10000 }).catch(() => {});
+			// フィード一覧が更新されるまで待つ
 			await page.waitForTimeout(1000);
 
 			// フィードが表示されているか確認
-			await expect(page.locator(`text=${feedTitle}`)).toBeVisible();
+			await expect(page.locator(`text=${feedTitle}`)).toBeVisible({ timeout: 5000 });
 		}
 	});
 });

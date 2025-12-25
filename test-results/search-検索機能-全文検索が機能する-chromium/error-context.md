@@ -23,7 +23,7 @@
     - generic [ref=e18]:
       - textbox "検索キーワードを入力..." [active] [ref=e19]: E2E_SEARCH_KEYWORD_12345
       - button "検索" [ref=e20] [cursor=pointer]
-    - paragraph [ref=e21]: 2件の結果
+    - paragraph [ref=e21]: 12件の結果
     - list [ref=e22]:
       - listitem [ref=e23] [cursor=pointer]:
         - heading [level=3]
@@ -31,4 +31,34 @@
       - listitem [ref=e25] [cursor=pointer]:
         - heading [level=3]
         - paragraph [ref=e26]: 2025/12/25 11:41:55 更新
+      - listitem [ref=e27] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e28]: 2025/12/25 11:43:16 更新
+      - listitem [ref=e29] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e30]: 2025/12/25 11:44:47 更新
+      - listitem [ref=e31] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e32]: 2025/12/25 11:45:56 更新
+      - listitem [ref=e33] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e34]: 2025/12/25 11:47:03 更新
+      - listitem [ref=e35] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e36]: 2025/12/25 11:47:50 更新
+      - listitem [ref=e37] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e38]: 2025/12/25 11:52:27 更新
+      - listitem [ref=e39] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e40]: 2025/12/25 11:53:41 更新
+      - listitem [ref=e41] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e42]: 2025/12/25 11:54:30 更新
+      - listitem [ref=e43] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e44]: 2025/12/25 11:55:28 更新
+      - listitem [ref=e45] [cursor=pointer]:
+        - heading [level=3]
+        - paragraph [ref=e46]: 2025/12/25 11:55:59 更新
 ```

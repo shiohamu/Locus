@@ -113,8 +113,15 @@ export async function editNote(page: Page, noteId: string, newTitle: string, new
 	const saveButton = page.locator('button:has-text("保存")').first();
 	await saveButton.click();
 
-	// 保存完了を待つ
-	await page.waitForTimeout(2000);
+	// 保存完了を待つ - 編集モードが終了し、ノートが再読み込みされるまで待機
+	// "保存中..." が消えるのを待つ
+	await page.waitForSelector('button:has-text("保存中...")', { state: 'hidden', timeout: 10000 }).catch(() => {});
+	// 編集モードが終了するのを待つ（編集ボタンが再表示されるか、タイトル入力欄が消える）
+	await page.waitForSelector('input#title', { state: 'hidden', timeout: 10000 }).catch(() => {});
+	// ノート詳細ページに移動し直して、更新された内容を確認
+	await goToNoteDetail(page, noteId);
+	// 更新されたタイトルが表示されるのを待つ
+	await page.waitForSelector(`h1:has-text("${newTitle}")`, { timeout: 10000 });
 }
 
 /**
@@ -123,15 +130,15 @@ export async function editNote(page: Page, noteId: string, newTitle: string, new
 export async function deleteNote(page: Page, noteId: string) {
 	await goToNoteDetail(page, noteId);
 
+	// 確認ダイアログを事前に設定
+	page.on('dialog', (dialog) => dialog.accept());
+
 	// 削除ボタンをクリック
 	const deleteButton = page.locator('button:has-text("削除")').first();
 	await deleteButton.click();
 
-	// 確認ダイアログを承認
-	page.on('dialog', (dialog) => dialog.accept());
-
 	// ノート一覧ページに戻るのを待つ
-	await page.waitForURL('/', { timeout: 5000 });
+	await page.waitForURL('/', { timeout: 10000 });
 }
 
 /**
@@ -189,11 +196,18 @@ export async function searchNotes(page: Page, query: string) {
 	await goToSearch(page);
 
 	// 検索入力欄に入力
-	const searchInput = page.locator('input[type="search"], input[placeholder*="検索"]').first();
+	const searchInput = page.locator('input[type="search"], input[placeholder*="検索"], input.search-input, input[type="text"]').first();
 	await searchInput.fill(query);
 
 	// Enterキーを押すか検索ボタンをクリック
 	await searchInput.press('Enter');
+
+	// 検索が完了するまで待つ - "検索中..." が消えるのを待つ
+	await page.waitForSelector('button:has-text("検索中...")', { state: 'hidden', timeout: 15000 }).catch(() => {});
+	// 検索結果が表示されるまで待つ（結果リストまたは「検索結果が見つかりませんでした」メッセージが表示されるまで）
+	// hasSearched && !loading の条件で結果が表示されるため、結果リストまたはno-resultsメッセージが表示されるまで待つ
+	await page.waitForSelector('.results-list, .no-results, .results-count', { timeout: 15000 });
+	// 検索結果が表示されるまで少し待つ
 	await page.waitForTimeout(1000);
 }
 
