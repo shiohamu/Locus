@@ -1,0 +1,47 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e3]:
+  - navigation [ref=e4]:
+    - link "ホーム" [ref=e5] [cursor=pointer]:
+      - /url: /
+    - link "新規ノート" [ref=e6] [cursor=pointer]:
+      - /url: /notes/new
+    - link "タグ" [ref=e7] [cursor=pointer]:
+      - /url: /tags
+    - link "RSS" [ref=e8] [cursor=pointer]:
+      - /url: /rss
+    - link "検索" [ref=e9] [cursor=pointer]:
+      - /url: /search
+  - generic [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]: "最終同期:"
+      - generic [ref=e14]: 未同期
+    - button "同期" [ref=e15] [cursor=pointer]
+  - main [ref=e16]:
+    - generic [ref=e17]:
+      - generic [ref=e18]:
+        - textbox "タイトル" [ref=e19]: Updated E2E Test Note 1766630514653
+        - generic [ref=e20]:
+          - button "保存" [active] [ref=e21] [cursor=pointer]
+          - button "キャンセル" [ref=e22] [cursor=pointer]
+      - generic [ref=e23]:
+        - generic [ref=e24]:
+          - generic [ref=e25]: タイトル
+          - textbox "タイトル" [ref=e26]:
+            - /placeholder: ノートのタイトル
+            - text: Updated E2E Test Note 1766630514653
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e29]: 内容（Markdown）
+            - button "プレビュー" [ref=e30] [cursor=pointer]
+          - textbox "内容（Markdown）" [ref=e31]:
+            - /placeholder: Markdown形式で記述してください
+            - text: This is updated content.
+      - generic [ref=e32]:
+        - heading "タグ" [level=3] [ref=e33]
+        - button "+ タグを追加" [ref=e34] [cursor=pointer]
+      - generic [ref=e35]:
+        - heading "リンク" [level=3] [ref=e36]
+        - paragraph [ref=e37]: リンクがありません
+```

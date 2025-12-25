@@ -9,6 +9,7 @@ services:
   dependencies:
   - '@biomejs/biome'
   - '@libsql/client'
+  - '@playwright/test'
   - '@types/bun'
   modules:
   - name: apps
@@ -41,6 +42,12 @@ services:
         is_package: false
         dependencies: []
         submodules: []
+  - name: e2e
+    path: !!python/object/apply:pathlib._local.PosixPath
+    - e2e
+    is_package: false
+    dependencies: []
+    submodules: []
   - name: scripts
     path: !!python/object/apply:pathlib._local.PosixPath
     - scripts

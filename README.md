@@ -9,38 +9,35 @@
 Locus は「ローカルファースト」をモットーに設計された個人知識管理システムです。
 ノートは Markdown で書き、すべてのデータ（Markdown ファイル、メタ情報、リンク構造）はユーザー自身が所有するローカルストレージに保存されます。そのためインターネット接続不要・外部サービスへの依存なしに知識を蓄積できるほか、プライバシーやデータセキュリティも担保します。
 <!-- MANUAL_END:description -->
+Locusは、ノートテイキングと情報収集を一つの統合された知識空間にまとめる**ローカルファースト型パーソナルナレッジシステム**です。  
+- **Markdownベースのメモ管理**：フリーなエディタで作成した Markdown ファイルは自動的に Locus のデータ構造へ取り込まれ、リンクやタグを使って相互参照が可能になります。  
+- **RSS フィード統合**：好きなフィードリーダーのように複数 RSS ソースから記事を取得し、自分専用のノートとして保存・検索できます。  
+- **双方向リンク（Bidirectional Links）**：`[[ページ名]]` の記法で作成したリンクは、相手側にも自動的に参照が付与されるため、知識グラフを即座に可視化しながら関連情報へ飛びやすくなります。  
+- **ローカル優先設計**：全データ（Markdown ファイル・RSS 記事・メタデータ）はユーザーのローカルディレクトリに保存され、外部サービスへのアップロードはオプションです。そのため、通信環境が不安定な場所や高いセキュリティ要件を持つ業務でも安心して利用できます。  
+- **拡張性とカスタマイズ**：TypeScript で書かれたコアロジックは CLI ツールとしても、また VS Code のようなエディタに組み込むことが可能です。`locus init <dir>` コマンドでワークスペースを作成し、`.md`, `.rss.json`, `links.db` などのファイル構造を自動生成します。  
+- **同期オプション**：Git リポジトリやクラウドストレージ（Dropbox, Google Drive 等）にデータをバックアップするだけでなく、複数端末間の手軽なシンクロもサポートしています。
 
-主な特徴
-
-| 機能 | 説明 |
-|------|------|
-| **Markdown ノート** | 典型的な Markdown 文法（見出し・表・画像など）に加え、YAML フロントマターをサポート。ファイル名やフロントマタのタグでメタ情報管理が可能です。 |
-| **RSS フィード統合** | RSS から記事を定期的または手動で取得し、自動生成されたノートとして保存します。タイトル・著者・公開日時、カテゴリなどのメタデータも保持されるため、後から検索やフィルタリングが容易です。 |
-| **双方向リンク** | `[[Note Title]]` 形式で他ノートを参照すると、自動的にバックリンクリスト（どこから呼び出されたか）が生成されます。これにより知識のネットワーク構造を可視化し、関連情報へ迅速にアクセスできます。 |
-| **ローカルデータベース** | ノートメタとインデックスは軽量な JSON/SQLite データストアで管理。高速検索（全文検索・タグ検索）や履歴管理が可能です。 |
-| **CLI と Web UI の両方提供** | `locus` コマンドラインツールでノートの作成、編集、同期を行い、ブラウザベースのインターフェイスではビジュアルに閲覧・ナビゲーションができます（※実装状況はプロジェクトリポジトリをご確認ください）。 |
-| **拡張性** | TypeScript で書かれたモジュール構造と npm パッケージとして公開されているため、ユーザー自身のプラグインやカスタムスクリプトを簡単に追加できます。 |
-
-## 技術スタック
-
-- **言語**: TypeScript (型安全性)、JavaScript（実行環境互換）
-- **パッケージマネージャー**: npm
-- **主要ライブラリ**
-  - `markdown-it` / `remark`: Markdown パース・レンダリング
-  - `rss-parser`: RSS フィード取得と解析
-  - `lunr.js` または `flexsearch`: クイック全文検索
-  - `lowdb`, `sqlite3` 等のローカルデータストア
-
-## インストール & 初期設定（例）
+## 開発・実行
 
 ```bash
-npm install --global locus
-locus init           # プロジェクトディレクトリを作成し、初期構造生成
+# グローバルインストール (npm)
+npm install -g locus
+
+# 新規プロジェクト作成
+locus init ~/my-locus-space
+
+# RSS フィードを追加
+echo "https://example.com/feed.xml" >> feeds.txt
+locus fetch-feeds
+
+# ノートのリンク編集例（VS Code で開く）
+code .
+
+# コマンドラインから検索・表示
+locus search --tag todo
 ```
 
-その後は `locus add rss <URL>` で RSS フィードを登録し、`locus new "タイトル"` でノートを書き始めるだけです。
-
-Locus は「知識のインフラ」を最小限に抑えつつ、Markdown と RSS の自然な組み合わせと双方向リンクによって情報同士を有機的につないだパーソナルナレッジベースへ変換します。<!-- MANUAL_START:architecture -->
+Locus はシンプルなコマンドセットと直感的な Markdown 記法を組み合わせ、知識管理に必要なすべての機能（ノート作成, フィード取り込み, 双方向リンク, 検索）をローカルで完結させます。開発者は TypeScript で拡張可能、ユーザーは日常的に手軽に情報を蓄積・再利用できるよう設計されています。<!-- MANUAL_START:architecture -->
 
 <!-- MANUAL_END:architecture -->
 ```mermaid
@@ -63,6 +60,7 @@ graph TB
             class apps_web moduleStyle
         end
         class apps moduleStyle
+        e2e["e2e"]:::moduleStyle
         scripts["scripts"]:::moduleStyle
     end
 
@@ -78,12 +76,13 @@ graph TB
 ### locus
 - **Type**: typescript
 - **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
-- **Dependencies**: @biomejs/biome, @libsql/client, @types/bun
+- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun
 
 ## 使用技術
 
 - TypeScript
 - JavaScript
+- Shell
 
 ## 依存関係
 
@@ -148,6 +147,11 @@ npm run format:check
 npm run check
 # ... その他のコマンド
 ```
+### テスト
+
+```bash
+npm test
+```
 ## コマンド
 
 プロジェクトで利用可能なスクリプト:
@@ -164,7 +168,12 @@ npm run check
 | `dev:api` | bun run apps/api/src/server.ts |
 | `dev:web` | bun --cwd=apps/web run dev |
 | `dev` | bunx concurrently --names 'API,WEB' --prefix-colors 'blue,green' 'bun run dev:api' 'bun run dev:web' |
+| `test` | bun test |
+| `test:api` | bun --cwd=apps/api test |
+| `test:web` | bun --cwd=apps/web test |
+| `test:e2e` | playwright test |
+| `test:e2e:ui` | bash scripts/test-e2e-ui.sh |
 
 ---
 
-*このREADME.mdは自動生成されています。最終更新: 2025-12-24 05:53:05*
+*このREADME.mdは自動生成されています。最終更新: 2025-12-25 11:34:12*

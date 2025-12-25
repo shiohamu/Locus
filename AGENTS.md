@@ -1,6 +1,6 @@
 # AGENTS ドキュメント
 
-自動生成日時: 2025-12-24 05:53:59
+自動生成日時: 2025-12-25 11:34:57
 
 このドキュメントは、AIコーディングエージェントがプロジェクト内で効果的に作業するための指示とコンテキストを提供します。
 
@@ -12,37 +12,22 @@ Locus は、Markdown ノートと RSS フィードを一つのローカルに保
 ユーザーは自分専用のノートを書き込みながら、インターネット上の情報をリアルタイムに取り込むことができます。また、全てのデータはローカルファイル（Markdown とメタデータ）として保存されるため、クラウドへの依存やプライバシーリスクを排除しつつ高速な検索とオフライン利用を実現します。
 <!-- MANUAL_END:description -->
 
+Locusは、MarkdownノートとRSSフィードを統合し、双方向リンクでつながる個人知識ベースをローカルファイルシステム上に構築することを目的としたオープンソースプロジェクトです。  
+- **ローカル第一設計**：すべてのデータはユーザーのマシン内に保持され、インターネット接続がなくても完全な検索・閲覧機能を提供します。必要に応じてバックアップや同期用CLI（例: `locus sync`）でクラウドストレージと連携できます。  
+- **Markdownベースのノート**：任意のテキストエディタで作成した`.md`ファイルをそのままインデックス化し、タグやフロントマターも自動解析します。リンクは `[[ページ名]]` 形式により簡単に設定でき、相互参照が可視化されます。  
+- **RSS統合**：指定したフィードURLを監視して新記事を取得し、自動でMarkdownファイルへ保存・インデックスします。ユーザーは「#rss」タグやカスタムメタ情報で整理できます。  
+- **双方向リンクとグラフ表示**：ノート間のリレーションシップを解析し、CLIベースまたはWeb UI（オプショナル）でトピックネットワーク図として可視化します。これにより知識構造が直感的に把握できます。  
+- **拡張性**：TypeScript/JavaScriptのAPIとShellスクリプトを組み合わせてカスタムプラグインや自動処理（バックアップ、エクスポート）を書き込むことが可能です。  
 
-### 主な機能
+技術概要  
+| コンポーネント | 言語 / ツール |
+|-----------------|---------------|
+| コアロジック   | TypeScript (ESNext) |
+| CLI・スクリプト  | Node.js + npm, Bash/Shell |
+| パッケージ管理 | npm |
 
-| 機能 | 内容 |
-|------|-----|
-| **Markdown エディタ** | VS Code ライクな編集体験。リアルタイムプレビュー、シンタックスハイライト、スニペットなどの拡張性を備える。 |
-| **RSS フィード統合** | ユーザーが登録したフィードから記事タイトルと本文を自動取得し、ノートとして保存。タグ付けやカテゴリ分けで整理可能。 |
-| **双方向リンク** | `[[ページ名]]` 形式のリンクにより、自動的に相互参照リストを生成。グラフビューで知識ネットワークを可視化できる。 |
-| **ローカル検索 & インデックス** | ElasticSearch ライクな全文検索エンジン（軽量版）を内蔵し、キーワードやリンク関係に基づく高速クエリが可能。 |
-| **プラグインアーキテクチャ** | TypeScript で実装されており、npm パッケージとして簡単に拡張・統合できる。例えば、画像の自動埋め込みや外部 API 連携などが追加しやすい設計。 |
-| **オフライン優先** | 全データはファイルシステム上（`.locus` ディレクトリ）に保存され、ネットワーク接続不可時でも完全機能を保持。同期機能も必要なら別途実装可能。 |
-
-### 技術スタック
-
-- **言語**：TypeScript/JavaScript (ES2020+)
-- **ビルドツール**：tsc + esbuild
-- **パッケージマネージャー**：npm（`package.json` に依存関係を管理）
-- **データストア**：ローカルファイルシステム＋軽量インデックスライブラリ
-  （例: `lunr.js` や自前の B+ 木構造）
-- **UI/UX**：React + Electron（または Web 向け SPA）
-
-### 利用ケース
-
-1. **研究者・学生** – 論文や講義ノートを Markdown でまとめ、関連するオンライン記事を RSS フィードから自動取得しつつ、双方向リンクで知識の相関性を可視化。
-2. **プロダクトマネージャー** – 製品ロードマップと市場情報を同一ベースに統合し、意思決定時に必要なデータへ瞬時アクセス。
-3. **ライター・ブロガー** – インスピレーションやリサーチ資料をオフラインで管理しつつ、執筆中の記事とリンクさせてコンテンツ構造を整える。
-
-### まとめ
-
-Locus は「知識＝ファイル＋相互参照」の哲学に基づき、ローカル第一・プライバシー保護型でありながらもウェブ情報との統合性と拡張性を兼ね備えたツールです。TypeScript で構築されたモジュラー設計は既存の開発ワークフローに容易に組み込め、エコシステムが成長するにつれてプラグインやテーマなどコミュニティドリブンな拡張を期待できます。
-**使用技術**: typescript, javascript
+Locusは、ノート作成と情報収集を同じ場所で完結させたい開発者やリサーチャーに最適なツールです。ローカルファイルとしての可搬性・永続化が保証される一方、RSSフィードとの統合で最新情報も自動的に取り込めます。また、双方向リンクとグラフ機能によって知識を「ネットワーク」として捉え直すことで、新たな洞察やアイデアの発掘が促進されます。
+**使用技術**: typescript, javascript, shell
 ## プロジェクト構造
 ```
 ├── apps//
@@ -57,6 +42,11 @@ Locus は「知識＝ファイル＋相互参照」の哲学に基づき、ロ�
 │   └── shared//
 │       ├── package.json
 │       └── tsconfig.json
+├── playwright-report//
+│   └── data//
+│       ├── 43f6d6bbdc0e9b7d9a7dbcacaad485eab9c919e2.md
+│       ├── 4b48a192a0b429d7e6318dfa399a20bb896e9f30.md
+│       └── 6d27d4c8f06f97d0a27c03343afd96cc6f999d31.md
 ├── scripts/
 ├── AGENTS.md
 ├── README.md
@@ -68,6 +58,7 @@ Locus は「知識＝ファイル＋相互参照」の哲学に基づき、ロ�
 ## アーキテクチャ
 
 <!-- MANUAL_START:architecture -->
+
 <!-- MANUAL_END:architecture -->
 ```mermaid
 graph TB
@@ -89,6 +80,7 @@ graph TB
             class apps_web moduleStyle
         end
         class apps moduleStyle
+        e2e["e2e"]:::moduleStyle
         scripts["scripts"]:::moduleStyle
     end
 
@@ -104,13 +96,14 @@ graph TB
 ### locus
 - **Type**: typescript
 - **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
-- **Dependencies**: @biomejs/biome, @libsql/client, @types/bun
+- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun
 
 ---
 
 ## 開発環境のセットアップ
 
 <!-- MANUAL_START:setup -->
+
 <!-- MANUAL_END:setup -->
 ### 前提条件
 - Node.js 18以上
@@ -151,7 +144,9 @@ npm run check
 ```
 
 ### テスト実行
-テストコマンドは設定されていません。
+```bash
+npm test
+```
 ## コマンド
 
 プロジェクトで利用可能なスクリプト:
@@ -168,11 +163,17 @@ npm run check
 | `dev:api` | bun run apps/api/src/server.ts |
 | `dev:web` | bun --cwd=apps/web run dev |
 | `dev` | bunx concurrently --names 'API,WEB' --prefix-colors 'blue,green' 'bun run dev:api' 'bun run dev:web' |
+| `test` | bun test |
+| `test:api` | bun --cwd=apps/api test |
+| `test:web` | bun --cwd=apps/web test |
+| `test:e2e` | playwright test |
+| `test:e2e:ui` | bash scripts/test-e2e-ui.sh |
 ---
 
 ## コーディング規約
 
 <!-- MANUAL_START:other -->
+
 <!-- MANUAL_END:other -->
 
 ---
@@ -180,6 +181,7 @@ npm run check
 ## プルリクエストの手順
 
 <!-- MANUAL_START:pr -->
+
 <!-- MANUAL_END:pr -->
 1. **ブランチの作成**
    ```bash
@@ -192,7 +194,7 @@ npm run check
 
 3. **テストの実行**
    ```bash
-   # テストコマンドを実行
+   npm test
    ```
 
 4. **プルリクエストの作成**
@@ -201,4 +203,4 @@ npm run check
 
 ---
 
-*このAGENTS.mdは自動生成されています。最終更新: 2025-12-24 05:53:59*
+*このAGENTS.mdは自動生成されています。最終更新: 2025-12-25 11:34:57*

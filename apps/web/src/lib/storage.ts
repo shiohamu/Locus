@@ -224,3 +224,4 @@ export async function clearAll(): Promise<void> {
 	await database.clear("sync_state");
 }
 
+
