@@ -8,6 +8,7 @@ node_modules
 out
 dist
 *.tgz
+.old/
 
 # code coverage
 coverage
@@ -53,3 +54,4 @@ apps/api/data/*.db-shm
 # playwright
 playwright-report
 test-results
+
