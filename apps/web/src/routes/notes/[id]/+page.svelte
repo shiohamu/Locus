@@ -1,11 +1,11 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
-import { deleteNote, getNote, getNoteMD, getRSSItem, updateNoteMD } from "$lib/api";
+import { deleteNote, getNote, getNoteMD, getRSSItem, getWebClip, updateNoteMD } from "$lib/api";
 import NoteEditor from "$lib/components/NoteEditor.svelte";
 import NoteLinks from "$lib/components/NoteLinks.svelte";
 import NoteTags from "$lib/components/NoteTags.svelte";
-import type { NoteCore, NoteMD, RSSItem } from "$lib/types";
+import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
 import { nowTimestamp } from "$lib/utils";
 import { marked } from "marked";
 import { onMount } from "svelte";
@@ -13,6 +13,7 @@ import { onMount } from "svelte";
 let note: NoteCore | null = null;
 let noteMD: NoteMD | null = null;
 let rssItem: RSSItem | null = null;
+let webClip: WebClip | null = null;
 let editing = false;
 let title = "";
 let content = "";
@@ -20,7 +21,7 @@ let loading = true;
 let saving = false;
 let deleting = false;
 let error: string | null = null;
-const showPreview = false;
+let showPreview = false;
 let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSavedTitle = "";
 let lastSavedContent = "";
@@ -51,6 +52,12 @@ async function loadNote() {
       rssItem = await getRSSItem(noteId);
       if (rssItem) {
         content = rssItem.content;
+      }
+    } else if (note.type === "web_clip") {
+      const clipData = await getWebClip(noteId);
+      if (clipData) {
+        webClip = clipData;
+        content = webClip.content;
       }
     }
   } catch (e) {
@@ -163,14 +170,16 @@ $: renderedContent = noteMD?.content
   ? marked.parse(noteMD.content)
   : rssItem?.content
     ? marked.parse(rssItem.content)
-    : "";
+    : webClip?.content
+      ? marked.parse(webClip.content)
+      : "";
 </script>
 
 {#if loading}
 	<p>読み込み中...</p>
 {:else if error}
 	<p class="error">エラー: {error}</p>
-{:else if note && (noteMD || rssItem)}
+{:else if note && (noteMD || rssItem || webClip)}
 	<div class="note-page">
 		<div class="note-header">
 			{#if editing && note.type === "md"}
@@ -212,6 +221,19 @@ $: renderedContent = noteMD?.content
 				</p>
 				<p class="rss-date">
 					公開日時: {formatDate(rssItem.published_at)}
+				</p>
+			</div>
+		{/if}
+
+		{#if webClip}
+			<div class="rss-meta">
+				<p class="rss-url">
+					<a href={webClip.source_url} target="_blank" rel="noopener noreferrer">
+						{webClip.source_url}
+					</a>
+				</p>
+				<p class="rss-date">
+					取得日時: {formatDate(webClip.fetched_at)}
 				</p>
 			</div>
 		{/if}

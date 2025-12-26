@@ -16,11 +16,11 @@ type FilterType = "all" | "md" | "rss";
 type SortBy = "updated_at" | "created_at" | "title";
 type SortOrder = "desc" | "asc";
 
-const filterType: FilterType = "all";
-const sortBy: SortBy = "updated_at";
-const sortOrder: SortOrder = "desc";
+let filterType: FilterType = "all";
+let sortBy: SortBy = "updated_at";
+let sortOrder: SortOrder = "desc";
 let currentPage = 1;
-const itemsPerPage = 20;
+let itemsPerPage = 20;
 
 onMount(async () => {
   await Promise.all([loadNotes(), loadTags()]);

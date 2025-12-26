@@ -4,3 +4,5 @@ export * from "./tag.js";
 export * from "./link.js";
 export * from "./sync.js";
 export * from "./api.js";
+export * from "./web-clip.js";
+export * from "./file.js";

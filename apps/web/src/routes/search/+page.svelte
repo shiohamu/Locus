@@ -4,7 +4,7 @@ import { searchNotes } from "$lib/api";
 import type { NoteCore } from "$lib/types";
 import { onMount } from "svelte";
 
-const query = "";
+let query = "";
 let results: NoteCore[] = [];
 let loading = false;
 let error: string | null = null;

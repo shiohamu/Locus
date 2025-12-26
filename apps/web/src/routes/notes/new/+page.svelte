@@ -5,8 +5,8 @@ import NoteEditor from "$lib/components/NoteEditor.svelte";
 import type { NoteCore, NoteMD } from "$lib/types";
 import { generateId, nowTimestamp } from "$lib/utils";
 
-const title = "";
-const content = "";
+let title = "";
+let content = "";
 let saving = false;
 let error: string | null = null;
 

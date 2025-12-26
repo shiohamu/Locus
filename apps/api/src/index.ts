@@ -3,6 +3,8 @@ import * as tagsDb from "./db/tags.js";
 import { corsMiddleware } from "./middleware/cors.js";
 import { errorHandler } from "./middleware/error-handler.js";
 import { logger } from "./middleware/logger.js";
+import exportRoutes from "./routes/export.js";
+import filesRoutes from "./routes/files.js";
 import linksRoutes from "./routes/links.js";
 import notesRoutes from "./routes/notes.js";
 import notesMDRoutes from "./routes/notes_md.js";
@@ -10,6 +12,7 @@ import rssRoutes from "./routes/rss.js";
 import searchRoutes from "./routes/search.js";
 import syncRoutes from "./routes/sync.js";
 import tagsRoutes from "./routes/tags.js";
+import webClipsRoutes from "./routes/web-clips.js";
 
 const app = new Hono();
 
@@ -74,6 +77,9 @@ app.delete("/tags/:id", async (c) => {
 });
 app.route("/search", searchRoutes);
 app.route("/rss", rssRoutes);
+app.route("/web-clips", webClipsRoutes);
+app.route("/files", filesRoutes);
+app.route("/export", exportRoutes);
 app.route("/sync", syncRoutes);
 
 // ヘルスチェック

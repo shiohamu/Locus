@@ -1,7 +1,7 @@
 /**
  * ノートタイプ
  */
-export type NoteType = "md" | "rss";
+export type NoteType = "md" | "rss" | "web_clip";
 
 /**
  * ノートコア情報

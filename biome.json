@@ -68,6 +68,16 @@
       "formatter": {
         "lineWidth": 120
       }
+    },
+    {
+      "include": ["**/*.svelte"],
+      "linter": {
+        "rules": {
+          "style": {
+            "useConst": "off"
+          }
+        }
+      }
     }
   ]
 }

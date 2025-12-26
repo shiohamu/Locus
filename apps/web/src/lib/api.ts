@@ -229,6 +229,174 @@ export async function getRSSItem(noteId: string) {
 }
 
 /**
+ * Webクリップ作成
+ */
+export async function createWebClip(url: string) {
+  return apiRequest("/web-clips", {
+    method: "POST",
+    body: JSON.stringify({ url }),
+  });
+}
+
+/**
+ * Webクリップ一覧取得
+ */
+export async function getWebClips(options?: {
+  limit?: number;
+  offset?: number;
+}) {
+  const params = new URLSearchParams();
+  if (options?.limit) params.set("limit", String(options.limit));
+  if (options?.offset) params.set("offset", String(options.offset));
+
+  const query = params.toString();
+  return apiRequest(`/web-clips${query ? `?${query}` : ""}`);
+}
+
+/**
+ * Webクリップ取得
+ */
+export async function getWebClip(noteId: string) {
+  return apiRequest(`/web-clips/${noteId}`);
+}
+
+/**
+ * Webクリップ更新（再取得）
+ */
+export async function refetchWebClip(noteId: string) {
+  return apiRequest(`/web-clips/${noteId}`, {
+    method: "PUT",
+  });
+}
+
+/**
+ * Webクリップ削除
+ */
+export async function deleteWebClip(noteId: string) {
+  return apiRequest(`/web-clips/${noteId}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * ファイルアップロード
+ */
+export async function uploadFile(file: File): Promise<unknown> {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
+  const url = `${API_BASE_URL}/files`;
+
+  const response = await fetch(url, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({
+      error: "Unknown error",
+    }));
+    throw new Error(error.error || `HTTP ${response.status}`);
+  }
+
+  return response.json();
+}
+
+/**
+ * ファイル一覧取得
+ */
+export async function getFiles(options?: {
+  limit?: number;
+  offset?: number;
+}) {
+  const params = new URLSearchParams();
+  if (options?.limit) params.set("limit", String(options.limit));
+  if (options?.offset) params.set("offset", String(options.offset));
+
+  const query = params.toString();
+  return apiRequest(`/files${query ? `?${query}` : ""}`);
+}
+
+/**
+ * ファイル取得
+ */
+export async function getFile(id: string) {
+  return apiRequest(`/files/${id}`);
+}
+
+/**
+ * ファイルダウンロードURL取得
+ */
+export function getFileDownloadUrl(id: string): string {
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
+  return `${API_BASE_URL}/files/${id}/download`;
+}
+
+/**
+ * ファイル削除
+ */
+export async function deleteFile(id: string) {
+  return apiRequest(`/files/${id}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * ノートにファイルを関連付け
+ */
+export async function linkFileToNote(fileId: string, noteId: string) {
+  return apiRequest(`/files/${fileId}/notes`, {
+    method: "POST",
+    body: JSON.stringify({ note_id: noteId }),
+  });
+}
+
+/**
+ * ノートからファイルの関連を解除
+ */
+export async function unlinkFileFromNote(fileId: string, noteId: string) {
+  return apiRequest(`/files/${fileId}/notes/${noteId}`, {
+    method: "DELETE",
+  });
+}
+
+/**
+ * ノートに紐づくファイル一覧取得
+ */
+export async function getFilesByNote(noteId: string) {
+  // このエンドポイントは実装されていないため、全ファイルを取得してフィルタリング
+  // 将来的には専用エンドポイントを追加することを推奨
+  const files = await getFiles();
+  // 注意: この実装は非効率なので、将来的に改善が必要
+  return files;
+}
+
+/**
+ * Markdownエクスポート
+ */
+export function getMarkdownExportUrl(type?: string, tags?: string[]): string {
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
+  const params = new URLSearchParams();
+  if (type) params.set("type", type);
+  if (tags && tags.length > 0) params.set("tags", tags.join(","));
+  const query = params.toString();
+  return `${API_BASE_URL}/export/markdown${query ? `?${query}` : ""}`;
+}
+
+/**
+ * JSONエクスポート
+ */
+export function getJSONExportUrl(): string {
+  const API_BASE_URL =
+    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
+  return `${API_BASE_URL}/export/json`;
+}
+
+/**
  * 同期プル
  */
 export async function syncPull(since: number) {

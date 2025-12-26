@@ -3,7 +3,7 @@ import { marked } from "marked";
 
 export let title: string;
 export let content: string;
-export const showPreview = false;
+export let showPreview = false;
 
 $: previewHtml = marked.parse(content || "");
 </script>
