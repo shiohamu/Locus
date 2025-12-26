@@ -1,105 +1,104 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { NoteCore } from "$lib/types";
-	import { getNotes, getTags } from "$lib/api";
-	import type { Tag } from "$lib/types";
-	import NoteList from "$lib/components/NoteList.svelte";
+import { getNotes, getTags } from "$lib/api";
+import NoteList from "$lib/components/NoteList.svelte";
+import type { NoteCore } from "$lib/types";
+import type { Tag } from "$lib/types";
+import { onMount } from "svelte";
 
-	let allNotes: NoteCore[] = [];
-	let notes: NoteCore[] = [];
-	let tags: Tag[] = [];
-	let loading = true;
-	let error: string | null = null;
+let allNotes: NoteCore[] = [];
+let notes: NoteCore[] = [];
+let tags: Tag[] = [];
+let loading = true;
+let error: string | null = null;
 
-	// フィルタ・ソート・ページネーション設定
-	type FilterType = "all" | "md" | "rss";
-	type SortBy = "updated_at" | "created_at" | "title";
-	type SortOrder = "desc" | "asc";
+// フィルタ・ソート・ページネーション設定
+type FilterType = "all" | "md" | "rss";
+type SortBy = "updated_at" | "created_at" | "title";
+type SortOrder = "desc" | "asc";
 
-	let filterType: FilterType = "all";
-	let sortBy: SortBy = "updated_at";
-	let sortOrder: SortOrder = "desc";
-	let currentPage = 1;
-	const itemsPerPage = 20;
+const filterType: FilterType = "all";
+const sortBy: SortBy = "updated_at";
+const sortOrder: SortOrder = "desc";
+let currentPage = 1;
+const itemsPerPage = 20;
 
-	onMount(async () => {
-		await Promise.all([loadNotes(), loadTags()]);
-	});
+onMount(async () => {
+  await Promise.all([loadNotes(), loadTags()]);
+});
 
-	async function loadNotes() {
-		loading = true;
-		error = null;
-		try {
-			allNotes = await getNotes({ limit: 10000 });
-			applyFilters();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "Unknown error";
-		} finally {
-			loading = false;
-		}
-	}
+async function loadNotes() {
+  loading = true;
+  error = null;
+  try {
+    allNotes = await getNotes({ limit: 10000 });
+    applyFilters();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "Unknown error";
+  } finally {
+    loading = false;
+  }
+}
 
-	async function loadTags() {
-		try {
-			tags = await getTags();
-		} catch (e) {
-			// タグの読み込み失敗は無視
-		}
-	}
+async function loadTags() {
+  try {
+    tags = await getTags();
+  } catch (e) {
+    // タグの読み込み失敗は無視
+  }
+}
 
-	function applyFilters() {
-		let filtered = [...allNotes];
+function applyFilters() {
+  let filtered = [...allNotes];
 
-		// タイプフィルタ
-		if (filterType !== "all") {
-			filtered = filtered.filter((note) => note.type === filterType);
-		}
+  // タイプフィルタ
+  if (filterType !== "all") {
+    filtered = filtered.filter((note) => note.type === filterType);
+  }
 
-		// ソート
-		filtered.sort((a, b) => {
-			let comparison = 0;
-			if (sortBy === "title") {
-				comparison = a.title.localeCompare(b.title, "ja");
-			} else if (sortBy === "updated_at") {
-				comparison = a.updated_at - b.updated_at;
-			} else if (sortBy === "created_at") {
-				comparison = a.created_at - b.created_at;
-			}
+  // ソート
+  filtered.sort((a, b) => {
+    let comparison = 0;
+    if (sortBy === "title") {
+      comparison = a.title.localeCompare(b.title, "ja");
+    } else if (sortBy === "updated_at") {
+      comparison = a.updated_at - b.updated_at;
+    } else if (sortBy === "created_at") {
+      comparison = a.created_at - b.created_at;
+    }
 
-			return sortOrder === "desc" ? -comparison : comparison;
-		});
+    return sortOrder === "desc" ? -comparison : comparison;
+  });
 
-		// ページネーション
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		notes = filtered.slice(startIndex, endIndex);
-	}
+  // ページネーション
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  notes = filtered.slice(startIndex, endIndex);
+}
 
-	$: {
-		if (allNotes.length > 0) {
-			applyFilters();
-		}
-	}
+$: {
+  if (allNotes.length > 0) {
+    applyFilters();
+  }
+}
 
-	$: totalPages = Math.ceil(
-		(filterType === "all"
-			? allNotes.length
-			: allNotes.filter((n) => n.type === filterType).length) / itemsPerPage,
-	);
+$: totalPages = Math.ceil(
+  (filterType === "all" ? allNotes.length : allNotes.filter((n) => n.type === filterType).length) /
+    itemsPerPage
+);
 
-	function handleFilterChange() {
-		currentPage = 1;
-		applyFilters();
-	}
+function handleFilterChange() {
+  currentPage = 1;
+  applyFilters();
+}
 
-	function handleSortChange() {
-		applyFilters();
-	}
+function handleSortChange() {
+  applyFilters();
+}
 
-	function goToPage(page: number) {
-		currentPage = page;
-		applyFilters();
-	}
+function goToPage(page: number) {
+  currentPage = page;
+  applyFilters();
+}
 </script>
 
 <div class="page-header">

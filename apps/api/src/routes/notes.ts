@@ -1,5 +1,5 @@
-import { Hono } from "hono";
 import type { NoteCore, NoteType } from "@locus/shared";
+import { Hono } from "hono";
 import * as notesDb from "../db/notes.js";
 
 const app = new Hono();
@@ -9,16 +9,14 @@ const app = new Hono();
  * GET /notes?type=md&limit=100&offset=0
  */
 app.get("/", async (c) => {
-	const type = c.req.query("type") as NoteType | undefined;
-	const limit = c.req.query("limit")
-		? Number.parseInt(c.req.query("limit")!, 10)
-		: undefined;
-	const offset = c.req.query("offset")
-		? Number.parseInt(c.req.query("offset")!, 10)
-		: undefined;
+  const type = c.req.query("type") as NoteType | undefined;
+  const limitParam = c.req.query("limit");
+  const limit = limitParam ? Number.parseInt(limitParam, 10) : undefined;
+  const offsetParam = c.req.query("offset");
+  const offset = offsetParam ? Number.parseInt(offsetParam, 10) : undefined;
 
-	const notes = await notesDb.listNotes({ type, limit, offset });
-	return c.json(notes);
+  const notes = await notesDb.listNotes({ type, limit, offset });
+  return c.json(notes);
 });
 
 /**
@@ -26,9 +24,9 @@ app.get("/", async (c) => {
  * POST /notes
  */
 app.post("/", async (c) => {
-	const body = await c.req.json<NoteCore>();
-	const note = await notesDb.createNote(body);
-	return c.json(note, 201);
+  const body = await c.req.json<NoteCore>();
+  const note = await notesDb.createNote(body);
+  return c.json(note, 201);
 });
 
 /**
@@ -36,14 +34,14 @@ app.post("/", async (c) => {
  * GET /notes/:id
  */
 app.get("/:id", async (c) => {
-	const id = c.req.param("id");
-	const note = await notesDb.getNote(id);
+  const id = c.req.param("id");
+  const note = await notesDb.getNote(id);
 
-	if (!note) {
-		return c.json({ error: "Note not found" }, 404);
-	}
+  if (!note) {
+    return c.json({ error: "Note not found" }, 404);
+  }
 
-	return c.json(note);
+  return c.json(note);
 });
 
 /**
@@ -51,23 +49,23 @@ app.get("/:id", async (c) => {
  * PUT /notes/:id
  */
 app.put("/:id", async (c) => {
-	const id = c.req.param("id");
-	const body = await c.req.json<Partial<NoteCore>>();
+  const id = c.req.param("id");
+  const body = await c.req.json<Partial<NoteCore>>();
 
-	const existing = await notesDb.getNote(id);
-	if (!existing) {
-		return c.json({ error: "Note not found" }, 404);
-	}
+  const existing = await notesDb.getNote(id);
+  if (!existing) {
+    return c.json({ error: "Note not found" }, 404);
+  }
 
-	const updated: NoteCore = {
-		...existing,
-		...body,
-		id, // IDは変更不可
-		updated_at: Math.floor(Date.now() / 1000),
-	};
+  const updated: NoteCore = {
+    ...existing,
+    ...body,
+    id, // IDは変更不可
+    updated_at: Math.floor(Date.now() / 1000),
+  };
 
-	const note = await notesDb.updateNote(updated);
-	return c.json(note);
+  const note = await notesDb.updateNote(updated);
+  return c.json(note);
 });
 
 /**
@@ -75,20 +73,16 @@ app.put("/:id", async (c) => {
  * DELETE /notes/:id
  */
 app.delete("/:id", async (c) => {
-	const id = c.req.param("id");
-	const existing = await notesDb.getNote(id);
+  const id = c.req.param("id");
+  const existing = await notesDb.getNote(id);
 
-	if (!existing) {
-		return c.json({ error: "Note not found" }, 404);
-	}
+  if (!existing) {
+    return c.json({ error: "Note not found" }, 404);
+  }
 
-	const deletedAt = Math.floor(Date.now() / 1000);
-	await notesDb.deleteNote(id, deletedAt);
-	return c.json({ message: "Note deleted" });
+  const deletedAt = Math.floor(Date.now() / 1000);
+  await notesDb.deleteNote(id, deletedAt);
+  return c.json({ message: "Note deleted" });
 });
 
 export default app;
-
-
-
-

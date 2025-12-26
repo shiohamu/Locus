@@ -1,66 +1,56 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { Tag } from "$lib/types";
-	import {
-		getTags,
-		getTagsByNote,
-		addTagToNote,
-		removeTagFromNote,
-	} from "$lib/api";
+import { addTagToNote, getTags, getTagsByNote, removeTagFromNote } from "$lib/api";
+import type { Tag } from "$lib/types";
+import { onMount } from "svelte";
 
-	export let noteId: string;
+export let noteId: string;
 
-	let allTags: Tag[] = [];
-	let noteTags: Tag[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let showAddTag = false;
-	let selectedTagId = "";
+let allTags: Tag[] = [];
+let noteTags: Tag[] = [];
+let loading = true;
+let error: string | null = null;
+let showAddTag = false;
+let selectedTagId = "";
 
-	onMount(async () => {
-		await loadData();
-	});
+onMount(async () => {
+  await loadData();
+});
 
-	async function loadData() {
-		loading = true;
-		error = null;
-		try {
-			[allTags, noteTags] = await Promise.all([
-				getTags(),
-				getTagsByNote(noteId),
-			]);
-		} catch (e) {
-			error = e instanceof Error ? e.message : "タグの読み込みに失敗しました";
-		} finally {
-			loading = false;
-		}
-	}
+async function loadData() {
+  loading = true;
+  error = null;
+  try {
+    [allTags, noteTags] = await Promise.all([getTags(), getTagsByNote(noteId)]);
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの読み込みに失敗しました";
+  } finally {
+    loading = false;
+  }
+}
 
-	async function handleAddTag() {
-		if (!selectedTagId) return;
+async function handleAddTag() {
+  if (!selectedTagId) return;
 
-		try {
-			await addTagToNote(noteId, selectedTagId);
-			await loadData();
-			showAddTag = false;
-			selectedTagId = "";
-		} catch (e) {
-			error = e instanceof Error ? e.message : "タグの追加に失敗しました";
-		}
-	}
+  try {
+    await addTagToNote(noteId, selectedTagId);
+    await loadData();
+    showAddTag = false;
+    selectedTagId = "";
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの追加に失敗しました";
+  }
+}
 
-	async function handleRemoveTag(tagId: string) {
-		try {
-			await removeTagFromNote(noteId, tagId);
-			await loadData();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "タグの削除に失敗しました";
-		}
-	}
+async function handleRemoveTag(tagId: string) {
+  try {
+    await removeTagFromNote(noteId, tagId);
+    await loadData();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの削除に失敗しました";
+  }
+}
 
-	$: availableTags = allTags.filter(
-		(tag) => !noteTags.some((nt) => nt.id === tag.id),
-	);
+$: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.id));
 </script>
 
 <div class="note-tags">

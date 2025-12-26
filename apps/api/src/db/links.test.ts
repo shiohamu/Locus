@@ -1,6 +1,6 @@
-import { describe, test, expect, beforeEach, afterEach } from "bun:test";
-import { createTestDbFile, cleanupTestDbFile, createTestNoteCore } from "../test/helpers.js";
+import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { Client } from "@libsql/client";
+import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
 import * as linksDb from "./links.js";
 import * as notesDb from "./notes.js";
 
@@ -22,7 +22,7 @@ describe("links", () => {
 		if (originalEnv !== undefined) {
 			process.env.DATABASE_URL = originalEnv;
 		} else {
-			delete process.env.DATABASE_URL;
+			process.env.DATABASE_URL = undefined;
 		}
 
 		await cleanupTestDbFile(testDb, dbPath);
@@ -116,5 +116,3 @@ describe("links", () => {
 		expect(links.outgoing.length).toBe(0);
 	});
 });
-
-

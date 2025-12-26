@@ -5,11 +5,7 @@ import { cors } from "hono/cors";
  * CORSミドルウェア
  */
 export const corsMiddleware = cors({
-	origin: "*",
-	allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-	allowHeaders: ["Content-Type"],
+  origin: "*",
+  allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowHeaders: ["Content-Type"],
 });
-
-
-
-

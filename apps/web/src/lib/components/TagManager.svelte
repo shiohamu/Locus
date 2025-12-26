@@ -1,52 +1,52 @@
 <script lang="ts">
-	import { createEventDispatcher } from "svelte";
-	import type { Tag } from "$lib/types";
+import type { Tag } from "$lib/types";
+import { createEventDispatcher } from "svelte";
 
-	export let tags: Tag[];
-	export let creating = false;
-	export let deleting = false;
+export let tags: Tag[];
+export const creating = false;
+export const deleting = false;
 
-	const dispatch = createEventDispatcher<{
-		create: string;
-		delete: string;
-	}>();
+const dispatch = createEventDispatcher<{
+  create: string;
+  delete: string;
+}>();
 
-	let newTagName = "";
-	let previousTagsLength = tags.length;
-	let lastCreatedTagName = "";
+let newTagName = "";
+let previousTagsLength = tags.length;
+let lastCreatedTagName = "";
 
-	// tagsが更新されたら（新しいタグが追加されたら）入力フィールドをクリア
-	$: if (tags.length > previousTagsLength) {
-		previousTagsLength = tags.length;
-		// 成功時のみ入力フィールドをクリア
-		if (lastCreatedTagName && newTagName.trim() === lastCreatedTagName) {
-			newTagName = "";
-			lastCreatedTagName = "";
-		}
-	}
+// tagsが更新されたら（新しいタグが追加されたら）入力フィールドをクリア
+$: if (tags.length > previousTagsLength) {
+  previousTagsLength = tags.length;
+  // 成功時のみ入力フィールドをクリア
+  if (lastCreatedTagName && newTagName.trim() === lastCreatedTagName) {
+    newTagName = "";
+    lastCreatedTagName = "";
+  }
+}
 
-	// tagsが変更されたらpreviousTagsLengthを更新
-	$: if (tags.length !== previousTagsLength) {
-		previousTagsLength = tags.length;
-	}
+// tagsが変更されたらpreviousTagsLengthを更新
+$: if (tags.length !== previousTagsLength) {
+  previousTagsLength = tags.length;
+}
 
-	function handleCreate() {
-		const trimmed = newTagName.trim();
-		if (!trimmed || creating) {
-			return;
-		}
+function handleCreate() {
+  const trimmed = newTagName.trim();
+  if (!trimmed || creating) {
+    return;
+  }
 
-		lastCreatedTagName = trimmed;
-		// dispatchは同期的なので、親コンポーネントのハンドラーを呼び出す
-		dispatch("create", trimmed);
-	}
+  lastCreatedTagName = trimmed;
+  // dispatchは同期的なので、親コンポーネントのハンドラーを呼び出す
+  dispatch("create", trimmed);
+}
 
-	function handleDelete(tagId: string) {
-		if (!confirm("このタグを削除しますか？")) {
-			return;
-		}
-		dispatch("delete", tagId);
-	}
+function handleDelete(tagId: string) {
+  if (!confirm("このタグを削除しますか？")) {
+    return;
+  }
+  dispatch("delete", tagId);
+}
 </script>
 
 <div class="tag-manager">

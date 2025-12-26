@@ -8,13 +8,9 @@ const app = new Hono();
  * GET /notes/:id/links
  */
 app.get("/:id/links", async (c) => {
-	const noteId = c.req.param("id");
-	const links = await linksDb.getLinksByNote(noteId);
-	return c.json(links);
+  const noteId = c.req.param("id");
+  const links = await linksDb.getLinksByNote(noteId);
+  return c.json(links);
 });
 
 export default app;
-
-
-
-

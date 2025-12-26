@@ -1,99 +1,99 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import type { RSSFeed } from "$lib/types";
-	import { getRSSFeeds, createRSSFeed, deleteRSSFeed, fetchRSSFeed } from "$lib/api";
+import { createRSSFeed, deleteRSSFeed, fetchRSSFeed, getRSSFeeds } from "$lib/api";
+import type { RSSFeed } from "$lib/types";
+import { onMount } from "svelte";
 
-	let feeds: RSSFeed[] = [];
-	let loading = true;
-	let error: string | null = null;
-	let creating = false;
-	let fetching: Set<string> = new Set();
-	let showForm = false;
-	let formUrl = "";
-	let formTitle = "";
+let feeds: RSSFeed[] = [];
+let loading = true;
+let error: string | null = null;
+let creating = false;
+const fetching: Set<string> = new Set();
+let showForm = false;
+let formUrl = "";
+let formTitle = "";
 
-	onMount(async () => {
-		await loadFeeds();
-	});
+onMount(async () => {
+  await loadFeeds();
+});
 
-	async function loadFeeds() {
-		loading = true;
-		error = null;
-		try {
-			feeds = await getRSSFeeds();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "フィードの読み込みに失敗しました";
-		} finally {
-			loading = false;
-		}
-	}
+async function loadFeeds() {
+  loading = true;
+  error = null;
+  try {
+    feeds = await getRSSFeeds();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "フィードの読み込みに失敗しました";
+  } finally {
+    loading = false;
+  }
+}
 
-	async function handleCreateFeed() {
-		if (!formUrl.trim() || !formTitle.trim()) {
-			error = "URLとタイトルを入力してください";
-			return;
-		}
+async function handleCreateFeed() {
+  if (!formUrl.trim() || !formTitle.trim()) {
+    error = "URLとタイトルを入力してください";
+    return;
+  }
 
-		error = null;
-		creating = true;
-		try {
-			await createRSSFeed({ url: formUrl.trim(), title: formTitle.trim() });
-			formUrl = "";
-			formTitle = "";
-			showForm = false;
-			await loadFeeds();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "フィードの登録に失敗しました";
-		} finally {
-			creating = false;
-		}
-	}
+  error = null;
+  creating = true;
+  try {
+    await createRSSFeed({ url: formUrl.trim(), title: formTitle.trim() });
+    formUrl = "";
+    formTitle = "";
+    showForm = false;
+    await loadFeeds();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "フィードの登録に失敗しました";
+  } finally {
+    creating = false;
+  }
+}
 
-	async function handleDeleteFeed(feedId: string) {
-		if (!confirm("このフィードを削除しますか？")) {
-			return;
-		}
+async function handleDeleteFeed(feedId: string) {
+  if (!confirm("このフィードを削除しますか？")) {
+    return;
+  }
 
-		error = null;
-		try {
-			await deleteRSSFeed(feedId);
-			await loadFeeds();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "フィードの削除に失敗しました";
-		}
-	}
+  error = null;
+  try {
+    await deleteRSSFeed(feedId);
+    await loadFeeds();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "フィードの削除に失敗しました";
+  }
+}
 
-	async function handleFetchFeed(feedId: string) {
-		fetching.add(feedId);
-		error = null;
-		try {
-			await fetchRSSFeed(feedId);
-			await loadFeeds();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
-		} finally {
-			fetching.delete(feedId);
-		}
-	}
+async function handleFetchFeed(feedId: string) {
+  fetching.add(feedId);
+  error = null;
+  try {
+    await fetchRSSFeed(feedId);
+    await loadFeeds();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
+  } finally {
+    fetching.delete(feedId);
+  }
+}
 
-	async function handleFetchAll() {
-		fetching.add("all");
-		error = null;
-		try {
-			await fetchRSSFeed();
-			await loadFeeds();
-		} catch (e) {
-			error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
-		} finally {
-			fetching.delete("all");
-		}
-	}
+async function handleFetchAll() {
+  fetching.add("all");
+  error = null;
+  try {
+    await fetchRSSFeed();
+    await loadFeeds();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
+  } finally {
+    fetching.delete("all");
+  }
+}
 
-	function formatDate(timestamp: number | null): string {
-		if (!timestamp) return "未取得";
-		const date = new Date(timestamp * 1000);
-		return date.toLocaleString("ja-JP");
-	}
+function formatDate(timestamp: number | null): string {
+  if (!timestamp) return "未取得";
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleString("ja-JP");
+}
 </script>
 
 <h1>RSSフィード管理</h1>

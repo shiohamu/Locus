@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { NoteCore } from "$lib/types";
-	import { formatDate } from "$lib/utils";
+import type { NoteCore } from "$lib/types";
+import { formatDate } from "$lib/utils";
 
-	export let notes: NoteCore[];
+export let notes: NoteCore[];
 </script>
 
 <div class="note-list">

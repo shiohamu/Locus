@@ -1,169 +1,169 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { page } from "$app/stores";
-	import { goto } from "$app/navigation";
-	import { marked } from "marked";
-	import { getNote, getNoteMD, updateNoteMD, deleteNote, getRSSItem } from "$lib/api";
-	import { nowTimestamp } from "$lib/utils";
-	import type { NoteCore, NoteMD, RSSItem } from "$lib/types";
-	import NoteEditor from "$lib/components/NoteEditor.svelte";
-	import NoteTags from "$lib/components/NoteTags.svelte";
-	import NoteLinks from "$lib/components/NoteLinks.svelte";
+import { goto } from "$app/navigation";
+import { page } from "$app/stores";
+import { deleteNote, getNote, getNoteMD, getRSSItem, updateNoteMD } from "$lib/api";
+import NoteEditor from "$lib/components/NoteEditor.svelte";
+import NoteLinks from "$lib/components/NoteLinks.svelte";
+import NoteTags from "$lib/components/NoteTags.svelte";
+import type { NoteCore, NoteMD, RSSItem } from "$lib/types";
+import { nowTimestamp } from "$lib/utils";
+import { marked } from "marked";
+import { onMount } from "svelte";
 
-	let note: NoteCore | null = null;
-	let noteMD: NoteMD | null = null;
-	let rssItem: RSSItem | null = null;
-	let editing = false;
-	let title = "";
-	let content = "";
-	let loading = true;
-	let saving = false;
-	let deleting = false;
-	let error: string | null = null;
-	let showPreview = false;
-	let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
-	let lastSavedTitle = "";
-	let lastSavedContent = "";
+let note: NoteCore | null = null;
+let noteMD: NoteMD | null = null;
+let rssItem: RSSItem | null = null;
+let editing = false;
+let title = "";
+let content = "";
+let loading = true;
+let saving = false;
+let deleting = false;
+let error: string | null = null;
+const showPreview = false;
+let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
+let lastSavedTitle = "";
+let lastSavedContent = "";
 
-	$: noteId = $page.params.id;
+$: noteId = $page.params.id;
 
-	onMount(async () => {
-		await loadNote();
-	});
+onMount(async () => {
+  await loadNote();
+});
 
-	async function loadNote() {
-		loading = true;
-		error = null;
-		try {
-			note = await getNote(noteId);
-			if (!note) {
-				error = "ノートが見つかりません";
-				return;
-			}
+async function loadNote() {
+  loading = true;
+  error = null;
+  try {
+    note = await getNote(noteId);
+    if (!note) {
+      error = "ノートが見つかりません";
+      return;
+    }
 
-			if (note.type === "md") {
-				noteMD = await getNoteMD(noteId);
-				if (noteMD) {
-					title = note.title;
-					content = noteMD.content;
-				}
-			} else if (note.type === "rss") {
-				rssItem = await getRSSItem(noteId);
-				if (rssItem) {
-					content = rssItem.content;
-				}
-			}
-		} catch (e) {
-			error = e instanceof Error ? e.message : "ノートの読み込みに失敗しました";
-		} finally {
-			loading = false;
-		}
-	}
+    if (note.type === "md") {
+      noteMD = await getNoteMD(noteId);
+      if (noteMD) {
+        title = note.title;
+        content = noteMD.content;
+      }
+    } else if (note.type === "rss") {
+      rssItem = await getRSSItem(noteId);
+      if (rssItem) {
+        content = rssItem.content;
+      }
+    }
+  } catch (e) {
+    error = e instanceof Error ? e.message : "ノートの読み込みに失敗しました";
+  } finally {
+    loading = false;
+  }
+}
 
-	async function handleSave(silent = false) {
-		if (!note || !noteMD) return;
+async function handleSave(silent = false) {
+  if (!note || !noteMD) return;
 
-		// 変更がない場合は保存しない
-		if (title.trim() === lastSavedTitle && content === lastSavedContent) {
-			return;
-		}
+  // 変更がない場合は保存しない
+  if (title.trim() === lastSavedTitle && content === lastSavedContent) {
+    return;
+  }
 
-		if (!silent) {
-			saving = true;
-		}
-		error = null;
+  if (!silent) {
+    saving = true;
+  }
+  error = null;
 
-		try {
-			const updatedCore: NoteCore = {
-				...note,
-				title: title.trim(),
-				updated_at: nowTimestamp(),
-			};
+  try {
+    const updatedCore: NoteCore = {
+      ...note,
+      title: title.trim(),
+      updated_at: nowTimestamp(),
+    };
 
-			const updatedMD: NoteMD = {
-				...noteMD,
-				content: content,
-			};
+    const updatedMD: NoteMD = {
+      ...noteMD,
+      content: content,
+    };
 
-			await updateNoteMD(noteId, { core: updatedCore, md: updatedMD });
-			lastSavedTitle = title.trim();
-			lastSavedContent = content;
+    await updateNoteMD(noteId, { core: updatedCore, md: updatedMD });
+    lastSavedTitle = title.trim();
+    lastSavedContent = content;
 
-			if (!silent) {
-				editing = false;
-				await loadNote();
-			}
-		} catch (e) {
-			error = e instanceof Error ? e.message : "ノートの更新に失敗しました";
-		} finally {
-			if (!silent) {
-				saving = false;
-			}
-		}
-	}
+    if (!silent) {
+      editing = false;
+      await loadNote();
+    }
+  } catch (e) {
+    error = e instanceof Error ? e.message : "ノートの更新に失敗しました";
+  } finally {
+    if (!silent) {
+      saving = false;
+    }
+  }
+}
 
-	function scheduleAutoSave() {
-		if (autoSaveTimer) {
-			clearTimeout(autoSaveTimer);
-		}
+function scheduleAutoSave() {
+  if (autoSaveTimer) {
+    clearTimeout(autoSaveTimer);
+  }
 
-		autoSaveTimer = setTimeout(() => {
-			handleSave(true);
-		}, 3000); // 3秒後に自動保存
-	}
+  autoSaveTimer = setTimeout(() => {
+    handleSave(true);
+  }, 3000); // 3秒後に自動保存
+}
 
-	$: if (editing && (title !== lastSavedTitle || content !== lastSavedContent)) {
-		scheduleAutoSave();
-	}
+$: if (editing && (title !== lastSavedTitle || content !== lastSavedContent)) {
+  scheduleAutoSave();
+}
 
-	async function handleDelete() {
-		if (!confirm("このノートを削除しますか？")) return;
+async function handleDelete() {
+  if (!confirm("このノートを削除しますか？")) return;
 
-		deleting = true;
-		error = null;
+  deleting = true;
+  error = null;
 
-		try {
-			await deleteNote(noteId);
-			goto("/");
-		} catch (e) {
-			error = e instanceof Error ? e.message : "ノートの削除に失敗しました";
-		} finally {
-			deleting = false;
-		}
-	}
+  try {
+    await deleteNote(noteId);
+    goto("/");
+  } catch (e) {
+    error = e instanceof Error ? e.message : "ノートの削除に失敗しました";
+  } finally {
+    deleting = false;
+  }
+}
 
-	function startEdit() {
-		if (note && noteMD) {
-			title = note.title;
-			content = noteMD.content;
-			lastSavedTitle = note.title;
-			lastSavedContent = noteMD.content;
-			editing = true;
-		}
-	}
+function startEdit() {
+  if (note && noteMD) {
+    title = note.title;
+    content = noteMD.content;
+    lastSavedTitle = note.title;
+    lastSavedContent = noteMD.content;
+    editing = true;
+  }
+}
 
-	function cancelEdit() {
-		if (autoSaveTimer) {
-			clearTimeout(autoSaveTimer);
-			autoSaveTimer = null;
-		}
-		editing = false;
-		if (note && noteMD) {
-			title = note.title;
-			content = noteMD.content;
-		}
-	}
+function cancelEdit() {
+  if (autoSaveTimer) {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = null;
+  }
+  editing = false;
+  if (note && noteMD) {
+    title = note.title;
+    content = noteMD.content;
+  }
+}
 
-	function formatDate(timestamp: number): string {
-		const date = new Date(timestamp * 1000);
-		return date.toLocaleString("ja-JP");
-	}
+function formatDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleString("ja-JP");
+}
 
-	$: renderedContent = noteMD?.content
-		? marked.parse(noteMD.content)
-		: rssItem?.content
-			? marked.parse(rssItem.content)
-			: "";
+$: renderedContent = noteMD?.content
+  ? marked.parse(noteMD.content)
+  : rssItem?.content
+    ? marked.parse(rssItem.content)
+    : "";
 </script>
 
 {#if loading}

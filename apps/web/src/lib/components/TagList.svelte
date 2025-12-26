@@ -1,8 +1,8 @@
 <script lang="ts">
-	import type { Tag } from "$lib/types";
+import type { Tag } from "$lib/types";
 
-	export let tags: Tag[];
-	export let onTagClick: ((tag: Tag) => void) | null = null;
+export let tags: Tag[];
+export const onTagClick: ((tag: Tag) => void) | null = null;
 </script>
 
 <div class="tag-list">

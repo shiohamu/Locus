@@ -1,11 +1,11 @@
 <script lang="ts">
-	import { marked } from "marked";
+import { marked } from "marked";
 
-	export let title: string;
-	export let content: string;
-	export let showPreview = false;
+export let title: string;
+export let content: string;
+export const showPreview = false;
 
-	$: previewHtml = marked.parse(content || "");
+$: previewHtml = marked.parse(content || "");
 </script>
 
 <div class="editor">

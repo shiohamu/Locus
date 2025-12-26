@@ -6,30 +6,30 @@ import { getDb } from "./db.js";
  * FTS5テーブルではnote_idはUNINDEXEDカラムとして保持されている
  */
 export async function searchNotes(
-	query: string,
-	options: { limit?: number; offset?: number } = {},
+  query: string,
+  options: { limit?: number; offset?: number } = {}
 ): Promise<NoteCore[]> {
-	const db = getDb();
-	const { limit = 100, offset = 0 } = options;
+  const db = getDb();
+  const { limit = 100, offset = 0 } = options;
 
-	const result = await db.execute({
-		sql: `SELECT nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at
+  const result = await db.execute({
+    sql: `SELECT nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at
               FROM notes_fts
               INNER JOIN notes_core nc ON nc.id = notes_fts.note_id
               WHERE notes_fts MATCH ? AND nc.deleted_at IS NULL
               ORDER BY notes_fts.rank
               LIMIT ? OFFSET ?`,
-		args: [query, limit, offset],
-	});
+    args: [query, limit, offset],
+  });
 
-	return result.rows.map((row) => ({
-		id: row.id as string,
-		type: row.type as "md" | "rss",
-		title: row.title as string,
-		created_at: row.created_at as number,
-		updated_at: row.updated_at as number,
-		deleted_at: (row.deleted_at as number | null) ?? null,
-	}));
+  return result.rows.map((row) => ({
+    id: row.id as string,
+    type: row.type as "md" | "rss",
+    title: row.title as string,
+    created_at: row.created_at as number,
+    updated_at: row.updated_at as number,
+    deleted_at: (row.deleted_at as number | null) ?? null,
+  }));
 }
 
 /**
@@ -37,22 +37,16 @@ export async function searchNotes(
  * FTS5テーブルではUPSERTが使えないため、DELETEしてからINSERTする
  * note_idはUNINDEXEDカラムなので、WHERE句で使用可能
  */
-export async function updateFTS(
-	noteId: string,
-	title: string,
-	content: string,
-): Promise<void> {
-	const db = getDb();
-	// 既存のエントリを削除（note_idカラムを使用）
-	await db.execute({
-		sql: `DELETE FROM notes_fts WHERE note_id = ?`,
-		args: [noteId],
-	});
-	// 新しいエントリを挿入
-	await db.execute({
-		sql: `INSERT INTO notes_fts (note_id, title, content) VALUES (?, ?, ?)`,
-		args: [noteId, title, content],
-	});
+export async function updateFTS(noteId: string, title: string, content: string): Promise<void> {
+  const db = getDb();
+  // 既存のエントリを削除（note_idカラムを使用）
+  await db.execute({
+    sql: "DELETE FROM notes_fts WHERE note_id = ?",
+    args: [noteId],
+  });
+  // 新しいエントリを挿入
+  await db.execute({
+    sql: "INSERT INTO notes_fts (note_id, title, content) VALUES (?, ?, ?)",
+    args: [noteId, title, content],
+  });
 }
-
-

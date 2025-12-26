@@ -1,77 +1,80 @@
 <script lang="ts">
-	import { onMount, onDestroy } from "svelte";
-	import * as storage from "$lib/storage";
+import * as storage from "$lib/storage";
+import { onDestroy, onMount } from "svelte";
 
-	let syncing = false;
-	let lastSync: number | null = null;
-	let error: string | null = null;
-	let autoSyncInterval: number | null = null;
-	let initialized = false;
+let syncing = false;
+let lastSync: number | null = null;
+let error: string | null = null;
+let autoSyncInterval: number | null = null;
+let initialized = false;
 
-	onMount(async () => {
-		try {
-			await loadLastSync();
-		} catch (e) {
-			console.error("Failed to load last sync:", e);
-		} finally {
-			initialized = true;
-		}
-		// 自動同期を有効化（5分ごと）
-		autoSyncInterval = window.setInterval(async () => {
-			if (navigator.onLine && !syncing && initialized) {
-				try {
-					// 自動同期はpullSyncのみ（pushSyncは手動のみ）
-					const { pullSync } = await import("$lib/sync");
-					await pullSync();
-					await loadLastSync();
-				} catch (e) {
-					console.error("Auto sync failed:", e);
-					// エラーが発生してもUIは表示し続ける
-				}
-			}
-		}, 5 * 60 * 1000);
-	});
+onMount(async () => {
+  try {
+    await loadLastSync();
+  } catch (e) {
+    console.error("Failed to load last sync:", e);
+  } finally {
+    initialized = true;
+  }
+  // 自動同期を有効化（5分ごと）
+  autoSyncInterval = window.setInterval(
+    async () => {
+      if (navigator.onLine && !syncing && initialized) {
+        try {
+          // 自動同期はpullSyncのみ（pushSyncは手動のみ）
+          const { pullSync } = await import("$lib/sync");
+          await pullSync();
+          await loadLastSync();
+        } catch (e) {
+          console.error("Auto sync failed:", e);
+          // エラーが発生してもUIは表示し続ける
+        }
+      }
+    },
+    5 * 60 * 1000
+  );
+});
 
-	onDestroy(() => {
-		if (autoSyncInterval !== null) {
-			clearInterval(autoSyncInterval);
-		}
-	});
+onDestroy(() => {
+  if (autoSyncInterval !== null) {
+    clearInterval(autoSyncInterval);
+  }
+});
 
-	async function loadLastSync() {
-		try {
-			lastSync = await storage.getLastSync();
-		} catch (e) {
-			console.error("Failed to get last sync:", e);
-			lastSync = null;
-		}
-	}
+async function loadLastSync() {
+  try {
+    lastSync = await storage.getLastSync();
+  } catch (e) {
+    console.error("Failed to get last sync:", e);
+    lastSync = null;
+  }
+}
 
-	async function handleSync() {
-		if (syncing) return;
+async function handleSync() {
+  if (syncing) return;
 
-		syncing = true;
-		error = null;
+  syncing = true;
+  error = null;
 
-		try {
-			const { sync } = await import("$lib/sync");
-			const result = await sync();
-			await loadLastSync();
-			console.log("Sync completed:", result);
-		} catch (e) {
-			error = e instanceof Error ? e.message : "同期に失敗しました";
-			console.error("Sync failed:", e);
-			// エラーが発生してもUIは表示し続ける
-		} finally {
-			syncing = false;
-		}
-	}
+  try {
+    const { sync } = await import("$lib/sync");
+    const result = await sync();
+    await loadLastSync();
+    console.log("Sync completed:", result);
+  } catch (e) {
+    error = e instanceof Error ? e.message : "同期に失敗しました";
+    console.error("Sync failed:", e);
+    // エラーが発生してもUIは表示し続ける
+  } finally {
+    syncing = false;
+  }
+}
 
-	function formatDate(timestamp: number | null): string {
-		if (!timestamp) return "未同期";
-		const date = new Date(timestamp * 1000);
-		return date.toLocaleString("ja-JP");
-	}
+function formatDate(timestamp: number | null): string {
+  if (!timestamp) return "未同期";
+  const date = new Date(timestamp * 1000);
+  return date.toLocaleString("ja-JP");
+}
 </script>
 
 {#if initialized}

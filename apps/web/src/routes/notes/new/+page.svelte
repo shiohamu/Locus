@@ -1,50 +1,50 @@
 <script lang="ts">
-	import { goto } from "$app/navigation";
-	import { generateId, nowTimestamp } from "$lib/utils";
-	import { createNoteMD } from "$lib/api";
-	import type { NoteCore, NoteMD } from "$lib/types";
-	import NoteEditor from "$lib/components/NoteEditor.svelte";
+import { goto } from "$app/navigation";
+import { createNoteMD } from "$lib/api";
+import NoteEditor from "$lib/components/NoteEditor.svelte";
+import type { NoteCore, NoteMD } from "$lib/types";
+import { generateId, nowTimestamp } from "$lib/utils";
 
-	let title = "";
-	let content = "";
-	let saving = false;
-	let error: string | null = null;
+const title = "";
+const content = "";
+let saving = false;
+let error: string | null = null;
 
-	async function handleSave() {
-		if (!title.trim()) {
-			error = "タイトルを入力してください";
-			return;
-		}
+async function handleSave() {
+  if (!title.trim()) {
+    error = "タイトルを入力してください";
+    return;
+  }
 
-		saving = true;
-		error = null;
+  saving = true;
+  error = null;
 
-		try {
-			const now = nowTimestamp();
-			const id = generateId();
+  try {
+    const now = nowTimestamp();
+    const id = generateId();
 
-			const core: NoteCore = {
-				id,
-				type: "md",
-				title: title.trim(),
-				created_at: now,
-				updated_at: now,
-				deleted_at: null,
-			};
+    const core: NoteCore = {
+      id,
+      type: "md",
+      title: title.trim(),
+      created_at: now,
+      updated_at: now,
+      deleted_at: null,
+    };
 
-			const md: NoteMD = {
-				note_id: id,
-				content: content,
-			};
+    const md: NoteMD = {
+      note_id: id,
+      content: content,
+    };
 
-			await createNoteMD({ core, md });
-			goto(`/notes/${id}`);
-		} catch (e) {
-			error = e instanceof Error ? e.message : "ノートの作成に失敗しました";
-		} finally {
-			saving = false;
-		}
-	}
+    await createNoteMD({ core, md });
+    goto(`/notes/${id}`);
+  } catch (e) {
+    error = e instanceof Error ? e.message : "ノートの作成に失敗しました";
+  } finally {
+    saving = false;
+  }
+}
 </script>
 
 <h1>新規ノート作成</h1>

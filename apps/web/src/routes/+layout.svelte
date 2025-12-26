@@ -1,21 +1,21 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import Nav from "$lib/components/Nav.svelte";
-	import SyncStatus from "$lib/components/SyncStatus.svelte";
+import Nav from "$lib/components/Nav.svelte";
+import SyncStatus from "$lib/components/SyncStatus.svelte";
+import { onMount } from "svelte";
 
-	onMount(() => {
-		// Service Workerを登録
-		if ("serviceWorker" in navigator) {
-			navigator.serviceWorker
-				.register("/sw.js")
-				.then((registration) => {
-					console.log("Service Worker registered:", registration);
-				})
-				.catch((error) => {
-					console.error("Service Worker registration failed:", error);
-				});
-		}
-	});
+onMount(() => {
+  // Service Workerを登録
+  if ("serviceWorker" in navigator) {
+    navigator.serviceWorker
+      .register("/sw.js")
+      .then((registration) => {
+        console.log("Service Worker registered:", registration);
+      })
+      .catch((error) => {
+        console.error("Service Worker registration failed:", error);
+      });
+  }
+});
 </script>
 
 <div class="app">

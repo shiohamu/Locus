@@ -1,74 +1,74 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import { goto } from "$app/navigation";
-	import type { Link, NoteCore } from "$lib/types";
-	import { getNoteLinks, getNote } from "$lib/api";
+import { goto } from "$app/navigation";
+import { getNote, getNoteLinks } from "$lib/api";
+import type { Link, NoteCore } from "$lib/types";
+import { onMount } from "svelte";
 
-	export let noteId: string;
+export let noteId: string;
 
-	let outgoingLinks: Link[] = [];
-	let incomingLinks: Link[] = [];
-	let loading = true;
-	let error: string | null = null;
+let outgoingLinks: Link[] = [];
+let incomingLinks: Link[] = [];
+let loading = true;
+let error: string | null = null;
 
-	// リンク先ノートの情報を保持
-	let outgoingNotes: Map<string, NoteCore> = new Map();
-	let incomingNotes: Map<string, NoteCore> = new Map();
+// リンク先ノートの情報を保持
+const outgoingNotes: Map<string, NoteCore> = new Map();
+const incomingNotes: Map<string, NoteCore> = new Map();
 
-	onMount(async () => {
-		await loadLinks();
-	});
+onMount(async () => {
+  await loadLinks();
+});
 
-	async function loadLinks() {
-		loading = true;
-		error = null;
-		try {
-			const links = await getNoteLinks(noteId) as { outgoing: Link[]; incoming: Link[] };
-			outgoingLinks = links.outgoing;
-			incomingLinks = links.incoming;
+async function loadLinks() {
+  loading = true;
+  error = null;
+  try {
+    const links = (await getNoteLinks(noteId)) as { outgoing: Link[]; incoming: Link[] };
+    outgoingLinks = links.outgoing;
+    incomingLinks = links.incoming;
 
-			// リンク先ノートの情報を取得
-			const notePromises: Promise<void>[] = [];
+    // リンク先ノートの情報を取得
+    const notePromises: Promise<void>[] = [];
 
-			for (const link of outgoingLinks) {
-				notePromises.push(
-					getNote(link.to_note_id)
-						.then((note: NoteCore | null) => {
-							if (note) {
-								outgoingNotes.set(link.to_note_id, note);
-							}
-						})
-						.catch(() => {
-							// ノートが存在しない場合は無視
-						})
-				);
-			}
+    for (const link of outgoingLinks) {
+      notePromises.push(
+        getNote(link.to_note_id)
+          .then((note: NoteCore | null) => {
+            if (note) {
+              outgoingNotes.set(link.to_note_id, note);
+            }
+          })
+          .catch(() => {
+            // ノートが存在しない場合は無視
+          })
+      );
+    }
 
-			for (const link of incomingLinks) {
-				notePromises.push(
-					getNote(link.from_note_id)
-						.then((note: NoteCore | null) => {
-							if (note) {
-								incomingNotes.set(link.from_note_id, note);
-							}
-						})
-						.catch(() => {
-							// ノートが存在しない場合は無視
-						})
-				);
-			}
+    for (const link of incomingLinks) {
+      notePromises.push(
+        getNote(link.from_note_id)
+          .then((note: NoteCore | null) => {
+            if (note) {
+              incomingNotes.set(link.from_note_id, note);
+            }
+          })
+          .catch(() => {
+            // ノートが存在しない場合は無視
+          })
+      );
+    }
 
-			await Promise.all(notePromises);
-		} catch (e) {
-			error = e instanceof Error ? e.message : "リンクの読み込みに失敗しました";
-		} finally {
-			loading = false;
-		}
-	}
+    await Promise.all(notePromises);
+  } catch (e) {
+    error = e instanceof Error ? e.message : "リンクの読み込みに失敗しました";
+  } finally {
+    loading = false;
+  }
+}
 
-	function handleLinkClick(noteId: string) {
-		goto(`/notes/${noteId}`);
-	}
+function handleLinkClick(noteId: string) {
+  goto(`/notes/${noteId}`);
+}
 </script>
 
 <div class="note-links">
