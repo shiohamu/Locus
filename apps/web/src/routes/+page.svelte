@@ -12,7 +12,7 @@ let loading = true;
 let error: string | null = null;
 
 // フィルタ・ソート・ページネーション設定
-type FilterType = "all" | "md" | "rss";
+type FilterType = "all" | "md" | "rss" | "web_clip";
 type SortBy = "updated_at" | "created_at" | "title";
 type SortOrder = "desc" | "asc";
 
@@ -118,6 +118,7 @@ function goToPage(page: number) {
 				<option value="all">すべて</option>
 				<option value="md">Markdown</option>
 				<option value="rss">RSS</option>
+				<option value="web_clip">Webクリップ</option>
 			</select>
 		</div>
 

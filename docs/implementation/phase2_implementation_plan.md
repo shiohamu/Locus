@@ -15,7 +15,7 @@ Phase2では、Phase1で構築した基盤の上に、Webクリップ、PDF/File
 ### 3.1 Webクリップ機能
 
 #### 3.1.1 データベーススキーマ拡張
-- [ ] `scripts/migrations/002_add_web_clips.sql`
+- [x] `scripts/migrations/002_add_web_clips.sql`
   - `web_clips` テーブル作成
     - `note_id` (TEXT, PK, FK → notes_core.id)
     - `source_url` (TEXT)
@@ -24,45 +24,45 @@ Phase2では、Phase1で構築した基盤の上に、Webクリップ、PDF/File
   - インデックス追加
 
 #### 3.1.2 データアクセス層 (`apps/api/src/db/web-clips.ts`)
-- [ ] `createWebClip()` - Webクリップ作成
-- [ ] `getWebClip()` - Webクリップ取得
-- [ ] `updateWebClip()` - Webクリップ更新
-- [ ] `listWebClips()` - Webクリップ一覧取得
+- [x] `createWebClip()` - Webクリップ作成
+- [x] `getWebClip()` - Webクリップ取得
+- [x] `updateWebClip()` - Webクリップ更新
+- [x] `listWebClips()` - Webクリップ一覧取得
 
 #### 3.1.3 Webクリップ取得サービス (`apps/api/src/services/web-clip-fetcher.ts`)
-- [ ] URLからHTML取得
+- [x] URLからHTML取得
   - ユーザーエージェント設定
   - タイムアウト処理
   - エラーハンドリング
-- [ ] HTML to Markdown変換
+- [x] HTML to Markdown変換
   - Phase1のRSS機能と同様の変換ロジックを再利用
   - メタデータ抽出（title, description等）
-- [ ] ノート作成処理
+- [x] ノート作成処理
   - `notes_core`に`type='web_clip'`で作成
   - `web_clips`テーブルに保存
 
 #### 3.1.4 WebクリップAPI (`apps/api/src/routes/web-clips.ts`)
-- [ ] `POST /web-clips` - Webクリップ作成
+- [x] `POST /web-clips` - Webクリップ作成
   - リクエスト: `{ url: string }`
   - レスポンス: 作成されたノート情報
-- [ ] `GET /web-clips` - Webクリップ一覧取得
-- [ ] `GET /web-clips/:id` - Webクリップ取得
-- [ ] `PUT /web-clips/:id` - Webクリップ更新（再取得）
-- [ ] `DELETE /web-clips/:id` - Webクリップ削除
+- [x] `GET /web-clips` - Webクリップ一覧取得
+- [x] `GET /web-clips/:id` - Webクリップ取得
+- [x] `PUT /web-clips/:id` - Webクリップ更新（再取得）
+- [x] `DELETE /web-clips/:id` - Webクリップ削除
 
 #### 3.1.5 フロントエンド実装
-- [ ] `apps/web/src/routes/web-clips/+page.svelte` - Webクリップ一覧
-- [ ] `apps/web/src/lib/components/WebClipForm.svelte` - URL登録フォーム
-- [ ] `apps/web/src/lib/components/WebClipCard.svelte` - Webクリップ表示
-- [ ] ノート詳細ページでWebクリップの元URL表示
+- [x] `apps/web/src/routes/web-clips/+page.svelte` - Webクリップ一覧
+- [x] `apps/web/src/lib/components/WebClipForm.svelte` - URL登録フォーム（一覧ページに統合）
+- [x] `apps/web/src/lib/components/WebClipCard.svelte` - Webクリップ表示（一覧ページに統合）
+- [x] ノート詳細ページでWebクリップの元URL表示
 
 #### 3.1.6 共通型定義追加 (`packages/shared/src/types/web-clip.ts`)
-- [ ] `WebClip` 型定義
+- [x] `WebClip` 型定義
 
 ### 3.2 PDF/File管理機能
 
 #### 3.2.1 データベーススキーマ拡張
-- [ ] `scripts/migrations/003_add_files.sql`
+- [x] `scripts/migrations/003_add_files.sql`
   - `files` テーブル作成
     - `id` (TEXT, PK)
     - `filename` (TEXT)
@@ -76,80 +76,80 @@ Phase2では、Phase1で構築した基盤の上に、Webクリップ、PDF/File
   - インデックス追加
 
 #### 3.2.2 ファイルストレージ
-- [ ] ファイル保存先の決定
+- [x] ファイル保存先の決定
   - ローカルファイルシステム（開発環境）
   - オブジェクトストレージ（本番環境、将来拡張）
-- [ ] ファイル保存パスの設計
+- [x] ファイル保存パスの設計
   - `files/{id}/{filename}` 形式を想定
 
 #### 3.2.3 データアクセス層 (`apps/api/src/db/files.ts`)
-- [ ] `createFile()` - ファイルメタデータ作成
-- [ ] `getFile()` - ファイルメタデータ取得
-- [ ] `listFiles()` - ファイル一覧取得
-- [ ] `deleteFile()` - ファイル削除
-- [ ] `linkFileToNote()` - ノートとファイルの関連付け
-- [ ] `unlinkFileFromNote()` - ノートとファイルの関連解除
-- [ ] `getFilesByNote()` - ノートに紐づくファイル取得
-- [ ] `getNotesByFile()` - ファイルに紐づくノート取得
+- [x] `createFile()` - ファイルメタデータ作成
+- [x] `getFile()` - ファイルメタデータ取得
+- [x] `listFiles()` - ファイル一覧取得
+- [x] `deleteFile()` - ファイル削除
+- [x] `linkFileToNote()` - ノートとファイルの関連付け
+- [x] `unlinkFileFromNote()` - ノートとファイルの関連解除
+- [x] `getFilesByNote()` - ノートに紐づくファイル取得
+- [x] `getNotesByFile()` - ファイルに紐づくノート取得
 
 #### 3.2.4 ファイルアップロード処理 (`apps/api/src/services/file-uploader.ts`)
-- [ ] ファイルアップロード処理
+- [x] ファイルアップロード処理
   - ファイルサイズ制限
   - MIMEタイプ検証
   - ファイル名のサニタイズ
-- [ ] ファイル保存処理
-- [ ] メタデータ抽出
+- [x] ファイル保存処理
+- [x] メタデータ抽出
 
 #### 3.2.5 ファイルAPI (`apps/api/src/routes/files.ts`)
-- [ ] `POST /files` - ファイルアップロード
+- [x] `POST /files` - ファイルアップロード
   - multipart/form-data対応
   - レスポンス: ファイルメタデータ
-- [ ] `GET /files` - ファイル一覧取得
-- [ ] `GET /files/:id` - ファイルメタデータ取得
-- [ ] `GET /files/:id/download` - ファイルダウンロード
-- [ ] `DELETE /files/:id` - ファイル削除
-- [ ] `POST /files/:id/notes` - ノートとファイルの関連付け
-- [ ] `DELETE /files/:id/notes/:noteId` - ノートとファイルの関連解除
+- [x] `GET /files` - ファイル一覧取得
+- [x] `GET /files/:id` - ファイルメタデータ取得
+- [x] `GET /files/:id/download` - ファイルダウンロード
+- [x] `DELETE /files/:id` - ファイル削除
+- [x] `POST /files/:id/notes` - ノートとファイルの関連付け
+- [x] `DELETE /files/:id/notes/:noteId` - ノートとファイルの関連解除
 
 #### 3.2.6 フロントエンド実装
-- [ ] `apps/web/src/routes/files/+page.svelte` - ファイル一覧
-- [ ] `apps/web/src/lib/components/FileUploader.svelte` - ファイルアップロードUI
-- [ ] `apps/web/src/lib/components/FileList.svelte` - ファイル一覧表示
-- [ ] ノート詳細ページでファイル添付機能
-- [ ] ファイルプレビュー機能（PDF、画像等）
+- [x] `apps/web/src/routes/files/+page.svelte` - ファイル一覧
+- [x] `apps/web/src/lib/components/FileUploader.svelte` - ファイルアップロードUI（一覧ページに統合）
+- [x] `apps/web/src/lib/components/FileList.svelte` - ファイル一覧表示（一覧ページに統合）
+- [ ] ノート詳細ページでファイル添付機能（将来実装）
+- [ ] ファイルプレビュー機能（PDF、画像等）（将来実装）
 
 #### 3.2.7 共通型定義追加 (`packages/shared/src/types/file.ts`)
-- [ ] `File` 型定義
-- [ ] `FileNote` 型定義
+- [x] `File` 型定義
+- [x] `FileNote` 型定義
 
 ### 3.3 エクスポート機能
 
 #### 3.3.1 Markdownエクスポート (`apps/api/src/services/export/markdown.ts`)
-- [ ] 全ノートのMarkdownエクスポート
+- [x] 全ノートのMarkdownエクスポート
   - ノートごとにファイル生成
   - ファイル名: `{note-id}.md` または `{title}.md`
   - メタデータ（タグ、リンク）をYAML frontmatterに含める
-- [ ] ZIP形式での一括ダウンロード
-- [ ] フィルタリング対応（タイプ、タグ）
+- [x] ZIP形式での一括ダウンロード
+- [x] フィルタリング対応（タイプ、タグ）
 
 #### 3.3.2 JSONエクスポート (`apps/api/src/services/export/json.ts`)
-- [ ] 全データのJSONエクスポート
+- [x] 全データのJSONエクスポート
   - ノート、タグ、リンク、RSS、Webクリップ、ファイルメタデータ
   - 構造化されたJSON形式
   - 他PKMツールへの移行を想定した形式
 
 #### 3.3.3 エクスポートAPI (`apps/api/src/routes/export.ts`)
-- [ ] `GET /export/markdown` - Markdownエクスポート
+- [x] `GET /export/markdown` - Markdownエクスポート
   - クエリパラメータ: `type`, `tags`
   - レスポンス: ZIPファイル
-- [ ] `GET /export/json` - JSONエクスポート
+- [x] `GET /export/json` - JSONエクスポート
   - レスポンス: JSONファイル
 
 #### 3.3.4 フロントエンド実装
-- [ ] `apps/web/src/routes/settings/+page.svelte` - 設定ページ
-- [ ] `apps/web/src/lib/components/ExportDialog.svelte` - エクスポートダイアログ
-- [ ] エクスポート形式選択
-- [ ] エクスポート実行・ダウンロード
+- [x] `apps/web/src/routes/settings/+page.svelte` - 設定ページ
+- [x] `apps/web/src/lib/components/ExportDialog.svelte` - エクスポートダイアログ（設定ページに統合）
+- [x] エクスポート形式選択
+- [x] エクスポート実行・ダウンロード
 
 ## 4. 技術的詳細
 
@@ -236,8 +236,9 @@ Note content here...
 ## 6. 依存関係
 
 ### バックエンド
-- `archiver` または `jszip` - ZIPファイル生成
-- `formidable` または `@hono/node-server` - ファイルアップロード処理
+- [x] `jszip` - ZIPファイル生成（実装済み）
+- [x] `cheerio` - HTMLパース（Webクリップ用、実装済み）
+- Honoの標準機能でファイルアップロード処理（multipart/form-data対応、実装済み）
 
 ### フロントエンド
 - 追加の依存関係なし（既存のライブラリで対応可能）
@@ -254,27 +255,27 @@ Note content here...
 ## 8. 実装チェックリスト
 
 ### Webクリップ
-- [ ] データベーススキーマ
-- [ ] データアクセス層
-- [ ] Webクリップ取得サービス
-- [ ] API実装
-- [ ] フロントエンド実装
-- [ ] 型定義
+- [x] データベーススキーマ
+- [x] データアクセス層
+- [x] Webクリップ取得サービス
+- [x] API実装
+- [x] フロントエンド実装
+- [x] 型定義
 
 ### PDF/File管理
-- [ ] データベーススキーマ
-- [ ] ファイルストレージ設計
-- [ ] データアクセス層
-- [ ] ファイルアップロード処理
-- [ ] API実装
-- [ ] フロントエンド実装
-- [ ] 型定義
+- [x] データベーススキーマ
+- [x] ファイルストレージ設計
+- [x] データアクセス層
+- [x] ファイルアップロード処理
+- [x] API実装
+- [x] フロントエンド実装
+- [x] 型定義
 
 ### エクスポート
-- [ ] Markdownエクスポート実装
-- [ ] JSONエクスポート実装
-- [ ] API実装
-- [ ] フロントエンド実装
+- [x] Markdownエクスポート実装
+- [x] JSONエクスポート実装
+- [x] API実装
+- [x] フロントエンド実装
 
 
 

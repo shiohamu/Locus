@@ -23,48 +23,57 @@ async function migrate() {
     // 外部キー制約を有効にする
     await client.execute("PRAGMA foreign_keys = ON;");
 
-    // マイグレーションファイルを読み込む
-    const migrationPath = join(import.meta.dir || ".", "migrations", "001_initial_schema.sql");
-    const sql = readFileSync(migrationPath, "utf-8");
+    // マイグレーションファイルのリスト（順番に実行）
+    const migrationFiles = [
+      "001_initial_schema.sql",
+      "002_add_web_clips.sql",
+      "003_add_files.sql",
+    ];
 
-    console.log("Running migration: 001_initial_schema.sql");
+    // 各マイグレーションファイルを実行
+    for (const migrationFile of migrationFiles) {
+      const migrationPath = join(import.meta.dir || ".", "migrations", migrationFile);
+      const sql = readFileSync(migrationPath, "utf-8");
 
-    // SQLを実行（複数のステートメントを分割）
-    // コメント行と空行を除外し、セミコロンで分割
-    const statements = sql
-      .split("\n")
-      .map((line) => {
-        // 行コメントを除去
-        const commentIndex = line.indexOf("--");
-        if (commentIndex >= 0) {
-          return line.substring(0, commentIndex).trim();
-        }
-        return line.trim();
-      })
-      .join("\n")
-      .split(";")
-      .map((s) => s.trim())
-      .filter((s) => s.length > 0);
+      console.log(`Running migration: ${migrationFile}`);
 
-    for (const statement of statements) {
-      if (statement) {
-        try {
-          await client.execute(statement);
-        } catch (error) {
-          // CREATE TABLE IF NOT EXISTS などのエラーは無視
-          if (
-            error instanceof Error &&
-            !error.message.includes("already exists") &&
-            !error.message.includes("duplicate")
-          ) {
-            console.warn(`Warning executing statement: ${statement.substring(0, 50)}...`);
-            console.warn(`Error: ${error.message}`);
+      // SQLを実行（複数のステートメントを分割）
+      // コメント行と空行を除外し、セミコロンで分割
+      const statements = sql
+        .split("\n")
+        .map((line) => {
+          // 行コメントを除去
+          const commentIndex = line.indexOf("--");
+          if (commentIndex >= 0) {
+            return line.substring(0, commentIndex).trim();
+          }
+          return line.trim();
+        })
+        .join("\n")
+        .split(";")
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+
+      for (const statement of statements) {
+        if (statement) {
+          try {
+            await client.execute(statement);
+          } catch (error) {
+            // CREATE TABLE IF NOT EXISTS などのエラーは無視
+            if (
+              error instanceof Error &&
+              !error.message.includes("already exists") &&
+              !error.message.includes("duplicate")
+            ) {
+              console.warn(`Warning executing statement: ${statement.substring(0, 50)}...`);
+              console.warn(`Error: ${error.message}`);
+            }
           }
         }
       }
     }
 
-    console.log("Migration completed successfully!");
+    console.log("All migrations completed successfully!");
   } catch (error) {
     console.error("Migration failed:", error);
     process.exit(1);

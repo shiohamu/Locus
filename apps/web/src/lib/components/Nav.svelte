@@ -7,7 +7,10 @@ import { page } from "$app/stores";
 	<a href="/notes/new" class:active={$page.url.pathname === "/notes/new"}>新規ノート</a>
 	<a href="/tags" class:active={$page.url.pathname === "/tags"}>タグ</a>
 	<a href="/rss" class:active={$page.url.pathname === "/rss"}>RSS</a>
+	<a href="/web-clips" class:active={$page.url.pathname === "/web-clips"}>Webクリップ</a>
+	<a href="/files" class:active={$page.url.pathname === "/files"}>ファイル</a>
 	<a href="/search" class:active={$page.url.pathname === "/search"}>検索</a>
+	<a href="/settings" class:active={$page.url.pathname === "/settings"}>設定</a>
 </nav>
 
 <style>
