@@ -218,20 +218,28 @@ Note content here...
 ## 5. テスト計画
 
 ### 5.1 Webクリップ
-- [ ] HTML取得処理のテスト
-- [ ] HTML to Markdown変換のテスト
-- [ ] エラーハンドリングのテスト（タイムアウト、無効なURL等）
+- [x] HTML取得処理のテスト
+- [x] HTML to Markdown変換のテスト
+- [x] エラーハンドリングのテスト（タイムアウト、無効なURL等）
+- [x] データアクセス層のテスト (`apps/api/src/db/web-clips.test.ts`)
+- [x] サービス層のテスト (`apps/api/src/services/web-clip-fetcher.test.ts`)
+- [x] APIルートのテスト (`apps/api/src/routes/web-clips.test.ts`)
 
 ### 5.2 ファイル管理
-- [ ] ファイルアップロード処理のテスト
-- [ ] ファイルダウンロード処理のテスト
-- [ ] ファイル削除処理のテスト
-- [ ] ノートとの関連付けのテスト
+- [x] ファイルアップロード処理のテスト
+- [x] ファイルダウンロード処理のテスト
+- [x] ファイル削除処理のテスト
+- [x] ノートとの関連付けのテスト
+- [x] データアクセス層のテスト (`apps/api/src/db/files.test.ts`)
+- [x] サービス層のテスト (`apps/api/src/services/file-uploader.test.ts`)
+- [x] APIルートのテスト (`apps/api/src/routes/files.test.ts`)
 
 ### 5.3 エクスポート
-- [ ] Markdownエクスポートのテスト
-- [ ] JSONエクスポートのテスト
-- [ ] エクスポートデータの整合性確認
+- [x] Markdownエクスポートのテスト
+- [x] JSONエクスポートのテスト
+- [x] エクスポートデータの整合性確認
+- [x] サービス層のテスト (`apps/api/src/services/export/markdown.test.ts`, `apps/api/src/services/export/json.test.ts`)
+- [x] APIルートのテスト (`apps/api/src/routes/export.test.ts`)
 
 ## 6. 依存関係
 

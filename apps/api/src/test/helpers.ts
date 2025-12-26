@@ -64,23 +64,12 @@ export async function cleanupTestDb(db: Client): Promise<void> {
 }
 
 /**
- * テスト用の一時データベースファイルを作成し、マイグレーションを実行する
- * 各テストで独立したデータベースを使用するために使用
+ * SQLファイルを実行するヘルパー関数
  */
-export async function createTestDbFile(): Promise<{ db: Client; path: string }> {
-  // 一時ファイルパスを生成
-  const tmpPath = `/tmp/locus-test-${Date.now()}-${Math.random().toString(36).substring(7)}.db`;
-  const db = createClient({
-    url: `file:${tmpPath}`,
-  });
-
-  // 外部キー制約を有効にする
-  await db.execute("PRAGMA foreign_keys = ON;");
-
-  // マイグレーションファイルを読み込む
+async function executeMigration(db: Client, migrationFile: string): Promise<void> {
   const migrationPath = join(
     import.meta.dir || ".",
-    "../../../../scripts/migrations/001_initial_schema.sql"
+    `../../../../scripts/migrations/${migrationFile}`
   );
   const sql = readFileSync(migrationPath, "utf-8");
 
@@ -116,6 +105,26 @@ export async function createTestDbFile(): Promise<{ db: Client; path: string }> 
       }
     }
   }
+}
+
+/**
+ * テスト用の一時データベースファイルを作成し、マイグレーションを実行する
+ * 各テストで独立したデータベースを使用するために使用
+ */
+export async function createTestDbFile(): Promise<{ db: Client; path: string }> {
+  // 一時ファイルパスを生成
+  const tmpPath = `/tmp/locus-test-${Date.now()}-${Math.random().toString(36).substring(7)}.db`;
+  const db = createClient({
+    url: `file:${tmpPath}`,
+  });
+
+  // 外部キー制約を有効にする
+  await db.execute("PRAGMA foreign_keys = ON;");
+
+  // マイグレーションファイルを順次実行
+  await executeMigration(db, "001_initial_schema.sql");
+  await executeMigration(db, "002_add_web_clips.sql");
+  await executeMigration(db, "003_add_files.sql");
 
   return { db, path: tmpPath };
 }
@@ -170,6 +179,33 @@ export function createTestRSSFeed(
     url: "https://example.com/feed.xml",
     title: "Test Feed",
     last_fetched_at: null,
+    ...overrides,
+  };
+}
+
+export function createTestWebClip(
+  overrides?: Partial<import("@locus/shared").WebClip>
+): import("@locus/shared").WebClip {
+  const now = Math.floor(Date.now() / 1000);
+  return {
+    note_id: crypto.randomUUID(),
+    source_url: "https://example.com/article",
+    fetched_at: now,
+    content: "Test content",
+    ...overrides,
+  };
+}
+
+export function createTestFile(
+  overrides?: Partial<import("@locus/shared").File>
+): import("@locus/shared").File {
+  const now = Math.floor(Date.now() / 1000);
+  return {
+    id: crypto.randomUUID(),
+    filename: "test.pdf",
+    mime_type: "application/pdf",
+    size: 1024,
+    created_at: now,
     ...overrides,
   };
 }

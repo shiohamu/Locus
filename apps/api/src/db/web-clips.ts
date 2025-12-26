@@ -52,12 +52,12 @@ export async function updateWebClip(webClip: WebClip): Promise<WebClip> {
 /**
  * Webクリップ一覧を取得する
  */
-export async function listWebClips(options: {
+export async function listWebClips(options?: {
   limit?: number;
   offset?: number;
 }): Promise<WebClip[]> {
   const db = getDb();
-  const { limit = 100, offset = 0 } = options;
+  const { limit = 100, offset = 0 } = options || {};
 
   const result = await db.execute({
     sql: `SELECT note_id, source_url, fetched_at, content

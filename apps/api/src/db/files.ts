@@ -41,12 +41,12 @@ export async function getFile(id: string): Promise<File | null> {
 /**
  * ファイル一覧を取得する
  */
-export async function listFiles(options: {
+export async function listFiles(options?: {
   limit?: number;
   offset?: number;
 }): Promise<File[]> {
   const db = getDb();
-  const { limit = 100, offset = 0 } = options;
+  const { limit = 100, offset = 0 } = options || {};
 
   const result = await db.execute({
     sql: `SELECT id, filename, mime_type, size, created_at
