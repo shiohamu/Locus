@@ -3,6 +3,7 @@
  */
 
 import type { RSSFeed, RSSItem } from "$lib/types";
+import type { CreateRSSFeedRequest, MessageResponse } from "$lib/types/api";
 import { apiRequest } from "./base.js";
 
 /**
@@ -15,7 +16,7 @@ export async function getRSSFeeds(): Promise<RSSFeed[]> {
 /**
  * RSSフィード登録
  */
-export async function createRSSFeed(feed: { url: string; title: string }): Promise<RSSFeed> {
+export async function createRSSFeed(feed: CreateRSSFeedRequest): Promise<RSSFeed> {
   return apiRequest<RSSFeed>("/rss/feeds", {
     method: "POST",
     body: JSON.stringify(feed),
@@ -34,8 +35,8 @@ export async function deleteRSSFeed(feedId: string): Promise<void> {
 /**
  * RSSフィード取得・更新
  */
-export async function fetchRSSFeed(feedId?: string): Promise<{ message: string }> {
-  return apiRequest<{ message: string }>("/rss/fetch", {
+export async function fetchRSSFeed(feedId?: string): Promise<MessageResponse> {
+  return apiRequest<MessageResponse>("/rss/fetch", {
     method: "POST",
     body: JSON.stringify(feedId ? { feed_id: feedId } : {}),
   });

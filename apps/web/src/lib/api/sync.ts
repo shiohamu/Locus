@@ -2,7 +2,8 @@
  * 同期関連API
  */
 
-import type { SyncPullResponse } from "$lib/types";
+import type { SyncPullResponse, SyncPushRequest } from "$lib/types";
+import type { MessageResponse } from "$lib/types/api";
 import { apiRequest } from "./base.js";
 
 /**
@@ -15,12 +16,8 @@ export async function syncPull(since: number): Promise<SyncPullResponse> {
 /**
  * 同期プッシュ
  */
-export async function syncPush(data: {
-  notes?: unknown[];
-  tags?: unknown[];
-  links?: unknown[];
-}): Promise<{ message: string }> {
-  return apiRequest<{ message: string }>("/sync/push", {
+export async function syncPush(data: SyncPushRequest): Promise<MessageResponse> {
+  return apiRequest<MessageResponse>("/sync/push", {
     method: "POST",
     body: JSON.stringify(data),
   });

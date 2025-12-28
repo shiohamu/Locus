@@ -3,14 +3,13 @@
  */
 
 import type { File as FileType } from "$lib/types";
+import type { UploadFileResponse } from "$lib/types/api";
 import { apiRequest, getApiBaseUrl } from "./base.js";
 
 /**
  * ファイルアップロード
  */
-export async function uploadFile(
-  file: globalThis.File
-): Promise<{ id: string; filename: string; size: number; mime_type: string; created_at: number }> {
+export async function uploadFile(file: globalThis.File): Promise<UploadFileResponse> {
   const formData = new FormData();
   formData.append("file", file);
 

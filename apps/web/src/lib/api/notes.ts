@@ -3,6 +3,12 @@
  */
 
 import type { NoteCore, NoteMD } from "$lib/types";
+import type {
+	CreateNoteMDRequest,
+	NoteLinksResponse,
+	TagSuggestionsResponse,
+	UpdateNoteMDRequest,
+} from "$lib/types/api";
 import { apiRequest } from "./base.js";
 
 /**
@@ -61,7 +67,7 @@ export async function deleteNote(id: string): Promise<void> {
 /**
  * Markdownノート作成
  */
-export async function createNoteMD(data: { title: string; content: string }): Promise<NoteMD> {
+export async function createNoteMD(data: CreateNoteMDRequest): Promise<NoteMD> {
   return apiRequest<NoteMD>("/notes/md", {
     method: "POST",
     body: JSON.stringify(data),
@@ -78,10 +84,7 @@ export async function getNoteMD(noteId: string): Promise<NoteMD> {
 /**
  * Markdownノート更新
  */
-export async function updateNoteMD(
-  id: string,
-  data: { title?: string; content?: string }
-): Promise<NoteMD> {
+export async function updateNoteMD(id: string, data: UpdateNoteMDRequest): Promise<NoteMD> {
   return apiRequest<NoteMD>(`/notes/md/${id}`, {
     method: "PUT",
     body: JSON.stringify(data),
@@ -91,6 +94,6 @@ export async function updateNoteMD(
 /**
  * ノートのリンク取得
  */
-export async function getNoteLinks(noteId: string): Promise<Array<{ from: string; to: string }>> {
-  return apiRequest<Array<{ from: string; to: string }>>(`/notes/${noteId}/links`);
+export async function getNoteLinks(noteId: string): Promise<NoteLinksResponse[]> {
+  return apiRequest<NoteLinksResponse[]>(`/notes/${noteId}/links`);
 }

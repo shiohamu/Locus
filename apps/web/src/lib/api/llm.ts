@@ -3,6 +3,13 @@
  */
 
 import type { LLMConfig } from "$lib/types";
+import type {
+	ExtractKeyPointsRequest,
+	ExtractKeyPointsResponse,
+	LLMSettingsResponse,
+	SaveLLMSettingsRequest,
+	SummaryResponse,
+} from "$lib/types/api";
 import { apiRequest } from "./base.js";
 
 /**
@@ -15,35 +22,14 @@ export async function getLLMConfig(): Promise<LLMConfig> {
 /**
  * LLM設定取得（設定ページ用）
  */
-export async function getLLMSettings(): Promise<{
-  provider: string;
-  model: string;
-  apiKey?: boolean;
-  baseUrl?: string;
-  maxTokens?: number;
-  temperature?: number;
-}> {
-  return apiRequest<{
-    provider: string;
-    model: string;
-    apiKey?: boolean;
-    baseUrl?: string;
-    maxTokens?: number;
-    temperature?: number;
-  }>("/settings/llm");
+export async function getLLMSettings(): Promise<LLMSettingsResponse> {
+  return apiRequest<LLMSettingsResponse>("/settings/llm");
 }
 
 /**
  * LLM設定保存
  */
-export async function saveLLMSettings(config: {
-  provider: "openai" | "ollama";
-  model: string;
-  apiKey?: string;
-  baseUrl?: string;
-  maxTokens?: number;
-  temperature?: number;
-}): Promise<void> {
+export async function saveLLMSettings(config: SaveLLMSettingsRequest): Promise<void> {
   return apiRequest<void>("/settings/llm", {
     method: "PUT",
     body: JSON.stringify(config),
@@ -62,8 +48,8 @@ export async function deleteLLMSettings(): Promise<void> {
 /**
  * ノート要約
  */
-export async function summarizeNote(noteId: string): Promise<{ summary: string }> {
-  return apiRequest<{ summary: string }>(`/llm/notes/${noteId}/summarize`, {
+export async function summarizeNote(noteId: string): Promise<SummaryResponse> {
+  return apiRequest<SummaryResponse>(`/llm/notes/${noteId}/summarize`, {
     method: "POST",
   });
 }
@@ -71,8 +57,8 @@ export async function summarizeNote(noteId: string): Promise<{ summary: string }
 /**
  * RSS記事要約
  */
-export async function summarizeRSSArticle(noteId: string): Promise<{ summary: string }> {
-  return apiRequest<{ summary: string }>(`/llm/rss/${noteId}/summarize`, {
+export async function summarizeRSSArticle(noteId: string): Promise<SummaryResponse> {
+  return apiRequest<SummaryResponse>(`/llm/rss/${noteId}/summarize`, {
     method: "POST",
   });
 }
@@ -80,9 +66,9 @@ export async function summarizeRSSArticle(noteId: string): Promise<{ summary: st
 /**
  * 要点抽出
  */
-export async function extractKeyPoints(content: string): Promise<{ keyPoints: string[] }> {
-  return apiRequest<{ keyPoints: string[] }>("/llm/extract-key-points", {
+export async function extractKeyPoints(content: string): Promise<ExtractKeyPointsResponse> {
+  return apiRequest<ExtractKeyPointsResponse>("/llm/extract-key-points", {
     method: "POST",
-    body: JSON.stringify({ content }),
+    body: JSON.stringify({ content } satisfies ExtractKeyPointsRequest),
   });
 }

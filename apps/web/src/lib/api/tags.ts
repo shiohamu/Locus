@@ -3,6 +3,7 @@
  */
 
 import type { Tag } from "$lib/types";
+import type { CreateTagRequest, TagSuggestionsResponse } from "$lib/types/api";
 import { apiRequest } from "./base.js";
 
 /**
@@ -15,7 +16,7 @@ export async function getTags(): Promise<Tag[]> {
 /**
  * タグ作成
  */
-export async function createTag(tag: { name: string; id?: string }): Promise<Tag> {
+export async function createTag(tag: CreateTagRequest): Promise<Tag> {
   return apiRequest<Tag>("/tags", {
     method: "POST",
     body: JSON.stringify(tag),
@@ -60,12 +61,8 @@ export async function deleteTag(tagId: string): Promise<void> {
 /**
  * タグ候補生成
  */
-export async function generateTagSuggestions(noteId: string): Promise<{
-  suggestions: Array<{ name: string; confidence: number; method: "llm" | "rule-based" }>;
-}> {
-  return apiRequest<{
-    suggestions: Array<{ name: string; confidence: number; method: "llm" | "rule-based" }>;
-  }>(`/notes/${noteId}/tags/suggestions`, {
+export async function generateTagSuggestions(noteId: string): Promise<TagSuggestionsResponse> {
+  return apiRequest<TagSuggestionsResponse>(`/notes/${noteId}/tags/suggestions`, {
     method: "POST",
   });
 }
