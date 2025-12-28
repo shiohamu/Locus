@@ -68,7 +68,13 @@ async function loadGraphData(forceRefresh = false) {
       // 空配列の場合はundefinedを送信（フィルタリングしない）
       tagNames = mappedNames.length > 0 ? mappedNames : undefined;
 
-      // デバッグログ
+      // デバッグログ（開発環境のみ）
+      if (dev) {
+        console.log("[Graph] Selected tag IDs:", selectedTags);
+        console.log("[Graph] Mapped tag names:", mappedNames);
+        console.log("[Graph] Final tag names for API:", tagNames);
+      }
+
       if (mappedNames.length !== selectedTags.length) {
         console.warn(
           `Some tags could not be found. Selected: ${selectedTags.length}, Found: ${mappedNames.length}`
@@ -83,14 +89,18 @@ async function loadGraphData(forceRefresh = false) {
 
     // データを更新（リアクティブステートメントが自動的に実行される）
     graphData = data;
+    // データが更新されたので、ハッシュをリセットして再レンダリングを強制
+    lastRenderedDataHash = null;
+
     if (dev) {
-      console.log("Graph data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
+      console.log("[Graph] Data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
     }
   } catch (e) {
     error = e instanceof Error ? e.message : "グラフデータの読み込みに失敗しました";
     console.error("Failed to load graph data:", e);
     // エラーが発生した場合でも、空のグラフデータを設定して表示を維持
     graphData = { nodes: [], edges: [] };
+    lastRenderedDataHash = null;
   } finally {
     loading = false;
   }
@@ -301,7 +311,7 @@ async function renderGraph() {
   // ネットワークを作成
   try {
     if (dev) {
-      console.log("Creating network instance...");
+      console.log("Creating network with", nodes.length, "nodes,", edges.length, "edges");
     }
     network = new Network(networkContainer, data, options);
     if (dev) {
@@ -492,6 +502,11 @@ onDestroy(() => {
 					</button>
 				{/each}
 			</div>
+			{#if dev && selectedTags.length > 0}
+				<div class="debug-info">
+					<small>選択中: {selectedTags.map(id => availableTags.find(t => t.id === id)?.name || id).join(", ")}</small>
+				</div>
+			{/if}
 		</div>
 	</div>
 
@@ -665,6 +680,15 @@ onDestroy(() => {
 		border-radius: 4px;
 		color: #4338ca;
 		font-size: 0.875rem;
+	}
+
+	.debug-info {
+		margin-top: 0.5rem;
+		padding: 0.5rem;
+		background: #f3f4f6;
+		border-radius: 4px;
+		font-size: 0.75rem;
+		color: #6b7280;
 	}
 
 	.graph-container {

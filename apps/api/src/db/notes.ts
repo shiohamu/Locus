@@ -121,7 +121,7 @@ export async function listNotes(options: {
 
 /**
  * タグでフィルタリングされたノート一覧を取得する
- * 複数のタグが指定された場合はAND条件（すべてのタグが含まれている）
+ * 複数のタグが指定された場合はOR条件（いずれかのタグが含まれている）
  */
 export async function listNotesByTags(options: {
   type?: NoteType;
@@ -136,8 +136,8 @@ export async function listNotesByTags(options: {
     return listNotes({ type, limit, offset });
   }
 
-  // すべての指定されたタグが含まれているノートを取得
-  // GROUP BYとHAVINGを使用して、指定されたすべてのタグが含まれているノートのみを取得
+  // いずれかの指定されたタグが含まれているノートを取得（OR条件）
+  // DISTINCTを使用して重複を除去
   let sql = `SELECT DISTINCT nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at, nc.public
                FROM notes_core nc
                INNER JOIN note_tags nt ON nc.id = nt.note_id
@@ -151,10 +151,6 @@ export async function listNotesByTags(options: {
     sql += " AND nc.type = ?";
     args.push(type);
   }
-
-  sql += ` GROUP BY nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at, nc.public
-               HAVING COUNT(DISTINCT t.name) = ?`;
-  args.push(tagNames.length);
 
   sql += " ORDER BY nc.updated_at DESC LIMIT ? OFFSET ?";
   args.push(limit, offset);

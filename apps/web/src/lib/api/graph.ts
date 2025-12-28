@@ -25,11 +25,15 @@ export async function getGraphData(options?: {
   if (options?.limit) params.set("limit", String(options.limit));
 
   const query = params.toString();
-  return apiRequest<{ nodes: GraphNode[]; edges: GraphEdge[] }>(
-    `/graph${query ? `?${query}` : ""}`,
-    {
-      useCache: true,
-      cacheTTL: 1 * 60 * 1000, // 1分（グラフデータは比較的頻繁に更新される可能性がある）
-    }
-  );
+  const endpoint = `/graph${query ? `?${query}` : ""}`;
+
+  // デバッグログ
+  if (import.meta.env.DEV) {
+    console.log("[Graph API] Request:", endpoint, "Tags:", options?.tags);
+  }
+
+  return apiRequest<{ nodes: GraphNode[]; edges: GraphEdge[] }>(endpoint, {
+    useCache: false, // タグフィルターが変更される可能性があるため、キャッシュを無効化
+    cacheTTL: 1 * 60 * 1000, // 1分（グラフデータは比較的頻繁に更新される可能性がある）
+  });
 }
