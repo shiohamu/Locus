@@ -2,20 +2,31 @@
  * エラーハンドリングユーティリティ
  */
 
+import { getErrorMessage as getErrorMessageFromMap } from "./error-messages";
+import { logError } from "./logger";
+
 /**
  * APIエラーを処理し、ユーザーフレンドリーなメッセージを返す
  * @param error エラーオブジェクト（Error、unknown、またはstring）
- * @param defaultMessage デフォルトのエラーメッセージ
+ * @param defaultMessage デフォルトのエラーメッセージ（エラーメッセージマッピングが使用できない場合）
  * @returns エラーメッセージ文字列
  */
-export function handleApiError(error: unknown, defaultMessage = "エラーが発生しました"): string {
-  if (error instanceof Error) {
-    return error.message || defaultMessage;
-  }
-  if (typeof error === "string") {
-    return error;
-  }
-  return defaultMessage;
+export function handleApiError(error: unknown, defaultMessage?: string): string {
+	// エラーの種類を判定
+	const errorType = getErrorType(error);
+
+	// エラーメッセージマッピングからメッセージを取得
+	const message = getErrorMessageFromMap(error, errorType);
+
+	// エラーログを記録
+	logError(error, { errorType, message });
+
+	// デフォルトメッセージが指定されている場合は、それを使用（後方互換性のため）
+	if (defaultMessage && message === "予期しないエラーが発生しました。") {
+		return defaultMessage;
+	}
+
+	return message;
 }
 
 /**
@@ -24,7 +35,7 @@ export function handleApiError(error: unknown, defaultMessage = "エラーが発
  * @returns エラーメッセージ文字列
  */
 export function getErrorMessage(error: unknown): string {
-  return handleApiError(error);
+	return handleApiError(error);
 }
 
 /**

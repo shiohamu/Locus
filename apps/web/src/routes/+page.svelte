@@ -1,105 +1,43 @@
 <script lang="ts">
-import { getNotes, getTags } from "$lib/api";
-import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
-import NoteList from "$lib/components/NoteList.svelte";
-import type { NoteCore } from "$lib/types";
-import type { Tag } from "$lib/types";
-import { onMount } from "svelte";
+	import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+	import NoteList from "$lib/components/NoteList.svelte";
+	import { notesStore, filteredNotes, totalPages } from "$lib/stores/notes";
+	import type { FilterType, SortBy, SortOrder } from "$lib/stores/notes";
+	import { tagsStore } from "$lib/stores/tags";
+	import { onMount } from "svelte";
 
-let allNotes: NoteCore[] = [];
-let notes: NoteCore[] = [];
-let tags: Tag[] = [];
-let loading = true;
-let error: unknown | null = null;
+	onMount(async () => {
+		await Promise.all([notesStore.loadNotes(), tagsStore.loadTags()]);
+	});
 
-// フィルタ・ソート・ページネーション設定
-type FilterType = "all" | "md" | "rss" | "web_clip";
-type SortBy = "updated_at" | "created_at" | "title";
-type SortOrder = "desc" | "asc";
+	// ローカル変数でフィルタとソートを管理
+	let filterType: FilterType = $notesStore.filterType;
+	let sortBy: SortBy = $notesStore.sortBy;
+	let sortOrder: SortOrder = $notesStore.sortOrder;
 
-let filterType: FilterType = "all";
-let sortBy: SortBy = "updated_at";
-let sortOrder: SortOrder = "desc";
-let currentPage = 1;
-let itemsPerPage = 20;
+	// ストアの変更を監視
+	$: if ($notesStore.filterType !== filterType) {
+		filterType = $notesStore.filterType;
+	}
+	$: if ($notesStore.sortBy !== sortBy) {
+		sortBy = $notesStore.sortBy;
+	}
+	$: if ($notesStore.sortOrder !== sortOrder) {
+		sortOrder = $notesStore.sortOrder;
+	}
 
-onMount(async () => {
-  await Promise.all([loadNotes(), loadTags()]);
-});
+	function handleFilterChange() {
+		notesStore.setFilter(filterType);
+		notesStore.setPage(1);
+	}
 
-async function loadNotes() {
-  loading = true;
-  error = null;
-  try {
-    allNotes = await getNotes({ limit: 10000 });
-    applyFilters();
-  } catch (e) {
-    error = e;
-  } finally {
-    loading = false;
-  }
-}
+	function handleSortChange() {
+		notesStore.setSort(sortBy, sortOrder);
+	}
 
-async function loadTags() {
-  try {
-    tags = await getTags();
-  } catch (e) {
-    // タグの読み込み失敗は無視
-  }
-}
-
-function applyFilters() {
-  let filtered = [...allNotes];
-
-  // タイプフィルタ
-  if (filterType !== "all") {
-    filtered = filtered.filter((note) => note.type === filterType);
-  }
-
-  // ソート
-  filtered.sort((a, b) => {
-    let comparison = 0;
-    if (sortBy === "title") {
-      comparison = a.title.localeCompare(b.title, "ja");
-    } else if (sortBy === "updated_at") {
-      comparison = a.updated_at - b.updated_at;
-    } else if (sortBy === "created_at") {
-      comparison = a.created_at - b.created_at;
-    }
-
-    return sortOrder === "desc" ? -comparison : comparison;
-  });
-
-  // ページネーション
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  notes = filtered.slice(startIndex, endIndex);
-}
-
-$: {
-  if (allNotes.length > 0) {
-    applyFilters();
-  }
-}
-
-$: totalPages = Math.ceil(
-  (filterType === "all" ? allNotes.length : allNotes.filter((n) => n.type === filterType).length) /
-    itemsPerPage
-);
-
-function handleFilterChange() {
-  currentPage = 1;
-  applyFilters();
-}
-
-function handleSortChange() {
-  applyFilters();
-}
-
-function goToPage(page: number) {
-  currentPage = page;
-  applyFilters();
-}
+	function goToPage(page: number) {
+		notesStore.setPage(page);
+	}
 </script>
 
 <div class="page-header">
@@ -107,14 +45,18 @@ function goToPage(page: number) {
 	<a href="/notes/new" class="new-button">新規ノート作成</a>
 </div>
 
-{#if loading}
+{#if $notesStore.loading}
 	<p>読み込み中...</p>
 {:else}
-	<ErrorDisplay {error} defaultMessage="ノートの読み込みに失敗しました" />
+	<ErrorDisplay error={$notesStore.error} defaultMessage="ノートの読み込みに失敗しました" />
 	<div class="filters-section">
 		<div class="filter-group">
 			<label for="filter-type">タイプ:</label>
-			<select id="filter-type" bind:value={filterType} on:change={handleFilterChange}>
+			<select
+				id="filter-type"
+				bind:value={filterType}
+				on:change={handleFilterChange}
+			>
 				<option value="all">すべて</option>
 				<option value="md">Markdown</option>
 				<option value="rss">RSS</option>
@@ -124,35 +66,42 @@ function goToPage(page: number) {
 
 		<div class="filter-group">
 			<label for="sort-by">並び替え:</label>
-			<select id="sort-by" bind:value={sortBy} on:change={handleSortChange}>
+			<select
+				id="sort-by"
+				bind:value={sortBy}
+				on:change={handleSortChange}
+			>
 				<option value="updated_at">更新日時</option>
 				<option value="created_at">作成日時</option>
 				<option value="title">タイトル</option>
 			</select>
-			<select bind:value={sortOrder} on:change={handleSortChange}>
+			<select
+				bind:value={sortOrder}
+				on:change={handleSortChange}
+			>
 				<option value="desc">降順</option>
 				<option value="asc">昇順</option>
 			</select>
 		</div>
 	</div>
 
-	<NoteList {notes} />
+	<NoteList notes={$filteredNotes} />
 
-	{#if totalPages > 1}
+	{#if $totalPages > 1}
 		<div class="pagination">
 			<button
-				on:click={() => goToPage(currentPage - 1)}
-				disabled={currentPage === 1}
+				on:click={() => goToPage($notesStore.currentPage - 1)}
+				disabled={$notesStore.currentPage === 1}
 				class="page-btn"
 			>
 				前へ
 			</button>
 			<span class="page-info">
-				ページ {currentPage} / {totalPages}
+				ページ {$notesStore.currentPage} / {$totalPages}
 			</span>
 			<button
-				on:click={() => goToPage(currentPage + 1)}
-				disabled={currentPage >= totalPages}
+				on:click={() => goToPage($notesStore.currentPage + 1)}
+				disabled={$notesStore.currentPage >= $totalPages}
 				class="page-btn"
 			>
 				次へ

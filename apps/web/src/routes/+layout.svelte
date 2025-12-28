@@ -1,6 +1,7 @@
 <script lang="ts">
 import Nav from "$lib/components/Nav.svelte";
 import SyncStatus from "$lib/components/SyncStatus.svelte";
+import ErrorBoundary from "$lib/components/ErrorBoundary.svelte";
 import { onMount } from "svelte";
 // 共通スタイルのインポート
 import "$lib/styles/buttons.css";
@@ -36,15 +37,17 @@ onMount(() => {
 });
 </script>
 
-<div class="app">
-	<Nav />
-	<div class="sync-container">
-		<SyncStatus />
+<ErrorBoundary fallback="アプリケーションでエラーが発生しました">
+	<div class="app">
+		<Nav />
+		<div class="sync-container">
+			<SyncStatus />
+		</div>
+		<main>
+			<slot />
+		</main>
 	</div>
-	<main>
-		<slot />
-	</main>
-</div>
+</ErrorBoundary>
 
 <style>
 	:global(body) {
