@@ -34,7 +34,7 @@ export class OllamaProvider extends BaseLLMProvider {
           },
           body: JSON.stringify(body),
         },
-        120000 // 120秒のタイムアウト（ローカルLLMは時間がかかることがある）
+        300000 // 300秒（5分）のタイムアウト（ローカルLLMやタグ生成など時間がかかる処理に対応）
       );
 
       if (!response.ok) {

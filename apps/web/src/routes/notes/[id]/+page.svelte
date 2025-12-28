@@ -3,7 +3,6 @@ import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import {
   deleteNote,
-  extractKeyPoints,
   getNote,
   getNoteMD,
   getRSSItem,
@@ -36,11 +35,8 @@ let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSavedTitle = "";
 let lastSavedContent = "";
 let summary: string | null = null;
-let keyPoints: string | null = null;
 let summarizing = false;
-let extracting = false;
 let showSummary = false;
-let showKeyPoints = false;
 
 $: noteId = $page.params.id;
 
@@ -211,21 +207,6 @@ async function handleSummarize() {
   }
 }
 
-async function handleExtractKeyPoints() {
-  if (!content) return;
-
-  extracting = true;
-  error = null;
-  try {
-    const result = await extractKeyPoints(content);
-    keyPoints = result.keyPoints;
-    showKeyPoints = true;
-  } catch (e) {
-    error = e instanceof Error ? e.message : "要点抽出に失敗しました";
-  } finally {
-    extracting = false;
-  }
-}
 </script>
 
 {#if loading}
@@ -255,22 +236,13 @@ async function handleExtractKeyPoints() {
 						キャンセル
 					</button>
 				{:else}
-					{#if note.type === "md" || note.type === "rss"}
+					{#if content}
 						<button
 							on:click={handleSummarize}
 							disabled={summarizing}
 							class="llm-button"
 						>
 							{summarizing ? "要約中..." : "要約"}
-						</button>
-					{/if}
-					{#if content}
-						<button
-							on:click={handleExtractKeyPoints}
-							disabled={extracting}
-							class="llm-button"
-						>
-							{extracting ? "抽出中..." : "要点抽出"}
 						</button>
 					{/if}
 					{#if note.type === "md"}
@@ -321,18 +293,6 @@ async function handleExtractKeyPoints() {
 			</div>
 		{/if}
 
-		{#if showKeyPoints && keyPoints}
-			<div class="llm-section">
-				<div class="llm-header">
-					<h2>要点</h2>
-					<button on:click={() => (showKeyPoints = false)} class="close-button">
-						×
-					</button>
-				</div>
-				<div class="llm-content markdown-preview">{@html marked.parse(keyPoints)}</div>
-			</div>
-		{/if}
-
 		{#if editing && note.type === "md"}
 			<NoteEditor bind:title bind:content bind:showPreview />
 			{#if saving}
@@ -357,20 +317,21 @@ async function handleExtractKeyPoints() {
 
 	.note-header {
 		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		flex-direction: column;
+		gap: 1rem;
 		margin-bottom: 2rem;
 		padding: 1.5rem;
 		background: rgba(255, 255, 255, 0.9);
 		backdrop-filter: blur(10px);
 		border-radius: 16px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-		gap: 1rem;
 	}
 
 	.note-header h1 {
 		margin: 0;
-		flex: 1;
+		word-break: break-word;
+		overflow-wrap: break-word;
+		line-height: 1.4;
 	}
 
 	.title-input {
@@ -394,7 +355,9 @@ async function handleExtractKeyPoints() {
 	.actions {
 		display: flex;
 		gap: 0.75rem;
-		flex-shrink: 0;
+		flex-wrap: wrap;
+		align-items: center;
+		width: 100%;
 	}
 
 	button {

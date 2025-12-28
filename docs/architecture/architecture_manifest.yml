@@ -11,6 +11,10 @@ services:
   - '@libsql/client'
   - '@playwright/test'
   - '@types/bun'
+  - '@types/cheerio'
+  - '@types/jszip'
+  - cheerio
+  - jszip
   modules:
   - name: apps
     path: !!python/object/apply:pathlib._local.PosixPath

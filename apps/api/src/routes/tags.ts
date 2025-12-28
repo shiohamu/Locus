@@ -84,8 +84,11 @@ app.post("/:id/tags/suggestions", async (c) => {
       return c.json({ error: "Note content not found" }, 404);
     }
 
-    // 既存のタグを取得
+    // 既存のタグを取得（このノートに紐づくタグ）
     const existingTags = await tagsDb.getTagsByNote(noteId);
+
+    // すべてのタグを取得（既存タグを優先的に使用するため）
+    const allTags = await tagsDb.listTags();
 
     // LLMプロバイダーを取得（利用可能な場合）
     let llmProvider = null;
@@ -98,12 +101,13 @@ app.post("/:id/tags/suggestions", async (c) => {
       // LLMが設定されていない場合はルールベースのみ使用
     }
 
-    // タグ候補を生成
+    // タグ候補を生成（すべての既存タグを渡す）
     const tagSuggestionService = new TagSuggestionService(llmProvider);
     const suggestions = await tagSuggestionService.generateSuggestions(
       note.title,
       content,
-      existingTags
+      existingTags,
+      allTags
     );
 
     return c.json({ suggestions });

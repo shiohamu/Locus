@@ -3,6 +3,7 @@ import { Hono } from "hono";
 import * as notesDb from "../db/notes.js";
 import * as notesMdDb from "../db/notes_md.js";
 import * as rssDb from "../db/rss.js";
+import * as webClipsDb from "../db/web-clips.js";
 import { keepAliveMiddleware } from "../middleware/keep-alive.js";
 import { createLLMProvider, getLLMConfig, getLLMConfigFromEnv } from "../services/llm/factory.js";
 import { SummarizerService } from "../services/llm/summarizer.js";
@@ -36,8 +37,26 @@ app.post("/notes/:id/summarize", async (c) => {
       return c.json({ error: "Note not found" }, 404);
     }
 
-    const noteMd = await notesMdDb.getNoteMD(noteId);
-    if (!noteMd) {
+    let content: string | null = null;
+
+    // ノートタイプに応じてコンテンツを取得
+    if (note.type === "md") {
+      const noteMd = await notesMdDb.getNoteMD(noteId);
+      if (!noteMd) {
+        return c.json({ error: "Note content not found" }, 404);
+      }
+      content = noteMd.content;
+    } else if (note.type === "web_clip") {
+      const webClip = await webClipsDb.getWebClip(noteId);
+      if (!webClip) {
+        return c.json({ error: "Web clip content not found" }, 404);
+      }
+      content = webClip.content;
+    } else {
+      return c.json({ error: "Unsupported note type for summarization" }, 400);
+    }
+
+    if (!content) {
       return c.json({ error: "Note content not found" }, 404);
     }
 
@@ -46,7 +65,7 @@ app.post("/notes/:id/summarize", async (c) => {
 
     // タイムアウトを長めに設定（3分）
     const summary = await Promise.race([
-      summarizer.summarizeNote(noteMd.content),
+      summarizer.summarizeNote(content),
       new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error("要約処理がタイムアウトしました（3分）")), 180000)
       ),

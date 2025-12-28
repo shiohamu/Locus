@@ -48,7 +48,7 @@ export class OpenAIProvider extends BaseLLMProvider {
           headers,
           body: JSON.stringify(body),
         },
-        60000 // 60秒のタイムアウト（OpenAI APIは通常速い）
+        180000 // 180秒（3分）のタイムアウト（タグ生成など時間がかかる処理に対応）
       );
 
       if (!response.ok) {

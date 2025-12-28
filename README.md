@@ -9,35 +9,62 @@
 Locus は「ローカルファースト」をモットーに設計された個人知識管理システムです。
 ノートは Markdown で書き、すべてのデータ（Markdown ファイル、メタ情報、リンク構造）はユーザー自身が所有するローカルストレージに保存されます。そのためインターネット接続不要・外部サービスへの依存なしに知識を蓄積できるほか、プライバシーやデータセキュリティも担保します。
 <!-- MANUAL_END:description -->
-Locusは、ノートテイキングと情報収集を一つの統合された知識空間にまとめる**ローカルファースト型パーソナルナレッジシステム**です。  
-- **Markdownベースのメモ管理**：フリーなエディタで作成した Markdown ファイルは自動的に Locus のデータ構造へ取り込まれ、リンクやタグを使って相互参照が可能になります。  
-- **RSS フィード統合**：好きなフィードリーダーのように複数 RSS ソースから記事を取得し、自分専用のノートとして保存・検索できます。  
-- **双方向リンク（Bidirectional Links）**：`[[ページ名]]` の記法で作成したリンクは、相手側にも自動的に参照が付与されるため、知識グラフを即座に可視化しながら関連情報へ飛びやすくなります。  
-- **ローカル優先設計**：全データ（Markdown ファイル・RSS 記事・メタデータ）はユーザーのローカルディレクトリに保存され、外部サービスへのアップロードはオプションです。そのため、通信環境が不安定な場所や高いセキュリティ要件を持つ業務でも安心して利用できます。  
-- **拡張性とカスタマイズ**：TypeScript で書かれたコアロジックは CLI ツールとしても、また VS Code のようなエディタに組み込むことが可能です。`locus init <dir>` コマンドでワークスペースを作成し、`.md`, `.rss.json`, `links.db` などのファイル構造を自動生成します。  
-- **同期オプション**：Git リポジトリやクラウドストレージ（Dropbox, Google Drive 等）にデータをバックアップするだけでなく、複数端末間の手軽なシンクロもサポートしています。
+Locusは、ローカル優先（local‑first）を採用したパーソナルナレッジシステムです。  
+- **Markdownノート**：任意のフォルダに保存された`.md`ファイルを自動的に検出し、タグやリンクで相互参照できるようにします。  
+- **RSSフィード統合**：外部サイトから記事を取得してローカルに保存し、そのままMarkdownとして閲覧・編集できます。HTMLのパースには`cheerio@^1.1.2`、ZIP化/解凍は`jszip@^3.10.1`を利用しています。  
+- **双方向リンク**：ノート内で`[[ページ名]]`と記述すると、自動的にリンク先のリストが生成されます。これにより知識ベース全体をグラフ状に把握でき、類似情報へ迅速にアクセスできます。
 
-## 開発・実行
+## 主な特徴
+
+- **オフラインファースト**：すべてのデータはローカルディスク上（`~/.locus/notes`, `feeds.json` 等）に保存されるため、インターネット接続がなくても作業可能。  
+- **シンプルなCLI操作**：`npx locus init`, `locus add <title>`, `locus fetch-feeds`, `locus link-list` などのコマンドでノート管理・RSS取得を行えます。  
+- **拡張性**：TypeScript/JavaScriptベースなので、独自プラグインやスクリプトを書いて機能追加が容易です。  
+- **セキュリティとプライバシー**：データはサーバに送信されずローカルだけで完結するため、個人情報の漏洩リスクを最小化します。
+
+## 開発環境
+
+| 言語 | バージョン |
+|------|------------|
+| TypeScript / JavaScript | 4.x+ (Node.js v18+) |
+| Shell Script | Bash |
+
+パッケージ管理は`npm`で行い、主要な依存関係は次のとおりです。
 
 ```bash
-# グローバルインストール (npm)
-npm install -g locus
-
-# 新規プロジェクト作成
-locus init ~/my-locus-space
-
-# RSS フィードを追加
-echo "https://example.com/feed.xml" >> feeds.txt
-locus fetch-feeds
-
-# ノートのリンク編集例（VS Code で開く）
-code .
-
-# コマンドラインから検索・表示
-locus search --tag todo
+# 必須ライブラリ（例）
+cheerio@^1.1.2   # RSSフィードやHTML解析用
+jszip@^3.10.1    # アーカイブ作成/解凍
 ```
 
-Locus はシンプルなコマンドセットと直感的な Markdown 記法を組み合わせ、知識管理に必要なすべての機能（ノート作成, フィード取り込み, 双方向リンク, 検索）をローカルで完結させます。開発者は TypeScript で拡張可能、ユーザーは日常的に手軽に情報を蓄積・再利用できるよう設計されています。<!-- MANUAL_START:architecture -->
+## 使い始め方
+
+1. **プロジェクトの初期化**  
+   ```bash
+   npx locus init
+   ```
+2. **ノートを追加**  
+   ```bash
+   locus add "新しいトピック"
+   # エディタが起動し、Markdownを書き込むことができます。
+   ```
+3. **RSSフィードの取得**  
+   `feeds.json`にURLを登録後、以下でフェッチ。  
+   ```bash
+   locus fetch-feeds
+   ```
+
+4. **リンク関係の確認**  
+   ```bash
+   locus link-list --page "新しいトピック"
+   ```
+5. **知識ベース全体を見る**（オプション）  
+   Locusは`--graph`フラグで簡易可視化を提供。  
+
+> **Tip:** `locus config edit` で設定ファイル (`~/.config/locus/config.json`) を直接編集し、デフォルトのノートディレクトリやRSSフィード取得頻度などをカスタマイズできます。
+
+---
+
+Locusは「手元にある情報だけで完結できる知識管理」を目指して設計されており、メモ取りから長期的な研究資料まで幅広く対応します。ぜひ試し、自分のワークフローに合わせたカスタマイズを楽しんでください。<!-- MANUAL_START:architecture -->
 
 <!-- MANUAL_END:architecture -->
 ```mermaid
@@ -76,7 +103,7 @@ graph TB
 ### locus
 - **Type**: typescript
 - **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
-- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun
+- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun, @types/cheerio, @types/jszip, cheerio, jszip
 
 ## 使用技術
 
@@ -176,4 +203,4 @@ npm test
 
 ---
 
-*このREADME.mdは自動生成されています。最終更新: 2025-12-25 11:34:12*
+*このREADME.mdは自動生成されています。最終更新: 2025-12-28 16:49:23*

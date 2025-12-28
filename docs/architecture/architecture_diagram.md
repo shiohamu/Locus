@@ -36,5 +36,5 @@ graph TB
 ### locus
 - **Type**: typescript
 - **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
-- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun
+- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun, @types/cheerio, @types/jszip, cheerio, jszip
 

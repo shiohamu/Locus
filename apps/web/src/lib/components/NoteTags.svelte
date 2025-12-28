@@ -78,8 +78,13 @@ async function handleGenerateSuggestions() {
 
 function toggleSuggestion(name: string) {
   if (selectedSuggestions.includes(name)) {
+    // 既に選択されている場合は解除
     selectedSuggestions = selectedSuggestions.filter((n) => n !== name);
   } else {
+    // 10個まで選択可能
+    if (selectedSuggestions.length >= 10) {
+      return;
+    }
     selectedSuggestions = [...selectedSuggestions, name];
   }
 }
@@ -143,7 +148,7 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 		{#if showSuggestions}
 			<div class="suggestions-section">
 				<div class="suggestions-header">
-					<h4>タグ候補</h4>
+					<h4>タグ候補（最大10個まで選択可能）</h4>
 					<button on:click={() => (showSuggestions = false)} class="close-btn">
 						×
 					</button>
@@ -151,10 +156,13 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 				{#if suggestions.length > 0}
 					<div class="suggestions-list">
 						{#each suggestions as suggestion (suggestion.name)}
-							<label class="suggestion-item">
+							{@const isSelected = selectedSuggestions.includes(suggestion.name)}
+							{@const isDisabled = !isSelected && selectedSuggestions.length >= 10}
+							<label class="suggestion-item" class:disabled={isDisabled}>
 								<input
 									type="checkbox"
-									checked={selectedSuggestions.includes(suggestion.name)}
+									checked={isSelected}
+									disabled={isDisabled}
 									on:change={() => toggleSuggestion(suggestion.name)}
 								/>
 								<span class="suggestion-name">{suggestion.name}</span>
@@ -168,6 +176,9 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 						{/each}
 					</div>
 					<div class="suggestions-actions">
+						<div class="selection-info">
+							{selectedSuggestions.length} / 10 個選択中
+						</div>
 						<button
 							on:click={handleApplySuggestions}
 							disabled={selectedSuggestions.length === 0}
@@ -430,9 +441,15 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 		border: 2px solid transparent;
 	}
 
-	.suggestion-item:hover {
+	.suggestion-item:hover:not(.disabled) {
 		border-color: rgba(99, 102, 241, 0.3);
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+	}
+
+	.suggestion-item.disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background: #f3f4f6;
 	}
 
 	.suggestion-item input[type="checkbox"] {
@@ -460,7 +477,15 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 
 	.suggestions-actions {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: space-between;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.selection-info {
+		font-size: 0.875rem;
+		color: #6b7280;
+		font-weight: 500;
 	}
 
 	.apply-btn {

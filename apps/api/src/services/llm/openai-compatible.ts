@@ -52,7 +52,7 @@ export class OpenAICompatibleProvider extends BaseLLMProvider {
           headers,
           body: JSON.stringify(body),
         },
-        120000 // 120秒のタイムアウト
+        300000 // 300秒（5分）のタイムアウト（ローカルLLMやタグ生成など時間がかかる処理に対応）
       );
 
       if (!response.ok) {
@@ -62,10 +62,38 @@ export class OpenAICompatibleProvider extends BaseLLMProvider {
         );
       }
 
-      const data = await response.json();
+      // JSONのパースを安全に処理
+      let data;
+      try {
+        data = await response.json();
+      } catch (parseError) {
+        console.warn("Failed to parse JSON response from OpenAI compatible API");
+        return {
+          text: "",
+          model: this.config.model,
+        };
+      }
+
+      // データ構造の検証
+      if (!data || !data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
+        console.warn("OpenAI compatible API returned invalid response structure");
+        return {
+          text: "",
+          tokensUsed: data?.usage?.total_tokens,
+          model: this.config.model,
+        };
+      }
+
       const text = data.choices[0]?.message?.content;
-      if (!text) {
-        throw new Error("OpenAI compatible API returned empty response");
+      if (!text || text.trim().length === 0) {
+        // 空のレスポンスの場合は、空文字列を返す（エラーではなく）
+        // 呼び出し側で適切に処理できるようにする
+        console.warn("OpenAI compatible API returned empty response");
+        return {
+          text: "",
+          tokensUsed: data.usage?.total_tokens,
+          model: this.config.model,
+        };
       }
 
       return {
@@ -74,6 +102,24 @@ export class OpenAICompatibleProvider extends BaseLLMProvider {
         model: this.config.model,
       };
     } catch (error) {
+      // 空のレスポンスや無効なレスポンスの場合は、エラーとして扱わずに空文字列を返す
+      if (error instanceof Error) {
+        const errorMessage = error.message.toLowerCase();
+        // より広範囲にエラーメッセージをチェック（handleErrorが付加するプレフィックスも考慮）
+        if (
+          errorMessage.includes("empty response") ||
+          errorMessage.includes("invalid response") ||
+          errorMessage.includes("returned empty") ||
+          errorMessage.includes("openai compatible api returned empty")
+        ) {
+          console.warn(`LLM API returned empty/invalid response: ${error.message}`);
+          return {
+            text: "",
+            model: this.config.model,
+          };
+        }
+      }
+      // その他のエラーはhandleErrorで処理
       return this.handleError(error);
     }
   }
