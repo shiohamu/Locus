@@ -12,9 +12,9 @@
  * @returns ページネーションされたアイテム一覧
  */
 export function paginate<T>(items: T[], currentPage: number, itemsPerPage: number): T[] {
-	const startIndex = (currentPage - 1) * itemsPerPage;
-	const endIndex = startIndex + itemsPerPage;
-	return items.slice(startIndex, endIndex);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  return items.slice(startIndex, endIndex);
 }
 
 /**
@@ -24,6 +24,5 @@ export function paginate<T>(items: T[], currentPage: number, itemsPerPage: numbe
  * @returns 総ページ数
  */
 export function calculateTotalPages(totalItems: number, itemsPerPage: number): number {
-	return Math.ceil(totalItems / itemsPerPage);
+  return Math.ceil(totalItems / itemsPerPage);
 }
-

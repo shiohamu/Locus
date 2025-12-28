@@ -1,7 +1,7 @@
 <script lang="ts">
+import ErrorBoundary from "$lib/components/ErrorBoundary.svelte";
 import Nav from "$lib/components/Nav.svelte";
 import SyncStatus from "$lib/components/SyncStatus.svelte";
-import ErrorBoundary from "$lib/components/ErrorBoundary.svelte";
 import { onMount } from "svelte";
 // 共通スタイルのインポート
 import "$lib/styles/buttons.css";

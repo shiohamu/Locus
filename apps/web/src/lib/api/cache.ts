@@ -95,8 +95,10 @@ export const apiCache = new APICache();
 
 // 定期的にクリーンアップ（5分ごと）
 if (typeof window !== "undefined") {
-  setInterval(() => {
-    apiCache.cleanup();
-  }, 5 * 60 * 1000);
+  setInterval(
+    () => {
+      apiCache.cleanup();
+    },
+    5 * 60 * 1000
+  );
 }
-

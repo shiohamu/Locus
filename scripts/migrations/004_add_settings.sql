@@ -10,3 +10,7 @@ CREATE TABLE IF NOT EXISTS settings (
 -- LLM設定のデフォルトキー
 -- 'llm_config' というキーでJSON形式で保存
 
+
+
+
+

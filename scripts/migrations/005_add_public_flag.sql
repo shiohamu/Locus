@@ -7,3 +7,7 @@ ALTER TABLE notes_core ADD COLUMN public INTEGER NOT NULL DEFAULT 0;
 -- 公開ノート検索用のインデックス
 CREATE INDEX IF NOT EXISTS idx_notes_core_public ON notes_core(public);
 
+
+
+
+

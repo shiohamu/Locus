@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { getErrorType, getErrorMessage, handleApiError } from "./error-handling.js";
+import { getErrorMessage, getErrorType, handleApiError } from "./error-handling.js";
 
 describe("error-handling", () => {
   test("handleApiError - Errorオブジェクトを処理できる", () => {
@@ -73,4 +73,3 @@ describe("error-handling", () => {
     expect(result).toBe("unknown");
   });
 });
-

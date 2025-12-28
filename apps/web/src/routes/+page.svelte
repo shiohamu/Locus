@@ -1,43 +1,43 @@
 <script lang="ts">
-	import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
-	import NoteList from "$lib/components/NoteList.svelte";
-	import { notesStore, filteredNotes, totalPages } from "$lib/stores/notes";
-	import type { FilterType, SortBy, SortOrder } from "$lib/stores/notes";
-	import { tagsStore } from "$lib/stores/tags";
-	import { onMount } from "svelte";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import NoteList from "$lib/components/NoteList.svelte";
+import { filteredNotes, notesStore, totalPages } from "$lib/stores/notes";
+import type { FilterType, SortBy, SortOrder } from "$lib/stores/notes";
+import { tagsStore } from "$lib/stores/tags";
+import { onMount } from "svelte";
 
-	onMount(async () => {
-		await Promise.all([notesStore.loadNotes(), tagsStore.loadTags()]);
-	});
+onMount(async () => {
+  await Promise.all([notesStore.loadNotes(), tagsStore.loadTags()]);
+});
 
-	// ローカル変数でフィルタとソートを管理
-	let filterType: FilterType = $notesStore.filterType;
-	let sortBy: SortBy = $notesStore.sortBy;
-	let sortOrder: SortOrder = $notesStore.sortOrder;
+// ローカル変数でフィルタとソートを管理
+let filterType: FilterType = $notesStore.filterType;
+let sortBy: SortBy = $notesStore.sortBy;
+let sortOrder: SortOrder = $notesStore.sortOrder;
 
-	// ストアの変更を監視
-	$: if ($notesStore.filterType !== filterType) {
-		filterType = $notesStore.filterType;
-	}
-	$: if ($notesStore.sortBy !== sortBy) {
-		sortBy = $notesStore.sortBy;
-	}
-	$: if ($notesStore.sortOrder !== sortOrder) {
-		sortOrder = $notesStore.sortOrder;
-	}
+// ストアの変更を監視
+$: if ($notesStore.filterType !== filterType) {
+  filterType = $notesStore.filterType;
+}
+$: if ($notesStore.sortBy !== sortBy) {
+  sortBy = $notesStore.sortBy;
+}
+$: if ($notesStore.sortOrder !== sortOrder) {
+  sortOrder = $notesStore.sortOrder;
+}
 
-	function handleFilterChange() {
-		notesStore.setFilter(filterType);
-		notesStore.setPage(1);
-	}
+function handleFilterChange() {
+  notesStore.setFilter(filterType);
+  notesStore.setPage(1);
+}
 
-	function handleSortChange() {
-		notesStore.setSort(sortBy, sortOrder);
-	}
+function handleSortChange() {
+  notesStore.setSort(sortBy, sortOrder);
+}
 
-	function goToPage(page: number) {
-		notesStore.setPage(page);
-	}
+function goToPage(page: number) {
+  notesStore.setPage(page);
+}
 </script>
 
 <div class="page-header">

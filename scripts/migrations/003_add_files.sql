@@ -23,3 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_files_created_at ON files(created_at);
 CREATE INDEX IF NOT EXISTS idx_file_notes_file_id ON file_notes(file_id);
 CREATE INDEX IF NOT EXISTS idx_file_notes_note_id ON file_notes(note_id);
 
+
+
+
+

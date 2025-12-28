@@ -15,10 +15,10 @@ export type FilterType = "all" | "md" | "rss" | "web_clip";
  * @returns フィルタリングされたノート一覧
  */
 export function filterNotes(notes: NoteCore[], filterType: FilterType): NoteCore[] {
-	if (filterType === "all") {
-		return notes;
-	}
-	return notes.filter((note) => note.type === filterType);
+  if (filterType === "all") {
+    return notes;
+  }
+  return notes.filter((note) => note.type === filterType);
 }
 
 /**
@@ -28,6 +28,5 @@ export function filterNotes(notes: NoteCore[], filterType: FilterType): NoteCore
  * @returns フィルタリングされたノートの数
  */
 export function getFilteredCount(notes: NoteCore[], filterType: FilterType): number {
-	return filterNotes(notes, filterType).length;
+  return filterNotes(notes, filterType).length;
 }
-

@@ -1,51 +1,48 @@
 <script lang="ts">
-	import { onMount } from "svelte";
-	import ErrorDisplay from "./ErrorDisplay.svelte";
-	import { logError } from "$lib/utils/logger";
-	import "$lib/styles/errors.css";
+import { logError } from "$lib/utils/logger";
+import { onMount } from "svelte";
+import ErrorDisplay from "./ErrorDisplay.svelte";
+import "$lib/styles/errors.css";
 
-	/** フォールバックメッセージ */
-	export let fallback = "エラーが発生しました";
-	/** エラー詳細を表示するか */
-	export let showDetails = false;
-	/** エラーが発生した場合のコールバック */
-	export let onError: ((error: Error) => void) | undefined = undefined;
+/** フォールバックメッセージ */
+export let fallback = "エラーが発生しました";
+/** エラー詳細を表示するか */
+export let showDetails = false;
+/** エラーが発生した場合のコールバック */
+export let onError: ((error: Error) => void) | undefined = undefined;
 
-	let error: Error | null = null;
+let error: Error | null = null;
 
-	onMount(() => {
-		// グローバルエラーハンドラーを設定
-		const handleError = (event: ErrorEvent) => {
-			error = event.error;
-			logError(event.error, { context: "ErrorBoundary", source: "error" });
-			onError?.(event.error);
-		};
+onMount(() => {
+  // グローバルエラーハンドラーを設定
+  const handleError = (event: ErrorEvent) => {
+    error = event.error;
+    logError(event.error, { context: "ErrorBoundary", source: "error" });
+    onError?.(event.error);
+  };
 
-		const handleRejection = (event: PromiseRejectionEvent) => {
-			error =
-				event.reason instanceof Error
-					? event.reason
-					: new Error(String(event.reason));
-			logError(error, { context: "ErrorBoundary", source: "unhandledrejection" });
-			onError?.(error);
-		};
+  const handleRejection = (event: PromiseRejectionEvent) => {
+    error = event.reason instanceof Error ? event.reason : new Error(String(event.reason));
+    logError(error, { context: "ErrorBoundary", source: "unhandledrejection" });
+    onError?.(error);
+  };
 
-		window.addEventListener("error", handleError);
-		window.addEventListener("unhandledrejection", handleRejection);
+  window.addEventListener("error", handleError);
+  window.addEventListener("unhandledrejection", handleRejection);
 
-		return () => {
-			window.removeEventListener("error", handleError);
-			window.removeEventListener("unhandledrejection", handleRejection);
-		};
-	});
+  return () => {
+    window.removeEventListener("error", handleError);
+    window.removeEventListener("unhandledrejection", handleRejection);
+  };
+});
 
-	function handleReload() {
-		window.location.reload();
-	}
+function handleReload() {
+  window.location.reload();
+}
 
-	function handleReset() {
-		error = null;
-	}
+function handleReset() {
+  error = null;
+}
 </script>
 
 {#if error}
@@ -133,4 +130,8 @@
 		transform: translateY(0);
 	}
 </style>
+
+
+
+
 

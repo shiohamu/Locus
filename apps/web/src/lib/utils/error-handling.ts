@@ -12,21 +12,21 @@ import { logError } from "./logger";
  * @returns エラーメッセージ文字列
  */
 export function handleApiError(error: unknown, defaultMessage?: string): string {
-	// エラーの種類を判定
-	const errorType = getErrorType(error);
+  // エラーの種類を判定
+  const errorType = getErrorType(error);
 
-	// エラーメッセージマッピングからメッセージを取得
-	const message = getErrorMessageFromMap(error, errorType);
+  // エラーメッセージマッピングからメッセージを取得
+  const message = getErrorMessageFromMap(error, errorType);
 
-	// エラーログを記録
-	logError(error, { errorType, message });
+  // エラーログを記録
+  logError(error, { errorType, message });
 
-	// デフォルトメッセージが指定されている場合は、それを使用（後方互換性のため）
-	if (defaultMessage && message === "予期しないエラーが発生しました。") {
-		return defaultMessage;
-	}
+  // デフォルトメッセージが指定されている場合は、それを使用（後方互換性のため）
+  if (defaultMessage && message === "予期しないエラーが発生しました。") {
+    return defaultMessage;
+  }
 
-	return message;
+  return message;
 }
 
 /**
@@ -35,7 +35,7 @@ export function handleApiError(error: unknown, defaultMessage?: string): string 
  * @returns エラーメッセージ文字列
  */
 export function getErrorMessage(error: unknown): string {
-	return handleApiError(error);
+  return handleApiError(error);
 }
 
 /**

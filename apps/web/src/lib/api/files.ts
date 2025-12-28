@@ -2,9 +2,9 @@
  * ファイル関連API
  */
 
-import type { APIError } from "@locus/shared";
 import type { File as FileType } from "$lib/types";
 import type { UploadFileResponse } from "$lib/types/api";
+import type { APIError } from "@locus/shared";
 import { apiRequest, getApiBaseUrl } from "./base.js";
 
 /**

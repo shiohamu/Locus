@@ -13,3 +13,7 @@ CREATE TABLE IF NOT EXISTS web_clips (
 CREATE INDEX IF NOT EXISTS idx_web_clips_source_url ON web_clips(source_url);
 CREATE INDEX IF NOT EXISTS idx_web_clips_fetched_at ON web_clips(fetched_at);
 
+
+
+
+
