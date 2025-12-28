@@ -1,6 +1,6 @@
 <script lang="ts">
-import { marked } from "marked";
 import type { NoteMD, RSSItem, WebClip } from "$lib/types";
+import { marked } from "marked";
 
 /** Markdownノート */
 export let noteMD: NoteMD | null = null;

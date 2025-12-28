@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { SyncPullResponse } from "@locus/shared";
-import * as api from "./api.js";
+import * as api from "./api/index.js";
 import * as storage from "./storage.js";
 import * as sync from "./sync.js";
 

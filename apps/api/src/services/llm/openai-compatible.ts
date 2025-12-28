@@ -63,7 +63,7 @@ export class OpenAICompatibleProvider extends BaseLLMProvider {
       }
 
       // JSONのパースを安全に処理
-      let data;
+      let data: unknown;
       try {
         data = await response.json();
       } catch (parseError) {

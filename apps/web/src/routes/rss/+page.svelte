@@ -1,7 +1,7 @@
 <script lang="ts">
 import { createRSSFeed, deleteRSSFeed, fetchRSSFeed, getRSSFeeds } from "$lib/api";
-import type { RSSFeed } from "$lib/types";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import type { RSSFeed } from "$lib/types";
 import { formatDate } from "$lib/utils";
 import { onMount } from "svelte";
 

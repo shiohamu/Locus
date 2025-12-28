@@ -1,4 +1,4 @@
-import type { LLMProviderInterface, Tag } from "@locus/shared";
+import type { LLMProviderInterface, LLMResponse, Tag } from "@locus/shared";
 import * as tagsDb from "../db/tags.js";
 
 /**
@@ -163,7 +163,7 @@ export class TagSuggestionService {
       .replace("{content}", truncatedContent)
       .replace("{existingTags}", existingTagsList);
 
-    let response;
+    let response: LLMResponse;
     try {
       response = await this.llm.generate({
         prompt,

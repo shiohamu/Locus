@@ -1,8 +1,8 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import { createNoteMD } from "$lib/api";
-import NoteEditor from "$lib/components/NoteEditor.svelte";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import NoteEditor from "$lib/components/NoteEditor.svelte";
 import type { NoteCore, NoteMD } from "$lib/types";
 import { generateId, nowTimestamp } from "$lib/utils";
 

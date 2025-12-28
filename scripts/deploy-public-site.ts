@@ -1,4 +1,4 @@
-import { writeFileSync, mkdirSync, existsSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import { generateStaticHTML } from "../apps/api/src/services/export/static-html.js";
 
@@ -8,7 +8,7 @@ import { generateStaticHTML } from "../apps/api/src/services/export/static-html.
 async function deployPublicSite() {
   const outputDir = process.env.PUBLIC_SITE_OUTPUT_DIR || "./public-site";
 
-  console.log(`Generating static HTML files...`);
+  console.log("Generating static HTML files...");
 
   try {
     // 出力ディレクトリを作成
@@ -26,12 +26,12 @@ async function deployPublicSite() {
       console.log(`Generated: ${filename}`);
     }
 
-    console.log(`\n✅ Static site generated successfully!`);
+    console.log("\n✅ Static site generated successfully!");
     console.log(`📁 Output directory: ${outputDir}`);
-    console.log(`\n📝 Next steps:`);
+    console.log("\n📝 Next steps:");
     console.log(`   1. Review the generated files in ${outputDir}`);
-    console.log(`   2. Deploy to your hosting service:`);
-    console.log(`      - GitHub Pages: Push to gh-pages branch`);
+    console.log("   2. Deploy to your hosting service:");
+    console.log("      - GitHub Pages: Push to gh-pages branch");
     console.log(`      - Netlify: Drag and drop ${outputDir} folder`);
     console.log(`      - Vercel: Run 'vercel --cwd ${outputDir}'`);
     console.log(`      - Any static hosting: Upload ${outputDir} contents`);

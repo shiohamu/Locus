@@ -2,12 +2,16 @@
  * ファイル関連API
  */
 
+import type { APIError } from "@locus/shared";
 import type { File as FileType } from "$lib/types";
 import type { UploadFileResponse } from "$lib/types/api";
 import { apiRequest, getApiBaseUrl } from "./base.js";
 
 /**
  * ファイルアップロード
+ * @param file アップロードするファイル
+ * @returns アップロードされたファイル情報
+ * @throws {Error} アップロードに失敗した場合
  */
 export async function uploadFile(file: globalThis.File): Promise<UploadFileResponse> {
   const formData = new FormData();
@@ -21,13 +25,18 @@ export async function uploadFile(file: globalThis.File): Promise<UploadFileRespo
   });
 
   if (!response.ok) {
-    const error = await response.json().catch(() => ({
-      error: "Unknown error",
-    }));
-    throw new Error(error.error || `HTTP ${response.status}`);
+    let errorData: APIError;
+    try {
+      errorData = (await response.json()) as APIError;
+    } catch {
+      errorData = {
+        error: "Unknown error",
+      };
+    }
+    throw new Error(errorData.error || `HTTP ${response.status}`);
   }
 
-  return response.json();
+  return response.json() as Promise<UploadFileResponse>;
 }
 
 /**

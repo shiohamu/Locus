@@ -1,9 +1,9 @@
 import { Hono } from "hono";
+import * as linksDb from "../db/links.js";
 import * as notesDb from "../db/notes.js";
 import * as notesMDDb from "../db/notes_md.js";
-import * as tagsDb from "../db/tags.js";
-import * as linksDb from "../db/links.js";
 import * as rssDb from "../db/rss.js";
+import * as tagsDb from "../db/tags.js";
 import * as webClipsDb from "../db/web-clips.js";
 
 const app = new Hono();

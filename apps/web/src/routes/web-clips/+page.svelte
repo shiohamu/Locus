@@ -1,8 +1,8 @@
 <script lang="ts">
 import { createWebClip, deleteWebClip, getWebClips, refetchWebClip } from "$lib/api";
-import type { WebClip } from "@locus/shared";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import { formatDate } from "$lib/utils";
+import type { WebClip } from "@locus/shared";
 import { onMount } from "svelte";
 
 interface WebClipWithNote extends WebClip {

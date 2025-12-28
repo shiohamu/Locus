@@ -1,8 +1,8 @@
 <script lang="ts">
+import { browser, dev } from "$app/environment";
 import { getGraphData, getTags } from "$lib/api";
 import type { GraphData } from "@locus/shared";
-import { browser } from "$app/environment";
-import { onMount, onDestroy, tick } from "svelte";
+import { onDestroy, onMount, tick } from "svelte";
 
 let graphData: GraphData | null = null;
 let loading = true;
@@ -83,7 +83,9 @@ async function loadGraphData(forceRefresh = false) {
 
     // データを更新（リアクティブステートメントが自動的に実行される）
     graphData = data;
-    console.log("Graph data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
+    if (dev) {
+      console.log("Graph data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
+    }
   } catch (e) {
     error = e instanceof Error ? e.message : "グラフデータの読み込みに失敗しました";
     console.error("Failed to load graph data:", e);
@@ -99,7 +101,9 @@ async function loadTags() {
   try {
     const tags = await getTags();
     availableTags = tags;
-    console.log("Tags loaded:", tags.length, "tags");
+    if (dev) {
+      console.log("Tags loaded:", tags.length, "tags");
+    }
   } catch (e) {
     console.error("Failed to load tags:", e);
     // タグの読み込み失敗は無視（空配列のまま）
@@ -158,7 +162,9 @@ async function renderGraph() {
   }
 
   if (graphData.nodes.length === 0) {
-    console.log("No nodes to render - clearing network");
+    if (dev) {
+      console.log("No nodes to render - clearing network");
+    }
     // 既存のネットワークをクリア
     if (network) {
       try {
@@ -185,7 +191,9 @@ async function renderGraph() {
   }
 
   const { Network, DataSet } = visNetwork;
-  console.log("Vis-network loaded, creating network with", graphData.nodes.length, "nodes");
+  if (dev) {
+    console.log("Vis-network loaded, creating network with", graphData.nodes.length, "nodes");
+  }
 
   // 既存のネットワークを破棄（レンダリング中に変更されないように）
   if (network) {
@@ -292,9 +300,13 @@ async function renderGraph() {
 
   // ネットワークを作成
   try {
-    console.log("Creating network instance...");
+    if (dev) {
+      console.log("Creating network instance...");
+    }
     network = new Network(networkContainer, data, options);
-    console.log("Network created successfully");
+    if (dev) {
+      console.log("Network created successfully");
+    }
 
     // ノードクリック時のイベント
     network.on("click", (params: any) => {
@@ -320,12 +332,14 @@ async function renderGraph() {
     network.on("stabilizationEnd", () => {
       if (network) {
         network.setOptions({ physics: { enabled: false } });
-        console.log("Stabilization complete, physics disabled");
+        if (dev) {
+          console.log("Stabilization complete, physics disabled");
+        }
       }
     });
   } catch (e) {
     console.error("Failed to create network:", e);
-    error = "グラフの作成に失敗しました: " + (e instanceof Error ? e.message : String(e));
+    error = `グラフの作成に失敗しました: ${e instanceof Error ? e.message : String(e)}`;
   }
 }
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+import { dev } from "$app/environment";
 import * as storage from "$lib/storage";
 import { formatDate } from "$lib/utils";
 import { onDestroy, onMount } from "svelte";
@@ -61,7 +62,9 @@ async function handleSync() {
     const { sync } = await import("$lib/sync");
     const result = await sync();
     await loadLastSync();
-    console.log("Sync completed:", result);
+    if (dev) {
+      console.log("Sync completed:", result);
+    }
   } catch (e) {
     error = e instanceof Error ? e.message : "同期に失敗しました";
     console.error("Sync failed:", e);

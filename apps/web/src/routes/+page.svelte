@@ -1,7 +1,7 @@
 <script lang="ts">
 import { getNotes, getTags } from "$lib/api";
-import NoteList from "$lib/components/NoteList.svelte";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import NoteList from "$lib/components/NoteList.svelte";
 import type { NoteCore } from "$lib/types";
 import type { Tag } from "$lib/types";
 import { onMount } from "svelte";

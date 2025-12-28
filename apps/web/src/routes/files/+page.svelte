@@ -1,9 +1,9 @@
 <script lang="ts">
 import { deleteFile, getFileDownloadUrl, getFiles, uploadFile } from "$lib/api";
-import type { File } from "@locus/shared";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import { formatDate } from "$lib/utils";
 import { handleApiError } from "$lib/utils/error-handling";
+import type { File } from "@locus/shared";
 import { onMount } from "svelte";
 
 let files: File[] = [];

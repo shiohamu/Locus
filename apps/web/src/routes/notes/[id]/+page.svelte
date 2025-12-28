@@ -2,6 +2,7 @@
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
 import { deleteNote } from "$lib/api";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import NoteActions from "$lib/components/NoteActions.svelte";
 import NoteEdit from "$lib/components/NoteEdit.svelte";
 import NoteHeader from "$lib/components/NoteHeader.svelte";
@@ -10,10 +11,9 @@ import NoteMeta from "$lib/components/NoteMeta.svelte";
 import NoteSummary from "$lib/components/NoteSummary.svelte";
 import NoteTags from "$lib/components/NoteTags.svelte";
 import NoteView from "$lib/components/NoteView.svelte";
-import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import { AutoSaveManager } from "$lib/hooks/useAutoSave";
-import { generateNoteSummary } from "$lib/hooks/useNoteSummary";
 import { loadNoteData, saveNoteData } from "$lib/hooks/useNote";
+import { generateNoteSummary } from "$lib/hooks/useNoteSummary";
 import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
 import { onDestroy, onMount } from "svelte";
 

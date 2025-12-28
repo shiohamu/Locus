@@ -1,8 +1,8 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import { searchNotes } from "$lib/api";
-import type { NoteCore } from "$lib/types";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import type { NoteCore } from "$lib/types";
 import { formatDate } from "$lib/utils";
 import { onMount } from "svelte";
 

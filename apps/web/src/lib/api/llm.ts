@@ -4,11 +4,11 @@
 
 import type { LLMConfig } from "$lib/types";
 import type {
-	ExtractKeyPointsRequest,
-	ExtractKeyPointsResponse,
-	LLMSettingsResponse,
-	SaveLLMSettingsRequest,
-	SummaryResponse,
+  ExtractKeyPointsRequest,
+  ExtractKeyPointsResponse,
+  LLMSettingsResponse,
+  SaveLLMSettingsRequest,
+  SummaryResponse,
 } from "$lib/types/api";
 import { apiRequest } from "./base.js";
 

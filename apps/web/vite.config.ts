@@ -3,6 +3,23 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [sveltekit()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: (id) => {
+          // vis-networkを別チャンクに分離
+          if (id.includes("vis-network")) {
+            return "vis-network";
+          }
+          // node_modulesをベンダーチャンクに分離
+          if (id.includes("node_modules")) {
+            return "vendor";
+          }
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
   server: {
     port: 5173,
     hmr: {
