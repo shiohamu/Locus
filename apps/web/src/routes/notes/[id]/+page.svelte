@@ -1,7 +1,17 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
 import { page } from "$app/stores";
-import { deleteNote, getNote, getNoteMD, getRSSItem, getWebClip, updateNoteMD } from "$lib/api";
+import {
+  deleteNote,
+  extractKeyPoints,
+  getNote,
+  getNoteMD,
+  getRSSItem,
+  getWebClip,
+  summarizeNote,
+  summarizeRSSArticle,
+  updateNoteMD,
+} from "$lib/api";
 import NoteEditor from "$lib/components/NoteEditor.svelte";
 import NoteLinks from "$lib/components/NoteLinks.svelte";
 import NoteTags from "$lib/components/NoteTags.svelte";
@@ -25,6 +35,12 @@ let showPreview = false;
 let autoSaveTimer: ReturnType<typeof setTimeout> | null = null;
 let lastSavedTitle = "";
 let lastSavedContent = "";
+let summary: string | null = null;
+let keyPoints: string | null = null;
+let summarizing = false;
+let extracting = false;
+let showSummary = false;
+let showKeyPoints = false;
 
 $: noteId = $page.params.id;
 
@@ -173,6 +189,43 @@ $: renderedContent = noteMD?.content
     : webClip?.content
       ? marked.parse(webClip.content)
       : "";
+
+async function handleSummarize() {
+  if (!note) return;
+
+  summarizing = true;
+  error = null;
+  try {
+    let result: { summary: string };
+    if (note.type === "rss") {
+      result = await summarizeRSSArticle(noteId);
+    } else {
+      result = await summarizeNote(noteId);
+    }
+    summary = result.summary;
+    showSummary = true;
+  } catch (e) {
+    error = e instanceof Error ? e.message : "要約の生成に失敗しました";
+  } finally {
+    summarizing = false;
+  }
+}
+
+async function handleExtractKeyPoints() {
+  if (!content) return;
+
+  extracting = true;
+  error = null;
+  try {
+    const result = await extractKeyPoints(content);
+    keyPoints = result.keyPoints;
+    showKeyPoints = true;
+  } catch (e) {
+    error = e instanceof Error ? e.message : "要点抽出に失敗しました";
+  } finally {
+    extracting = false;
+  }
+}
 </script>
 
 {#if loading}
@@ -202,6 +255,24 @@ $: renderedContent = noteMD?.content
 						キャンセル
 					</button>
 				{:else}
+					{#if note.type === "md" || note.type === "rss"}
+						<button
+							on:click={handleSummarize}
+							disabled={summarizing}
+							class="llm-button"
+						>
+							{summarizing ? "要約中..." : "要約"}
+						</button>
+					{/if}
+					{#if content}
+						<button
+							on:click={handleExtractKeyPoints}
+							disabled={extracting}
+							class="llm-button"
+						>
+							{extracting ? "抽出中..." : "要点抽出"}
+						</button>
+					{/if}
 					{#if note.type === "md"}
 						<button on:click={startEdit}>編集</button>
 					{/if}
@@ -235,6 +306,30 @@ $: renderedContent = noteMD?.content
 				<p class="rss-date">
 					取得日時: {formatDate(webClip.fetched_at)}
 				</p>
+			</div>
+		{/if}
+
+		{#if showSummary && summary}
+			<div class="llm-section">
+				<div class="llm-header">
+					<h2>要約</h2>
+					<button on:click={() => (showSummary = false)} class="close-button">
+						×
+					</button>
+				</div>
+				<div class="llm-content markdown-preview">{@html marked.parse(summary)}</div>
+			</div>
+		{/if}
+
+		{#if showKeyPoints && keyPoints}
+			<div class="llm-section">
+				<div class="llm-header">
+					<h2>要点</h2>
+					<button on:click={() => (showKeyPoints = false)} class="close-button">
+						×
+					</button>
+				</div>
+				<div class="llm-content markdown-preview">{@html marked.parse(keyPoints)}</div>
 			</div>
 		{/if}
 
@@ -483,6 +578,65 @@ $: renderedContent = noteMD?.content
 		color: #6b7280;
 		font-style: italic;
 		text-align: right;
+	}
+
+	.llm-button {
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+	}
+
+	.llm-button:hover:not(:disabled) {
+		box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+	}
+
+	.llm-section {
+		margin-top: 1.5rem;
+		padding: 1.5rem;
+		background: rgba(16, 185, 129, 0.05);
+		border: 1px solid rgba(16, 185, 129, 0.2);
+		border-radius: 12px;
+	}
+
+	.llm-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+
+	.llm-header h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		color: #059669;
+	}
+
+	.close-button {
+		background: transparent;
+		border: none;
+		color: #6b7280;
+		font-size: 1.5rem;
+		cursor: pointer;
+		padding: 0;
+		width: 2rem;
+		height: 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: all 0.2s;
+		box-shadow: none;
+	}
+
+	.close-button:hover {
+		background: rgba(0, 0, 0, 0.05);
+		color: #1a1a1a;
+		transform: none;
+	}
+
+	.llm-content {
+		background: rgba(255, 255, 255, 0.9);
+		padding: 1rem;
+		border-radius: 8px;
 	}
 </style>
 

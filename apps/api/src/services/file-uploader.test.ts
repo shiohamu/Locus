@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, mkdirSync, readFileSync, unlinkSync } from "node:fs";
-import { join } from "node:path";
 import { rmSync } from "node:fs";
+import { join } from "node:path";
 import type { Client } from "@libsql/client";
 import type { File } from "@locus/shared";
-import { cleanupTestDbFile, createTestDbFile, createTestFile } from "../test/helpers.js";
 import * as filesDb from "../db/files.js";
+import { cleanupTestDbFile, createTestDbFile, createTestFile } from "../test/helpers.js";
 import { deleteFileFromDisk, readFile, uploadFile } from "./file-uploader.js";
 
 describe("file-uploader", () => {
@@ -131,4 +131,3 @@ describe("file-uploader", () => {
     expect(existsSync(filePath)).toBe(false);
   });
 });
-

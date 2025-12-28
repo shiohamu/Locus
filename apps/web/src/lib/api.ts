@@ -412,3 +412,78 @@ export async function syncPush(data: unknown) {
     body: JSON.stringify(data),
   });
 }
+
+/**
+ * LLM設定取得（互換性のため残す）
+ */
+export async function getLLMConfig() {
+  return apiRequest("/llm/config");
+}
+
+/**
+ * LLM設定取得（設定ページ用）
+ */
+export async function getLLMSettings() {
+  return apiRequest<{
+    provider: string;
+    model: string;
+    apiKey?: boolean;
+    baseUrl?: string;
+    maxTokens?: number;
+    temperature?: number;
+  }>("/settings/llm");
+}
+
+/**
+ * LLM設定保存
+ */
+export async function saveLLMSettings(config: {
+  provider: "openai" | "ollama";
+  model: string;
+  apiKey?: string;
+  baseUrl?: string;
+  maxTokens?: number;
+  temperature?: number;
+}) {
+  return apiRequest("/settings/llm", {
+    method: "PUT",
+    body: JSON.stringify(config),
+  });
+}
+
+/**
+ * LLM設定削除
+ */
+export async function deleteLLMSettings() {
+  return apiRequest("/settings/llm", {
+    method: "DELETE",
+  });
+}
+
+/**
+ * ノート要約
+ */
+export async function summarizeNote(noteId: string) {
+  return apiRequest(`/llm/notes/${noteId}/summarize`, {
+    method: "POST",
+  });
+}
+
+/**
+ * RSS記事要約
+ */
+export async function summarizeRSSArticle(noteId: string) {
+  return apiRequest(`/llm/rss/${noteId}/summarize`, {
+    method: "POST",
+  });
+}
+
+/**
+ * 要点抽出
+ */
+export async function extractKeyPoints(content: string) {
+  return apiRequest("/llm/extract-key-points", {
+    method: "POST",
+    body: JSON.stringify({ content }),
+  });
+}

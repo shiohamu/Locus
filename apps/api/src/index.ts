@@ -6,10 +6,12 @@ import { logger } from "./middleware/logger.js";
 import exportRoutes from "./routes/export.js";
 import filesRoutes from "./routes/files.js";
 import linksRoutes from "./routes/links.js";
+import llmRoutes from "./routes/llm.js";
 import notesRoutes from "./routes/notes.js";
 import notesMDRoutes from "./routes/notes_md.js";
 import rssRoutes from "./routes/rss.js";
 import searchRoutes from "./routes/search.js";
+import settingsRoutes from "./routes/settings.js";
 import syncRoutes from "./routes/sync.js";
 import tagsRoutes from "./routes/tags.js";
 import webClipsRoutes from "./routes/web-clips.js";
@@ -81,6 +83,8 @@ app.route("/web-clips", webClipsRoutes);
 app.route("/files", filesRoutes);
 app.route("/export", exportRoutes);
 app.route("/sync", syncRoutes);
+app.route("/llm", llmRoutes);
+app.route("/settings", settingsRoutes);
 
 // ヘルスチェック
 app.get("/health", (c) => {

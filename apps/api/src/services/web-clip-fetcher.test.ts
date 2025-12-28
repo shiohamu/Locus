@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { Client } from "@libsql/client";
-import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
 import * as notesDb from "../db/notes.js";
 import * as searchDb from "../db/search.js";
 import * as webClipsDb from "../db/web-clips.js";
+import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
 import * as webClipFetcher from "./web-clip-fetcher.js";
 
 // fetchをモック
@@ -155,4 +155,3 @@ describe("web-clip-fetcher", () => {
     );
   });
 });
-

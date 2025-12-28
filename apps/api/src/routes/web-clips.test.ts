@@ -1,9 +1,14 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
 import type { Client } from "@libsql/client";
-import { app } from "../index.js";
-import { cleanupTestDbFile, createTestDbFile, createTestNoteCore, createTestWebClip } from "../test/helpers.js";
 import * as notesDb from "../db/notes.js";
 import * as webClipsDb from "../db/web-clips.js";
+import { app } from "../index.js";
+import {
+  cleanupTestDbFile,
+  createTestDbFile,
+  createTestNoteCore,
+  createTestWebClip,
+} from "../test/helpers.js";
 
 // fetchをモック
 const mockFetch = spyOn(global, "fetch").mockImplementation(async () => {
@@ -166,4 +171,3 @@ describe("web-clips API", () => {
     expect(getRes.status).toBe(404);
   });
 });
-

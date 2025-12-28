@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { Client } from "@libsql/client";
-import { cleanupTestDbFile, createTestDbFile, createTestFile, createTestNoteCore } from "../test/helpers.js";
+import {
+  cleanupTestDbFile,
+  createTestDbFile,
+  createTestFile,
+  createTestNoteCore,
+} from "../test/helpers.js";
 import * as filesDb from "./files.js";
 import * as notesDb from "./notes.js";
 
@@ -145,4 +150,3 @@ describe("files", () => {
     expect(noteIds).toContain(note2.id);
   });
 });
-

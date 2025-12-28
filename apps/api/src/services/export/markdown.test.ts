@@ -1,11 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import JSZip from "jszip";
 import type { Client } from "@libsql/client";
-import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../../test/helpers.js";
+import JSZip from "jszip";
 import * as linksDb from "../../db/links.js";
 import * as notesDb from "../../db/notes.js";
 import * as notesMDDb from "../../db/notes_md.js";
 import * as tagsDb from "../../db/tags.js";
+import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../../test/helpers.js";
 import { exportMarkdown } from "./markdown.js";
 
 describe("export markdown", () => {
@@ -124,4 +124,3 @@ describe("export markdown", () => {
     expect(content).toContain("---"); // frontmatter
   });
 });
-

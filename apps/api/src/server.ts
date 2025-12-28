@@ -6,6 +6,8 @@ try {
   const server = Bun.serve({
     port,
     fetch: app.fetch,
+    // 長時間実行されるリクエストに対応
+    idleTimeout: 180, // 180秒のアイドルタイムアウト
   });
   console.log(`Server running on http://localhost:${server.port}`);
 } catch (error) {

@@ -28,6 +28,7 @@ async function migrate() {
       "001_initial_schema.sql",
       "002_add_web_clips.sql",
       "003_add_files.sql",
+      "004_add_settings.sql",
     ];
 
     // 各マイグレーションファイルを実行

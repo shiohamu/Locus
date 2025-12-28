@@ -2,10 +2,15 @@ import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import { existsSync, rmSync } from "node:fs";
 import { join } from "node:path";
 import type { Client } from "@libsql/client";
-import { app } from "../index.js";
-import { cleanupTestDbFile, createTestDbFile, createTestFile, createTestNoteCore } from "../test/helpers.js";
 import * as filesDb from "../db/files.js";
 import * as notesDb from "../db/notes.js";
+import { app } from "../index.js";
+import {
+  cleanupTestDbFile,
+  createTestDbFile,
+  createTestFile,
+  createTestNoteCore,
+} from "../test/helpers.js";
 
 describe("files API", () => {
   let testDb: Client;
@@ -222,4 +227,3 @@ describe("files API", () => {
     expect(files.length).toBe(0);
   });
 });
-

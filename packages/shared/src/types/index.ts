@@ -6,3 +6,4 @@ export * from "./sync.js";
 export * from "./api.js";
 export * from "./web-clip.js";
 export * from "./file.js";
+export * from "./llm.js";

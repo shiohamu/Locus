@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
-import JSZip from "jszip";
 import type { Client } from "@libsql/client";
-import { app } from "../index.js";
-import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
+import JSZip from "jszip";
 import * as notesDb from "../db/notes.js";
 import * as notesMDDb from "../db/notes_md.js";
+import { app } from "../index.js";
+import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
 
 describe("export API", () => {
   let testDb: Client;
@@ -116,4 +116,3 @@ describe("export API", () => {
     expect(data.files).toEqual([]);
   });
 });
-

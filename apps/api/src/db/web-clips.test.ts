@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { Client } from "@libsql/client";
-import { cleanupTestDbFile, createTestDbFile, createTestNoteCore, createTestWebClip } from "../test/helpers.js";
+import {
+  cleanupTestDbFile,
+  createTestDbFile,
+  createTestNoteCore,
+  createTestWebClip,
+} from "../test/helpers.js";
 import * as notesDb from "./notes.js";
 import * as webClipsDb from "./web-clips.js";
 
@@ -123,4 +128,3 @@ describe("web-clips", () => {
     expect(retrieved).toBeNull();
   });
 });
-
