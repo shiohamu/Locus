@@ -1,11 +1,14 @@
 <script lang="ts">
-import { deleteFile, getFiles, uploadFile } from "$lib/api";
+import { deleteFile, getFileDownloadUrl, getFiles, uploadFile } from "$lib/api";
 import type { File } from "@locus/shared";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import { formatDate } from "$lib/utils";
+import { handleApiError } from "$lib/utils/error-handling";
 import { onMount } from "svelte";
 
 let files: File[] = [];
 let loading = true;
-let error: string | null = null;
+let error: unknown | null = null;
 let uploading = false;
 
 onMount(async () => {
@@ -18,7 +21,7 @@ async function loadFiles() {
   try {
     files = await getFiles();
   } catch (e) {
-    error = e instanceof Error ? e.message : "ファイルの読み込みに失敗しました";
+    error = e;
   } finally {
     loading = false;
   }
@@ -36,7 +39,7 @@ async function handleFileUpload(event: Event) {
     await loadFiles();
     input.value = "";
   } catch (e) {
-    error = e instanceof Error ? e.message : "ファイルのアップロードに失敗しました";
+    error = e;
   } finally {
     uploading = false;
   }
@@ -52,7 +55,7 @@ async function handleDeleteFile(fileId: string) {
     await deleteFile(fileId);
     await loadFiles();
   } catch (e) {
-    error = e instanceof Error ? e.message : "ファイルの削除に失敗しました";
+    error = e;
   }
 }
 
@@ -61,24 +64,11 @@ function formatFileSize(bytes: number): string {
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
   return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
-
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
-}
-
-function getFileDownloadUrl(id: string): string {
-  const API_BASE_URL =
-    import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
-  return `${API_BASE_URL}/files/${id}/download`;
-}
 </script>
 
 <h1>ファイル管理</h1>
 
-{#if error}
-	<p class="error">エラー: {error}</p>
-{/if}
+<ErrorDisplay {error} defaultMessage="ファイルの操作に失敗しました" />
 
 <div class="upload-section">
 	<label for="file-input" class="upload-button" class:uploading>
@@ -214,14 +204,6 @@ function getFileDownloadUrl(id: string): string {
 
 	.file-actions button:hover {
 		background: #e5e7eb;
-	}
-
-	.error {
-		color: #ef4444;
-		margin-bottom: 1rem;
-		padding: 0.75rem;
-		background: #fef2f2;
-		border-radius: 6px;
 	}
 </style>
 

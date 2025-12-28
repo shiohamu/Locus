@@ -33,4 +33,3 @@ export interface GraphData {
   /** エッジ一覧 */
   edges: GraphEdge[];
 }
-

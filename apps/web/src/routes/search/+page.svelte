@@ -2,12 +2,14 @@
 import { goto } from "$app/navigation";
 import { searchNotes } from "$lib/api";
 import type { NoteCore } from "$lib/types";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import { formatDate } from "$lib/utils";
 import { onMount } from "svelte";
 
 let query = "";
 let results: NoteCore[] = [];
 let loading = false;
-let error: string | null = null;
+let error: unknown | null = null;
 let hasSearched = false;
 
 async function handleSearch() {
@@ -21,7 +23,7 @@ async function handleSearch() {
   try {
     results = await searchNotes(query.trim());
   } catch (e) {
-    error = e instanceof Error ? e.message : "検索に失敗しました";
+    error = e;
     results = [];
   } finally {
     loading = false;
@@ -32,11 +34,6 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.key === "Enter") {
     handleSearch();
   }
-}
-
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
 }
 
 function highlightText(text: string, query: string): string {
@@ -61,9 +58,7 @@ function highlightText(text: string, query: string): string {
 	</button>
 </div>
 
-{#if error}
-	<p class="error">エラー: {error}</p>
-{/if}
+<ErrorDisplay {error} defaultMessage="検索に失敗しました" />
 
 {#if hasSearched && !loading}
 	{#if results.length === 0}
@@ -209,14 +204,6 @@ function highlightText(text: string, query: string): string {
 		text-align: center;
 		padding: 3rem;
 		color: #6b7280;
-	}
-
-	.error {
-		color: #ef4444;
-		margin-bottom: 1rem;
-		padding: 0.75rem;
-		background: #fef2f2;
-		border-radius: 6px;
 	}
 </style>
 

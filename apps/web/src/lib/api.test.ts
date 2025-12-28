@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, spyOn, test } from "bun:test";
-import * as api from "./api.js";
+import * as api from "./api/index.js";
 
 // fetchをモック
 const mockFetch = spyOn(global, "fetch");

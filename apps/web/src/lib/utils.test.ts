@@ -47,6 +47,19 @@ describe("utils", () => {
     expect(formatted).toContain("2021");
   });
 
+  test("formatDate - nullの場合はデフォルト値を返す", () => {
+    const defaultValue = "未取得";
+    const formatted = formatDate(null, defaultValue);
+
+    expect(formatted).toBe(defaultValue);
+  });
+
+  test("formatDate - nullでデフォルト値が指定されない場合は空文字を返す", () => {
+    const formatted = formatDate(null);
+
+    expect(formatted).toBe("");
+  });
+
   test("timestampToDateとdateToTimestampが双方向に変換できる", () => {
     const originalTimestamp = 1609459200;
     const date = timestampToDate(originalTimestamp);

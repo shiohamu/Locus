@@ -1,437 +1,447 @@
 <script lang="ts">
-	import { getGraphData, getTags } from "$lib/api";
-	import type { GraphData } from "@locus/shared";
-	import { browser } from "$app/environment";
-	import { onMount, onDestroy, tick } from "svelte";
+import { getGraphData, getTags } from "$lib/api";
+import type { GraphData } from "@locus/shared";
+import { browser } from "$app/environment";
+import { onMount, onDestroy, tick } from "svelte";
 
-	let graphData: GraphData | null = null;
-	let loading = true;
-	let error: string | null = null;
-	let network: any = null;
-	let networkContainer: HTMLDivElement | null = null;
-	let visNetworkLoaded = false;
-	let isRendering = false;
-	let lastRenderedDataHash: string | null = null;
-	let renderTimeout: ReturnType<typeof setTimeout> | null = null;
+let graphData: GraphData | null = null;
+let loading = true;
+let error: string | null = null;
+let network: any = null;
+let networkContainer: HTMLDivElement | null = null;
+let visNetworkLoaded = false;
+let isRendering = false;
+let lastRenderedDataHash: string | null = null;
+let renderTimeout: ReturnType<typeof setTimeout> | null = null;
 
-	// フィルタリング設定
-	let filterType: "all" | "md" | "rss" | "web_clip" = "all";
-	let selectedTags: string[] = [];
-	let availableTags: Array<{ id: string; name: string }> = [];
+// フィルタリング設定
+let filterType: "all" | "md" | "rss" | "web_clip" = "all";
+let selectedTags: string[] = [];
+let availableTags: Array<{ id: string; name: string }> = [];
 
-	// グラフデータのハッシュを計算（簡易版）
-	function calculateDataHash(data: GraphData | null): string {
-		if (!data) return "";
-		// ノードとエッジのIDをソートして結合し、ハッシュとして使用
-		const nodeIds = data.nodes.map((n) => n.id).sort().join(",");
-		const edgeIds = data.edges.map((e) => `${e.from}-${e.to}`).sort().join(",");
-		return `${nodeIds}|${edgeIds}`;
-	}
+// グラフデータのハッシュを計算（簡易版）
+function calculateDataHash(data: GraphData | null): string {
+  if (!data) return "";
+  // ノードとエッジのIDをソートして結合し、ハッシュとして使用
+  const nodeIds = data.nodes
+    .map((n) => n.id)
+    .sort()
+    .join(",");
+  const edgeIds = data.edges
+    .map((e) => `${e.from}-${e.to}`)
+    .sort()
+    .join(",");
+  return `${nodeIds}|${edgeIds}`;
+}
 
-	// グラフデータを読み込む
-	async function loadGraphData(forceRefresh = false) {
-		// 既存のレンダリングタイムアウトをクリア
-		if (renderTimeout) {
-			clearTimeout(renderTimeout);
-			renderTimeout = null;
-		}
+// グラフデータを読み込む
+async function loadGraphData(forceRefresh = false) {
+  // 既存のレンダリングタイムアウトをクリア
+  if (renderTimeout) {
+    clearTimeout(renderTimeout);
+    renderTimeout = null;
+  }
 
-		loading = true;
-		error = null;
-		// loading中はレンダリングを防ぐため、isRenderingをリセット
-		isRendering = false;
+  loading = true;
+  error = null;
+  // loading中はレンダリングを防ぐため、isRenderingをリセット
+  isRendering = false;
 
-		// 強制更新の場合は、ハッシュをリセットして再レンダリングを強制
-		if (forceRefresh) {
-			lastRenderedDataHash = null;
-		}
+  // 強制更新の場合は、ハッシュをリセットして再レンダリングを強制
+  if (forceRefresh) {
+    lastRenderedDataHash = null;
+  }
 
-		try {
-			// availableTagsが空の場合は、タグの読み込みを待つ
-			if (availableTags.length === 0 && selectedTags.length > 0) {
-				await loadTags();
-			}
+  try {
+    // availableTagsが空の場合は、タグの読み込みを待つ
+    if (availableTags.length === 0 && selectedTags.length > 0) {
+      await loadTags();
+    }
 
-			// タグIDをタグ名に変換
-			let tagNames: string[] | undefined = undefined;
-			if (selectedTags.length > 0) {
-				const mappedNames = selectedTags
-					.map((tagId) => availableTags.find((tag) => tag.id === tagId)?.name)
-					.filter((name): name is string => name !== undefined);
+    // タグIDをタグ名に変換
+    let tagNames: string[] | undefined = undefined;
+    if (selectedTags.length > 0) {
+      const mappedNames = selectedTags
+        .map((tagId) => availableTags.find((tag) => tag.id === tagId)?.name)
+        .filter((name): name is string => name !== undefined);
 
-				// 空配列の場合はundefinedを送信（フィルタリングしない）
-				tagNames = mappedNames.length > 0 ? mappedNames : undefined;
+      // 空配列の場合はundefinedを送信（フィルタリングしない）
+      tagNames = mappedNames.length > 0 ? mappedNames : undefined;
 
-				// デバッグログ
-				if (mappedNames.length !== selectedTags.length) {
-					console.warn(
-						`Some tags could not be found. Selected: ${selectedTags.length}, Found: ${mappedNames.length}`
-					);
-				}
-			}
+      // デバッグログ
+      if (mappedNames.length !== selectedTags.length) {
+        console.warn(
+          `Some tags could not be found. Selected: ${selectedTags.length}, Found: ${mappedNames.length}`
+        );
+      }
+    }
 
-			const data = await getGraphData({
-				type: filterType === "all" ? undefined : filterType,
-				tags: tagNames,
-			});
+    const data = await getGraphData({
+      type: filterType === "all" ? undefined : filterType,
+      tags: tagNames,
+    });
 
-			// データを更新（リアクティブステートメントが自動的に実行される）
-			graphData = data;
-			console.log("Graph data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
-		} catch (e) {
-			error = e instanceof Error ? e.message : "グラフデータの読み込みに失敗しました";
-			console.error("Failed to load graph data:", e);
-			// エラーが発生した場合でも、空のグラフデータを設定して表示を維持
-			graphData = { nodes: [], edges: [] };
-		} finally {
-			loading = false;
-		}
-	}
+    // データを更新（リアクティブステートメントが自動的に実行される）
+    graphData = data;
+    console.log("Graph data loaded:", data.nodes.length, "nodes,", data.edges.length, "edges");
+  } catch (e) {
+    error = e instanceof Error ? e.message : "グラフデータの読み込みに失敗しました";
+    console.error("Failed to load graph data:", e);
+    // エラーが発生した場合でも、空のグラフデータを設定して表示を維持
+    graphData = { nodes: [], edges: [] };
+  } finally {
+    loading = false;
+  }
+}
 
-	// タグ一覧を読み込む
-	async function loadTags() {
-		try {
-			const tags = await getTags();
-			availableTags = tags;
-			console.log("Tags loaded:", tags.length, "tags");
-		} catch (e) {
-			console.error("Failed to load tags:", e);
-			// タグの読み込み失敗は無視（空配列のまま）
-			availableTags = [];
-		}
-	}
+// タグ一覧を読み込む
+async function loadTags() {
+  try {
+    const tags = await getTags();
+    availableTags = tags;
+    console.log("Tags loaded:", tags.length, "tags");
+  } catch (e) {
+    console.error("Failed to load tags:", e);
+    // タグの読み込み失敗は無視（空配列のまま）
+    availableTags = [];
+  }
+}
 
-	// vis-networkを動的に読み込む
-	let visNetworkModule: any = null;
-	async function loadVisNetwork() {
-		if (!browser) return null;
+// vis-networkを動的に読み込む
+let visNetworkModule: any = null;
+async function loadVisNetwork() {
+  if (!browser) return null;
 
-		if (visNetworkModule) {
-			return visNetworkModule;
-		}
+  if (visNetworkModule) {
+    return visNetworkModule;
+  }
 
-		try {
-			const visNetwork = await import("vis-network/standalone");
-			visNetworkModule = visNetwork;
-			visNetworkLoaded = true;
-			return visNetwork;
-		} catch (e) {
-			console.error("Failed to load vis-network:", e);
-			error = "グラフライブラリの読み込みに失敗しました: " + (e instanceof Error ? e.message : String(e));
-			return null;
-		}
-	}
+  try {
+    const visNetwork = await import("vis-network/standalone");
+    visNetworkModule = visNetwork;
+    visNetworkLoaded = true;
+    return visNetwork;
+  } catch (e) {
+    console.error("Failed to load vis-network:", e);
+    error =
+      "グラフライブラリの読み込みに失敗しました: " + (e instanceof Error ? e.message : String(e));
+    return null;
+  }
+}
 
-	// グラフをレンダリング
-	async function renderGraph() {
-		if (!browser) {
-			return;
-		}
+// グラフをレンダリング
+async function renderGraph() {
+  if (!browser) {
+    return;
+  }
 
-		if (!networkContainer) {
-			console.warn("Network container not available");
-			return;
-		}
+  if (!networkContainer) {
+    console.warn("Network container not available");
+    return;
+  }
 
-		if (!graphData) {
-			console.warn("Graph data not available");
-			// 既存のネットワークをクリア
-			if (network) {
-				try {
-					network.off("click");
-					network.off("doubleClick");
-					network.off("stabilizationEnd");
-					network.destroy();
-				} catch (e) {
-					console.warn("Error destroying network:", e);
-				}
-				network = null;
-			}
-			return;
-		}
+  if (!graphData) {
+    console.warn("Graph data not available");
+    // 既存のネットワークをクリア
+    if (network) {
+      try {
+        network.off("click");
+        network.off("doubleClick");
+        network.off("stabilizationEnd");
+        network.destroy();
+      } catch (e) {
+        console.warn("Error destroying network:", e);
+      }
+      network = null;
+    }
+    return;
+  }
 
-		if (graphData.nodes.length === 0) {
-			console.log("No nodes to render - clearing network");
-			// 既存のネットワークをクリア
-			if (network) {
-				try {
-					network.off("click");
-					network.off("doubleClick");
-					network.off("stabilizationEnd");
-					network.destroy();
-				} catch (e) {
-					console.warn("Error destroying network:", e);
-				}
-				network = null;
-			}
-			// ハッシュを更新して、次回の再レンダリングを防ぐ
-			// 注意: この関数は呼び出し元でlastRenderedDataHashを更新するため、ここでは更新しない
-			return;
-		}
+  if (graphData.nodes.length === 0) {
+    console.log("No nodes to render - clearing network");
+    // 既存のネットワークをクリア
+    if (network) {
+      try {
+        network.off("click");
+        network.off("doubleClick");
+        network.off("stabilizationEnd");
+        network.destroy();
+      } catch (e) {
+        console.warn("Error destroying network:", e);
+      }
+      network = null;
+    }
+    // ハッシュを更新して、次回の再レンダリングを防ぐ
+    // 注意: この関数は呼び出し元でlastRenderedDataHashを更新するため、ここでは更新しない
+    return;
+  }
 
-		// vis-networkを読み込む
-		const visNetwork = await loadVisNetwork();
-		if (!visNetwork) {
-			console.error("Failed to load vis-network");
-			error = "グラフライブラリの読み込みに失敗しました";
-			return;
-		}
+  // vis-networkを読み込む
+  const visNetwork = await loadVisNetwork();
+  if (!visNetwork) {
+    console.error("Failed to load vis-network");
+    error = "グラフライブラリの読み込みに失敗しました";
+    return;
+  }
 
-		const { Network, DataSet } = visNetwork;
-		console.log("Vis-network loaded, creating network with", graphData.nodes.length, "nodes");
+  const { Network, DataSet } = visNetwork;
+  console.log("Vis-network loaded, creating network with", graphData.nodes.length, "nodes");
 
-		// 既存のネットワークを破棄（レンダリング中に変更されないように）
-		if (network) {
-			try {
-				// イベントリスナーを削除してから破棄
-				network.off("click");
-				network.off("doubleClick");
-				network.off("stabilizationEnd");
-				network.destroy();
-			} catch (e) {
-				console.warn("Error destroying network:", e);
-			}
-			network = null;
-		}
+  // 既存のネットワークを破棄（レンダリング中に変更されないように）
+  if (network) {
+    try {
+      // イベントリスナーを削除してから破棄
+      network.off("click");
+      network.off("doubleClick");
+      network.off("stabilizationEnd");
+      network.destroy();
+    } catch (e) {
+      console.warn("Error destroying network:", e);
+    }
+    network = null;
+  }
 
-		// ノードをvis-network形式に変換
-		const nodes = graphData.nodes.map((node) => {
-			const color = getNodeColor(node.type);
-			return {
-				id: node.id,
-				label: node.label.length > 30 ? node.label.substring(0, 30) + "..." : node.label,
-				title: `${node.label}\nタイプ: ${node.type}\nタグ: ${node.tags.join(", ") || "なし"}`,
-				color: {
-					background: color.background,
-					border: color.border,
-					highlight: {
-						background: color.highlight,
-						border: color.border,
-					},
-				},
-				font: {
-					size: 14,
-					color: "#1a1a1a",
-				},
-				shape: "box",
-				margin: 10,
-			};
-		});
+  // ノードをvis-network形式に変換
+  const nodes = graphData.nodes.map((node) => {
+    const color = getNodeColor(node.type);
+    return {
+      id: node.id,
+      label: node.label.length > 30 ? node.label.substring(0, 30) + "..." : node.label,
+      title: `${node.label}\nタイプ: ${node.type}\nタグ: ${node.tags.join(", ") || "なし"}`,
+      color: {
+        background: color.background,
+        border: color.border,
+        highlight: {
+          background: color.highlight,
+          border: color.border,
+        },
+      },
+      font: {
+        size: 14,
+        color: "#1a1a1a",
+      },
+      shape: "box",
+      margin: 10,
+    };
+  });
 
-		// エッジをvis-network形式に変換
-		const edges = graphData.edges.map((edge) => ({
-			from: edge.from,
-			to: edge.to,
-			arrows: "to",
-			color: {
-				color: "#6366f1",
-				highlight: "#8b5cf6",
-			},
-			width: 2,
-		}));
+  // エッジをvis-network形式に変換
+  const edges = graphData.edges.map((edge) => ({
+    from: edge.from,
+    to: edge.to,
+    arrows: "to",
+    color: {
+      color: "#6366f1",
+      highlight: "#8b5cf6",
+    },
+    width: 2,
+  }));
 
-		// データセットを作成
-		const nodesDataSet = new DataSet(nodes);
-		const edgesDataSet = new DataSet(edges);
-		const data = { nodes: nodesDataSet, edges: edgesDataSet };
+  // データセットを作成
+  const nodesDataSet = new DataSet(nodes);
+  const edgesDataSet = new DataSet(edges);
+  const data = { nodes: nodesDataSet, edges: edgesDataSet };
 
-		// ネットワークオプション
-		const options = {
-			layout: {
-				improvedLayout: true,
-				randomSeed: 42, // 固定シードで同じ配置を保証
-				hierarchical: {
-					enabled: false,
-				},
-			},
-			physics: {
-				enabled: true,
-				stabilization: {
-					enabled: true,
-					// ノード数に応じて反復回数を調整
-					iterations: graphData.nodes.length > 50 ? 100 : 200,
-					fit: true,
-				},
-				barnesHut: {
-					gravitationalConstant: graphData.nodes.length > 50 ? -3000 : -2000,
-					centralGravity: 0.1,
-					springLength: graphData.nodes.length > 50 ? 150 : 200,
-					springConstant: 0.04,
-					damping: graphData.nodes.length > 50 ? 0.12 : 0.09,
-				},
-			},
-			interaction: {
-				hover: true,
-				tooltipDelay: 200,
-				zoomView: true,
-				dragView: true,
-			},
-			nodes: {
-				borderWidth: 2,
-				shadow: true,
-			},
-			edges: {
-				// ノード数が多い場合は滑らかなエッジを無効化（パフォーマンス向上）
-				smooth: graphData.nodes.length > 50 ? false : {
-					type: "continuous",
-					roundness: 0.5,
-				},
-				shadow: graphData.nodes.length <= 50,
-			},
-		};
+  // ネットワークオプション
+  const options = {
+    layout: {
+      improvedLayout: true,
+      randomSeed: 42, // 固定シードで同じ配置を保証
+      hierarchical: {
+        enabled: false,
+      },
+    },
+    physics: {
+      enabled: true,
+      stabilization: {
+        enabled: true,
+        // ノード数に応じて反復回数を調整
+        iterations: graphData.nodes.length > 50 ? 100 : 200,
+        fit: true,
+      },
+      barnesHut: {
+        gravitationalConstant: graphData.nodes.length > 50 ? -3000 : -2000,
+        centralGravity: 0.1,
+        springLength: graphData.nodes.length > 50 ? 150 : 200,
+        springConstant: 0.04,
+        damping: graphData.nodes.length > 50 ? 0.12 : 0.09,
+      },
+    },
+    interaction: {
+      hover: true,
+      tooltipDelay: 200,
+      zoomView: true,
+      dragView: true,
+    },
+    nodes: {
+      borderWidth: 2,
+      shadow: true,
+    },
+    edges: {
+      // ノード数が多い場合は滑らかなエッジを無効化（パフォーマンス向上）
+      smooth:
+        graphData.nodes.length > 50
+          ? false
+          : {
+              type: "continuous",
+              roundness: 0.5,
+            },
+      shadow: graphData.nodes.length <= 50,
+    },
+  };
 
-		// ネットワークを作成
-		try {
-			console.log("Creating network instance...");
-			network = new Network(networkContainer, data, options);
-			console.log("Network created successfully");
+  // ネットワークを作成
+  try {
+    console.log("Creating network instance...");
+    network = new Network(networkContainer, data, options);
+    console.log("Network created successfully");
 
-			// ノードクリック時のイベント
-			network.on("click", (params: any) => {
-				if (params.nodes.length > 0) {
-					const nodeId = params.nodes[0] as string;
-					// ノートページに遷移
-					window.location.href = `/notes/${nodeId}`;
-				}
-			});
+    // ノードクリック時のイベント
+    network.on("click", (params: any) => {
+      if (params.nodes.length > 0) {
+        const nodeId = params.nodes[0] as string;
+        // ノートページに遷移
+        window.location.href = `/notes/${nodeId}`;
+      }
+    });
 
-			// ダブルクリックでズーム
-			network.on("doubleClick", (params: any) => {
-				if (params.nodes.length > 0) {
-					const nodeId = params.nodes[0] as string;
-					network?.focus(nodeId, {
-						scale: 1.5,
-						animation: true,
-					});
-				}
-			});
+    // ダブルクリックでズーム
+    network.on("doubleClick", (params: any) => {
+      if (params.nodes.length > 0) {
+        const nodeId = params.nodes[0] as string;
+        network?.focus(nodeId, {
+          scale: 1.5,
+          animation: true,
+        });
+      }
+    });
 
-			// 安定化完了後に物理エンジンを無効化して位置を固定
-			network.on("stabilizationEnd", () => {
-				if (network) {
-					network.setOptions({ physics: { enabled: false } });
-					console.log("Stabilization complete, physics disabled");
-				}
-			});
-		} catch (e) {
-			console.error("Failed to create network:", e);
-			error = "グラフの作成に失敗しました: " + (e instanceof Error ? e.message : String(e));
-		}
-	}
+    // 安定化完了後に物理エンジンを無効化して位置を固定
+    network.on("stabilizationEnd", () => {
+      if (network) {
+        network.setOptions({ physics: { enabled: false } });
+        console.log("Stabilization complete, physics disabled");
+      }
+    });
+  } catch (e) {
+    console.error("Failed to create network:", e);
+    error = "グラフの作成に失敗しました: " + (e instanceof Error ? e.message : String(e));
+  }
+}
 
-	// ノードタイプに応じた色を取得
-	function getNodeColor(type: string) {
-		switch (type) {
-			case "md":
-				return {
-					background: "#e0e7ff",
-					border: "#6366f1",
-					highlight: "#c7d2fe",
-				};
-			case "rss":
-				return {
-					background: "#fef3c7",
-					border: "#f59e0b",
-					highlight: "#fde68a",
-				};
-			case "web_clip":
-				return {
-					background: "#d1fae5",
-					border: "#10b981",
-					highlight: "#a7f3d0",
-				};
-			default:
-				return {
-					background: "#f3f4f6",
-					border: "#6b7280",
-					highlight: "#e5e7eb",
-				};
-		}
-	}
+// ノードタイプに応じた色を取得
+function getNodeColor(type: string) {
+  switch (type) {
+    case "md":
+      return {
+        background: "#e0e7ff",
+        border: "#6366f1",
+        highlight: "#c7d2fe",
+      };
+    case "rss":
+      return {
+        background: "#fef3c7",
+        border: "#f59e0b",
+        highlight: "#fde68a",
+      };
+    case "web_clip":
+      return {
+        background: "#d1fae5",
+        border: "#10b981",
+        highlight: "#a7f3d0",
+      };
+    default:
+      return {
+        background: "#f3f4f6",
+        border: "#6b7280",
+        highlight: "#e5e7eb",
+      };
+  }
+}
 
-	// フィルタ変更時にグラフを再読み込み
-	function handleFilterChange() {
-		loadGraphData();
-	}
+// フィルタ変更時にグラフを再読み込み
+function handleFilterChange() {
+  loadGraphData();
+}
 
-	// タグの選択/解除
-	function toggleTag(tagId: string) {
-		if (selectedTags.includes(tagId)) {
-			selectedTags = selectedTags.filter((id) => id !== tagId);
-		} else {
-			selectedTags = [...selectedTags, tagId];
-		}
-		handleFilterChange();
-	}
+// タグの選択/解除
+function toggleTag(tagId: string) {
+  if (selectedTags.includes(tagId)) {
+    selectedTags = selectedTags.filter((id) => id !== tagId);
+  } else {
+    selectedTags = [...selectedTags, tagId];
+  }
+  handleFilterChange();
+}
 
-	// networkContainerが設定されたらグラフをレンダリング
-	$: if (networkContainer && graphData !== null && browser && !loading && !isRendering) {
-		// データが実際に変更されたかチェック
-		const currentHash = calculateDataHash(graphData);
+// networkContainerが設定されたらグラフをレンダリング
+$: if (networkContainer && graphData !== null && browser && !loading && !isRendering) {
+  // データが実際に変更されたかチェック
+  const currentHash = calculateDataHash(graphData);
 
-		// lastRenderedDataHashがnullの場合は、初回レンダリングとして扱う
-		if (lastRenderedDataHash === null || currentHash !== lastRenderedDataHash) {
-			// 既存のタイムアウトをクリア
-			if (renderTimeout) {
-				clearTimeout(renderTimeout);
-				renderTimeout = null;
-			}
+  // lastRenderedDataHashがnullの場合は、初回レンダリングとして扱う
+  if (lastRenderedDataHash === null || currentHash !== lastRenderedDataHash) {
+    // 既存のタイムアウトをクリア
+    if (renderTimeout) {
+      clearTimeout(renderTimeout);
+      renderTimeout = null;
+    }
 
-			// デバウンス処理：短時間内の複数の更新を防ぐ
-			renderTimeout = setTimeout(async () => {
-				// graphDataがnullでないこと、loadingが完了していることを再確認
-				if (networkContainer && graphData !== null && !loading && !isRendering) {
-					// DOMの更新を確実に待つ
-					await tick();
+    // デバウンス処理：短時間内の複数の更新を防ぐ
+    renderTimeout = setTimeout(async () => {
+      // graphDataがnullでないこと、loadingが完了していることを再確認
+      if (networkContainer && graphData !== null && !loading && !isRendering) {
+        // DOMの更新を確実に待つ
+        await tick();
 
-					// 再度データが変更されていないかチェック
-					if (graphData !== null && !loading) {
-						const hash = calculateDataHash(graphData);
-						// ハッシュが変更されている、または初回レンダリングの場合
-						if (lastRenderedDataHash === null || hash !== lastRenderedDataHash) {
-							isRendering = true;
-							try {
-								await renderGraph();
-								// レンダリングが成功した場合のみハッシュを更新
-								// renderGraph()が早期リターンした場合でも、ハッシュを更新して無限ループを防ぐ
-								lastRenderedDataHash = hash;
-							} catch (e) {
-								console.error("Error in renderGraph:", e);
-								// エラーが発生した場合でも、ハッシュを更新して無限ループを防ぐ
-								lastRenderedDataHash = hash;
-							} finally {
-								isRendering = false;
-							}
-						}
-					}
-				}
-				renderTimeout = null;
-			}, 100);
-		}
-	}
+        // 再度データが変更されていないかチェック
+        if (graphData !== null && !loading) {
+          const hash = calculateDataHash(graphData);
+          // ハッシュが変更されている、または初回レンダリングの場合
+          if (lastRenderedDataHash === null || hash !== lastRenderedDataHash) {
+            isRendering = true;
+            try {
+              await renderGraph();
+              // レンダリングが成功した場合のみハッシュを更新
+              // renderGraph()が早期リターンした場合でも、ハッシュを更新して無限ループを防ぐ
+              lastRenderedDataHash = hash;
+            } catch (e) {
+              console.error("Error in renderGraph:", e);
+              // エラーが発生した場合でも、ハッシュを更新して無限ループを防ぐ
+              lastRenderedDataHash = hash;
+            } finally {
+              isRendering = false;
+            }
+          }
+        }
+      }
+      renderTimeout = null;
+    }, 100);
+  }
+}
 
-	onMount(async () => {
-		if (browser) {
-			await loadTags();
-			await loadGraphData();
-		}
-	});
+onMount(async () => {
+  if (browser) {
+    await loadTags();
+    await loadGraphData();
+  }
+});
 
-	// クリーンアップ
-	onDestroy(() => {
-		if (renderTimeout) {
-			clearTimeout(renderTimeout);
-			renderTimeout = null;
-		}
-		if (network) {
-			try {
-				network.destroy();
-			} catch (e) {
-				console.warn("Error destroying network on cleanup:", e);
-			}
-			network = null;
-		}
-	});
+// クリーンアップ
+onDestroy(() => {
+  if (renderTimeout) {
+    clearTimeout(renderTimeout);
+    renderTimeout = null;
+  }
+  if (network) {
+    try {
+      network.destroy();
+    } catch (e) {
+      console.warn("Error destroying network on cleanup:", e);
+    }
+    network = null;
+  }
+});
 </script>
 
 <div class="graph-page">

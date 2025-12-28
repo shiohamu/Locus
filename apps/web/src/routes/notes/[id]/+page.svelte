@@ -15,7 +15,7 @@ import NoteEditor from "$lib/components/NoteEditor.svelte";
 import NoteLinks from "$lib/components/NoteLinks.svelte";
 import NoteTags from "$lib/components/NoteTags.svelte";
 import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
-import { nowTimestamp } from "$lib/utils";
+import { formatDate, nowTimestamp } from "$lib/utils";
 import { marked } from "marked";
 import { onMount } from "svelte";
 
@@ -173,11 +173,6 @@ function cancelEdit() {
   }
 }
 
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
-}
-
 $: renderedContent = noteMD?.content
   ? marked.parse(noteMD.content)
   : rssItem?.content
@@ -206,7 +201,6 @@ async function handleSummarize() {
     summarizing = false;
   }
 }
-
 </script>
 
 {#if loading}
@@ -229,26 +223,35 @@ async function handleSummarize() {
 
 			<div class="actions">
 				{#if editing && note.type === "md"}
-					<button on:click={handleSave} disabled={saving}>
+					<button class="btn-primary" on:click={handleSave} disabled={saving}>
 						{saving ? "保存中..." : "保存"}
 					</button>
-					<button on:click={cancelEdit} disabled={saving}>
+					<button class="btn-secondary" on:click={cancelEdit} disabled={saving}>
 						キャンセル
 					</button>
 				{:else}
-					{#if content}
-						<button
-							on:click={handleSummarize}
-							disabled={summarizing}
-							class="llm-button"
-						>
-							{summarizing ? "要約中..." : "要約"}
-						</button>
-					{/if}
-					{#if note.type === "md"}
-						<button on:click={startEdit}>編集</button>
-					{/if}
-					<button on:click={handleDelete} disabled={deleting}>
+					<div class="action-group">
+						{#if content}
+							<button
+								class="btn-llm"
+								on:click={handleSummarize}
+								disabled={summarizing}
+								title="AIで要約を生成"
+							>
+								{summarizing ? "要約中..." : "要約"}
+							</button>
+						{/if}
+						{#if note.type === "md"}
+							<button class="btn-primary" on:click={startEdit}>編集</button>
+						{/if}
+					</div>
+					<div class="action-separator"></div>
+					<button
+						class="btn-danger"
+						on:click={handleDelete}
+						disabled={deleting}
+						title="このノートを削除"
+					>
 						{deleting ? "削除中..." : "削除"}
 					</button>
 				{/if}
@@ -285,7 +288,7 @@ async function handleSummarize() {
 			<div class="llm-section">
 				<div class="llm-header">
 					<h2>要約</h2>
-					<button on:click={() => (showSummary = false)} class="close-button">
+					<button class="btn-close" on:click={() => (showSummary = false)}>
 						×
 					</button>
 				</div>
@@ -360,42 +363,19 @@ async function handleSummarize() {
 		width: 100%;
 	}
 
-	button {
-		padding: 0.625rem 1.25rem;
-		border: none;
-		border-radius: 10px;
-		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-		color: white;
-		cursor: pointer;
-		font-weight: 600;
-		font-size: 0.9375rem;
-		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	.action-group {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
 	}
 
-	button:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+	.action-separator {
+		width: 1px;
+		height: 2rem;
+		background: rgba(0, 0, 0, 0.1);
+		margin: 0 0.5rem;
 	}
 
-	button:active:not(:disabled) {
-		transform: translateY(0);
-	}
-
-	button:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-		transform: none;
-	}
-
-	button:last-child {
-		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-		box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-	}
-
-	button:last-child:hover:not(:disabled) {
-		box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
-	}
 
 	.note-content {
 		margin-top: 1.5rem;
@@ -407,104 +387,6 @@ async function handleSummarize() {
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
-	.markdown-preview {
-		font-size: 1rem;
-		line-height: 1.8;
-		color: #1a1a1a;
-	}
-
-	.markdown-preview :global(h1),
-	.markdown-preview :global(h2),
-	.markdown-preview :global(h3),
-	.markdown-preview :global(h4),
-	.markdown-preview :global(h5),
-	.markdown-preview :global(h6) {
-		margin-top: 1.5em;
-		margin-bottom: 0.75em;
-		font-weight: 600;
-		color: #1a1a1a;
-	}
-
-	.markdown-preview :global(h1) {
-		font-size: 2em;
-		border-bottom: 2px solid rgba(99, 102, 241, 0.2);
-		padding-bottom: 0.5em;
-	}
-
-	.markdown-preview :global(h2) {
-		font-size: 1.5em;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-		padding-bottom: 0.5em;
-	}
-
-	.markdown-preview :global(p) {
-		margin: 1em 0;
-	}
-
-	.markdown-preview :global(ul),
-	.markdown-preview :global(ol) {
-		margin: 1em 0;
-		padding-left: 2em;
-	}
-
-	.markdown-preview :global(li) {
-		margin: 0.5em 0;
-	}
-
-	.markdown-preview :global(code) {
-		background: rgba(99, 102, 241, 0.1);
-		padding: 0.2em 0.4em;
-		border-radius: 4px;
-		font-family: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, "Courier New", monospace;
-		font-size: 0.9em;
-	}
-
-	.markdown-preview :global(pre) {
-		background: rgba(99, 102, 241, 0.05);
-		padding: 1em;
-		border-radius: 8px;
-		overflow-x: auto;
-		margin: 1em 0;
-	}
-
-	.markdown-preview :global(pre code) {
-		background: none;
-		padding: 0;
-	}
-
-	.markdown-preview :global(blockquote) {
-		border-left: 4px solid rgba(99, 102, 241, 0.3);
-		padding-left: 1em;
-		margin: 1em 0;
-		color: #6b7280;
-	}
-
-	.markdown-preview :global(a) {
-		color: #6366f1;
-		text-decoration: none;
-	}
-
-	.markdown-preview :global(a:hover) {
-		text-decoration: underline;
-	}
-
-	.markdown-preview :global(table) {
-		border-collapse: collapse;
-		width: 100%;
-		margin: 1em 0;
-	}
-
-	.markdown-preview :global(th),
-	.markdown-preview :global(td) {
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		padding: 0.5em 1em;
-		text-align: left;
-	}
-
-	.markdown-preview :global(th) {
-		background: rgba(99, 102, 241, 0.1);
-		font-weight: 600;
-	}
 
 	.rss-meta {
 		margin-bottom: 1.5rem;
@@ -543,14 +425,6 @@ async function handleSummarize() {
 		text-align: right;
 	}
 
-	.llm-button {
-		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-	}
-
-	.llm-button:hover:not(:disabled) {
-		box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
-	}
 
 	.llm-section {
 		margin-top: 1.5rem;
@@ -573,28 +447,6 @@ async function handleSummarize() {
 		color: #059669;
 	}
 
-	.close-button {
-		background: transparent;
-		border: none;
-		color: #6b7280;
-		font-size: 1.5rem;
-		cursor: pointer;
-		padding: 0;
-		width: 2rem;
-		height: 2rem;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		transition: all 0.2s;
-		box-shadow: none;
-	}
-
-	.close-button:hover {
-		background: rgba(0, 0, 0, 0.05);
-		color: #1a1a1a;
-		transform: none;
-	}
 
 	.llm-content {
 		background: rgba(255, 255, 255, 0.9);

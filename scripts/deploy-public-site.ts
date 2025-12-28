@@ -44,4 +44,3 @@ async function deployPublicSite() {
 if (import.meta.main) {
   deployPublicSite();
 }
-

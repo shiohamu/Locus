@@ -32,8 +32,13 @@ export function generateId(): string {
 
 /**
  * 日時をフォーマット
+ * @param timestamp Unix timestamp（秒）、またはnull
+ * @param defaultValue nullの場合に返すデフォルト値（デフォルト: ""）
  */
-export function formatDate(timestamp: number): string {
+export function formatDate(timestamp: number | null, defaultValue = ""): string {
+  if (timestamp === null) {
+    return defaultValue;
+  }
   const date = timestampToDate(timestamp);
   return date.toLocaleString("ja-JP");
 }

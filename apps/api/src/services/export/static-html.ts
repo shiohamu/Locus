@@ -26,14 +26,18 @@ function generateHTMLTemplate(
     return new Date(timestamp * 1000).toLocaleString("ja-JP");
   };
 
-  const tagList = metadata.tags.map((tag) => `<span class="tag">${escapeHtml(tag.name)}</span>`).join("");
+  const tagList = metadata.tags
+    .map((tag) => `<span class="tag">${escapeHtml(tag.name)}</span>`)
+    .join("");
 
   const outgoingLinks = metadata.links.outgoing
     .map((link) => `<li><a href="${link.to_note_id}.html">${escapeHtml(link.to_note_id)}</a></li>`)
     .join("");
 
   const incomingLinks = metadata.links.incoming
-    .map((link) => `<li><a href="${link.from_note_id}.html">${escapeHtml(link.from_note_id)}</a></li>`)
+    .map(
+      (link) => `<li><a href="${link.from_note_id}.html">${escapeHtml(link.from_note_id)}</a></li>`
+    )
     .join("");
 
   return `<!DOCTYPE html>
@@ -169,18 +173,30 @@ function generateHTMLTemplate(
     <div class="content">
       ${content}
     </div>
-    ${outgoingLinks || incomingLinks ? `
+    ${
+      outgoingLinks || incomingLinks
+        ? `
     <div class="links">
-      ${outgoingLinks ? `
+      ${
+        outgoingLinks
+          ? `
       <h3>関連ノート</h3>
       <ul>${outgoingLinks}</ul>
-      ` : ""}
-      ${incomingLinks ? `
+      `
+          : ""
+      }
+      ${
+        incomingLinks
+          ? `
       <h3>参照元</h3>
       <ul>${incomingLinks}</ul>
-      ` : ""}
+      `
+          : ""
+      }
     </div>
-    ` : ""}
+    `
+        : ""
+    }
   </div>
 </body>
 </html>`;
@@ -368,4 +384,3 @@ export async function generateStaticHTML(): Promise<Map<string, string>> {
 
   return htmlFiles;
 }
-

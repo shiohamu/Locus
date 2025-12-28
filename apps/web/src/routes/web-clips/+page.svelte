@@ -1,6 +1,8 @@
 <script lang="ts">
 import { createWebClip, deleteWebClip, getWebClips, refetchWebClip } from "$lib/api";
 import type { WebClip } from "@locus/shared";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import { formatDate } from "$lib/utils";
 import { onMount } from "svelte";
 
 interface WebClipWithNote extends WebClip {
@@ -15,7 +17,7 @@ interface WebClipWithNote extends WebClip {
 
 let webClips: WebClipWithNote[] = [];
 let loading = true;
-let error: string | null = null;
+let error: unknown | null = null;
 let creating = false;
 const refetching: Set<string> = new Set();
 let showForm = false;
@@ -31,7 +33,7 @@ async function loadWebClips() {
   try {
     webClips = await getWebClips();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Webクリップの読み込みに失敗しました";
+    error = e;
   } finally {
     loading = false;
   }
@@ -51,7 +53,7 @@ async function handleCreateWebClip() {
     showForm = false;
     await loadWebClips();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Webクリップの作成に失敗しました";
+    error = e;
   } finally {
     creating = false;
   }
@@ -67,7 +69,7 @@ async function handleDeleteWebClip(noteId: string) {
     await deleteWebClip(noteId);
     await loadWebClips();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Webクリップの削除に失敗しました";
+    error = e;
   }
 }
 
@@ -78,23 +80,16 @@ async function handleRefetchWebClip(noteId: string) {
     await refetchWebClip(noteId);
     await loadWebClips();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Webクリップの再取得に失敗しました";
+    error = e;
   } finally {
     refetching.delete(noteId);
   }
-}
-
-function formatDate(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
 }
 </script>
 
 <h1>Webクリップ管理</h1>
 
-{#if error}
-	<p class="error">エラー: {error}</p>
-{/if}
+<ErrorDisplay {error} defaultMessage="Webクリップの操作に失敗しました" />
 
 <div class="actions">
 	<button on:click={() => (showForm = !showForm)} disabled={creating}>

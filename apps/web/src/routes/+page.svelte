@@ -1,6 +1,7 @@
 <script lang="ts">
 import { getNotes, getTags } from "$lib/api";
 import NoteList from "$lib/components/NoteList.svelte";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import type { NoteCore } from "$lib/types";
 import type { Tag } from "$lib/types";
 import { onMount } from "svelte";
@@ -9,7 +10,7 @@ let allNotes: NoteCore[] = [];
 let notes: NoteCore[] = [];
 let tags: Tag[] = [];
 let loading = true;
-let error: string | null = null;
+let error: unknown | null = null;
 
 // フィルタ・ソート・ページネーション設定
 type FilterType = "all" | "md" | "rss" | "web_clip";
@@ -33,7 +34,7 @@ async function loadNotes() {
     allNotes = await getNotes({ limit: 10000 });
     applyFilters();
   } catch (e) {
-    error = e instanceof Error ? e.message : "Unknown error";
+    error = e;
   } finally {
     loading = false;
   }
@@ -108,9 +109,8 @@ function goToPage(page: number) {
 
 {#if loading}
 	<p>読み込み中...</p>
-{:else if error}
-	<p class="error">エラー: {error}</p>
 {:else}
+	<ErrorDisplay {error} defaultMessage="ノートの読み込みに失敗しました" />
 	<div class="filters-section">
 		<div class="filter-group">
 			<label for="filter-type">タイプ:</label>

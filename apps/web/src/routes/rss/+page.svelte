@@ -1,11 +1,13 @@
 <script lang="ts">
 import { createRSSFeed, deleteRSSFeed, fetchRSSFeed, getRSSFeeds } from "$lib/api";
 import type { RSSFeed } from "$lib/types";
+import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
+import { formatDate } from "$lib/utils";
 import { onMount } from "svelte";
 
 let feeds: RSSFeed[] = [];
 let loading = true;
-let error: string | null = null;
+let error: unknown | null = null;
 let creating = false;
 let fetching: string[] = [];
 let showForm = false;
@@ -22,7 +24,7 @@ async function loadFeeds() {
   try {
     feeds = await getRSSFeeds();
   } catch (e) {
-    error = e instanceof Error ? e.message : "フィードの読み込みに失敗しました";
+    error = e;
   } finally {
     loading = false;
   }
@@ -43,7 +45,7 @@ async function handleCreateFeed() {
     showForm = false;
     await loadFeeds();
   } catch (e) {
-    error = e instanceof Error ? e.message : "フィードの登録に失敗しました";
+    error = e;
   } finally {
     creating = false;
   }
@@ -59,7 +61,7 @@ async function handleDeleteFeed(feedId: string) {
     await deleteRSSFeed(feedId);
     await loadFeeds();
   } catch (e) {
-    error = e instanceof Error ? e.message : "フィードの削除に失敗しました";
+    error = e;
   }
 }
 
@@ -70,7 +72,7 @@ async function handleFetchFeed(feedId: string) {
     await fetchRSSFeed(feedId);
     await loadFeeds();
   } catch (e) {
-    error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
+    error = e;
   } finally {
     fetching = fetching.filter((id) => id !== feedId);
   }
@@ -83,24 +85,16 @@ async function handleFetchAll() {
     await fetchRSSFeed();
     await loadFeeds();
   } catch (e) {
-    error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
+    error = e;
   } finally {
     fetching = fetching.filter((id) => id !== "all");
   }
-}
-
-function formatDate(timestamp: number | null): string {
-  if (!timestamp) return "未取得";
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
 }
 </script>
 
 <h1>RSSフィード管理</h1>
 
-{#if error}
-	<p class="error">エラー: {error}</p>
-{/if}
+<ErrorDisplay {error} defaultMessage="RSSフィードの操作に失敗しました" />
 
 <div class="actions">
 	<button on:click={() => (showForm = !showForm)} disabled={creating}>
@@ -138,7 +132,7 @@ function formatDate(timestamp: number | null): string {
 				<div class="feed-info">
 					<h3>{feed.title}</h3>
 					<p class="url">{feed.url}</p>
-					<p class="meta">最終取得: {formatDate(feed.last_fetched_at)}</p>
+					<p class="meta">最終取得: {formatDate(feed.last_fetched_at, "未取得")}</p>
 				</div>
 				<div class="feed-actions">
 					<button

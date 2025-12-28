@@ -1,11 +1,11 @@
 <script lang="ts">
 import {
-	addTagToNote,
-	createTag,
-	generateTagSuggestions,
-	getTags,
-	getTagsByNote,
-	removeTagFromNote,
+  addTagToNote,
+  createTag,
+  generateTagSuggestions,
+  getTags,
+  getTagsByNote,
+  removeTagFromNote,
 } from "$lib/api";
 import type { Tag } from "$lib/types";
 import { onMount } from "svelte";

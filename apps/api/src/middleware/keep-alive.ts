@@ -10,4 +10,3 @@ export async function keepAliveMiddleware(c: Context, next: Next) {
   c.header("Connection", "keep-alive");
   c.header("Keep-Alive", "timeout=180");
 }
-

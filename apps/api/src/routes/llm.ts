@@ -78,7 +78,8 @@ app.post("/notes/:id/summarize", async (c) => {
       if (error.message.includes("timeout") || error.message.includes("タイムアウト")) {
         return c.json(
           {
-            error: "LLM処理がタイムアウトしました。コンテンツが長すぎるか、LLMサービスが応答していない可能性があります。",
+            error:
+              "LLM処理がタイムアウトしました。コンテンツが長すぎるか、LLMサービスが応答していない可能性があります。",
           },
           504
         );

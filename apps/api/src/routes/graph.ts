@@ -19,11 +19,18 @@ app.get("/", async (c) => {
 
     // フィルタリング用のパラメータ
     const type: NoteType | undefined = typeParam as NoteType | undefined;
-    const tagNames: string[] = tagsParam ? tagsParam.split(",").map((t) => t.trim()).filter(Boolean) : [];
+    const tagNames: string[] = tagsParam
+      ? tagsParam
+          .split(",")
+          .map((t) => t.trim())
+          .filter(Boolean)
+      : [];
     // デフォルトで100件に制限（パフォーマンス向上）
     const limit = limitParam ? Number.parseInt(limitParam, 10) : 100;
 
-    console.log(`Fetching notes with type=${type || "all"}, tags=${tagNames.join(",") || "none"}, limit=${limit}`);
+    console.log(
+      `Fetching notes with type=${type || "all"}, tags=${tagNames.join(",") || "none"}, limit=${limit}`
+    );
 
     // タグフィルタがある場合はSQLレベルでフィルタリング、ない場合は通常の取得
     let allNotes: Awaited<ReturnType<typeof notesDb.listNotes>>;
@@ -42,7 +49,10 @@ app.get("/", async (c) => {
     await Promise.all(
       allNotes.map(async (note) => {
         const tags = await tagsDb.getTagsByNote(note.id);
-        allTagsMap.set(note.id, tags.map((t) => t.name));
+        allTagsMap.set(
+          note.id,
+          tags.map((t) => t.name)
+        );
       })
     );
 
@@ -68,10 +78,7 @@ app.get("/", async (c) => {
         // アウトゴーイングリンク（フィルタリング後のノート間のみ）
         for (const link of links.outgoing) {
           // from_note_idとto_note_idの両方がフィルタリング後のノートセットに含まれていることを確認
-          if (
-            filteredNoteIds.has(link.from_note_id) &&
-            filteredNoteIds.has(link.to_note_id)
-          ) {
+          if (filteredNoteIds.has(link.from_note_id) && filteredNoteIds.has(link.to_note_id)) {
             allLinks.push({
               from: link.from_note_id,
               to: link.to_note_id,
@@ -99,4 +106,3 @@ app.get("/", async (c) => {
 });
 
 export default app;
-

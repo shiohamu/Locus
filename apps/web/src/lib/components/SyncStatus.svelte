@@ -1,5 +1,6 @@
 <script lang="ts">
 import * as storage from "$lib/storage";
+import { formatDate } from "$lib/utils";
 import { onDestroy, onMount } from "svelte";
 
 let syncing = false;
@@ -69,19 +70,13 @@ async function handleSync() {
     syncing = false;
   }
 }
-
-function formatDate(timestamp: number | null): string {
-  if (!timestamp) return "未同期";
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleString("ja-JP");
-}
 </script>
 
 {#if initialized}
 	<div class="sync-status">
 		<div class="status-info">
 			<span class="label">最終同期:</span>
-			<span class="value">{formatDate(lastSync)}</span>
+			<span class="value">{formatDate(lastSync, "未同期")}</span>
 		</div>
 		<button on:click={handleSync} disabled={syncing || !navigator.onLine}>
 			{syncing ? "同期中..." : "同期"}

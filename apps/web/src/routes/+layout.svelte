@@ -2,6 +2,11 @@
 import Nav from "$lib/components/Nav.svelte";
 import SyncStatus from "$lib/components/SyncStatus.svelte";
 import { onMount } from "svelte";
+// 共通スタイルのインポート
+import "$lib/styles/buttons.css";
+import "$lib/styles/markdown.css";
+import "$lib/styles/errors.css";
+import "$lib/styles/forms.css";
 
 onMount(() => {
   // 開発環境ではService Workerを無効化（ホットリロードの問題を回避）
@@ -108,17 +113,7 @@ onMount(() => {
 		color: #4a4a4a;
 	}
 
-	:global(.error) {
-		color: #d32f2f;
-		font-weight: 500;
-		margin: 0.5rem 0;
-		padding: 1rem 1.25rem;
-		background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
-		border-left: 4px solid #d32f2f;
-		border-radius: 8px;
-		line-height: 1.5;
-		box-shadow: 0 2px 8px rgba(211, 47, 47, 0.1);
-	}
+	/* エラー表示スタイルは errors.css で定義 */
 </style>
 
 

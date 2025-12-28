@@ -4,10 +4,7 @@
   "type": "module",
   "private": true,
   "description": "Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.",
-  "workspaces": [
-    "apps/*",
-    "packages/*"
-  ],
+  "workspaces": ["apps/*", "packages/*"],
   "scripts": {
     "lint": "biome lint .",
     "lint:fix": "biome lint --write .",

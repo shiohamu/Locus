@@ -118,4 +118,3 @@ app.get("/notes/:id", async (c) => {
 });
 
 export default app;
-

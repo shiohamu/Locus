@@ -1,0 +1,24 @@
+/**
+ * エラー表示スタイル
+ */
+
+.error {
+  color: #d32f2f;
+  font-weight: 500;
+  margin: 0.5rem 0;
+  padding: 1rem 1.25rem;
+  background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%);
+  border-left: 4px solid #d32f2f;
+  border-radius: 8px;
+  line-height: 1.5;
+  box-shadow: 0 2px 8px rgba(211, 47, 47, 0.1);
+}
+
+/* シンプルなエラー表示（一部のコンポーネントで使用） */
+.error-simple {
+  color: #ef4444;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #fef2f2;
+  border-radius: 6px;
+}
