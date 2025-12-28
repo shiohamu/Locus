@@ -7,7 +7,7 @@ let feeds: RSSFeed[] = [];
 let loading = true;
 let error: string | null = null;
 let creating = false;
-const fetching: Set<string> = new Set();
+let fetching: string[] = [];
 let showForm = false;
 let formUrl = "";
 let formTitle = "";
@@ -64,7 +64,7 @@ async function handleDeleteFeed(feedId: string) {
 }
 
 async function handleFetchFeed(feedId: string) {
-  fetching.add(feedId);
+  fetching = [...fetching, feedId];
   error = null;
   try {
     await fetchRSSFeed(feedId);
@@ -72,12 +72,12 @@ async function handleFetchFeed(feedId: string) {
   } catch (e) {
     error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
   } finally {
-    fetching.delete(feedId);
+    fetching = fetching.filter((id) => id !== feedId);
   }
 }
 
 async function handleFetchAll() {
-  fetching.add("all");
+  fetching = [...fetching, "all"];
   error = null;
   try {
     await fetchRSSFeed();
@@ -85,7 +85,7 @@ async function handleFetchAll() {
   } catch (e) {
     error = e instanceof Error ? e.message : "フィードの取得に失敗しました";
   } finally {
-    fetching.delete("all");
+    fetching = fetching.filter((id) => id !== "all");
   }
 }
 
@@ -106,8 +106,8 @@ function formatDate(timestamp: number | null): string {
 	<button on:click={() => (showForm = !showForm)} disabled={creating}>
 		{showForm ? "キャンセル" : "フィードを追加"}
 	</button>
-	<button on:click={handleFetchAll} disabled={fetching.has("all")}>
-		{fetching.has("all") ? "取得中..." : "すべて更新"}
+	<button on:click={handleFetchAll} disabled={fetching.includes("all")}>
+		{fetching.includes("all") ? "取得中..." : "すべて更新"}
 	</button>
 </div>
 
@@ -143,9 +143,9 @@ function formatDate(timestamp: number | null): string {
 				<div class="feed-actions">
 					<button
 						on:click={() => handleFetchFeed(feed.id)}
-						disabled={fetching.has(feed.id)}
+						disabled={fetching.includes(feed.id)}
 					>
-						{fetching.has(feed.id) ? "取得中..." : "更新"}
+						{fetching.includes(feed.id) ? "取得中..." : "更新"}
 					</button>
 					<button on:click={() => handleDeleteFeed(feed.id)}>削除</button>
 				</div>

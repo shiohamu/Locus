@@ -4,7 +4,20 @@ import SyncStatus from "$lib/components/SyncStatus.svelte";
 import { onMount } from "svelte";
 
 onMount(() => {
-  // Service Workerを登録
+  // 開発環境ではService Workerを無効化（ホットリロードの問題を回避）
+  if (import.meta.env.DEV) {
+    // 開発環境では既存のService Workerをアン登録
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const registration of registrations) {
+          registration.unregister();
+        }
+      });
+    }
+    return;
+  }
+
+  // 本番環境でのみService Workerを登録
   if ("serviceWorker" in navigator) {
     navigator.serviceWorker
       .register("/sw.js")

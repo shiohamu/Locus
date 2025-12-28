@@ -162,6 +162,18 @@ export async function deleteTag(tagId: string) {
 }
 
 /**
+ * タグ候補生成
+ */
+export async function generateTagSuggestions(noteId: string) {
+  return apiRequest<{ suggestions: Array<{ name: string; confidence: number; method: "llm" | "rule-based" }> }>(
+    `/notes/${noteId}/tags/suggestions`,
+    {
+      method: "POST",
+    }
+  );
+}
+
+/**
  * ノートのリンク取得
  */
 export async function getNoteLinks(noteId: string) {

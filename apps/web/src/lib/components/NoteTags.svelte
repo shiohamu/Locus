@@ -1,5 +1,12 @@
 <script lang="ts">
-import { addTagToNote, getTags, getTagsByNote, removeTagFromNote } from "$lib/api";
+import {
+	addTagToNote,
+	createTag,
+	generateTagSuggestions,
+	getTags,
+	getTagsByNote,
+	removeTagFromNote,
+} from "$lib/api";
 import type { Tag } from "$lib/types";
 import { onMount } from "svelte";
 
@@ -11,6 +18,10 @@ let loading = true;
 let error: string | null = null;
 let showAddTag = false;
 let selectedTagId = "";
+let showSuggestions = false;
+let generatingSuggestions = false;
+let suggestions: Array<{ name: string; confidence: number; method: "llm" | "rule-based" }> = [];
+let selectedSuggestions: string[] = [];
 
 onMount(async () => {
   await loadData();
@@ -50,6 +61,59 @@ async function handleRemoveTag(tagId: string) {
   }
 }
 
+async function handleGenerateSuggestions() {
+  generatingSuggestions = true;
+  error = null;
+  try {
+    const result = await generateTagSuggestions(noteId);
+    suggestions = result.suggestions;
+    selectedSuggestions = [];
+    showSuggestions = true;
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグ候補の生成に失敗しました";
+  } finally {
+    generatingSuggestions = false;
+  }
+}
+
+function toggleSuggestion(name: string) {
+  if (selectedSuggestions.includes(name)) {
+    selectedSuggestions = selectedSuggestions.filter((n) => n !== name);
+  } else {
+    selectedSuggestions = [...selectedSuggestions, name];
+  }
+}
+
+async function handleApplySuggestions() {
+  if (selectedSuggestions.length === 0) return;
+
+  try {
+    // 選択された候補をタグとして作成または取得し、ノートに追加
+    for (const tagName of selectedSuggestions) {
+      // 既存のタグを確認
+      let tag = allTags.find((t) => t.name.toLowerCase() === tagName.toLowerCase());
+
+      // タグが存在しない場合は作成
+      if (!tag) {
+        tag = await createTag({ name: tagName });
+        allTags.push(tag);
+      }
+
+      // ノートにタグを追加（既に追加されている場合はスキップ）
+      if (!noteTags.some((nt) => nt.id === tag.id)) {
+        await addTagToNote(noteId, tag.id);
+      }
+    }
+
+    // データを再読み込み
+    await loadData();
+    showSuggestions = false;
+    selectedSuggestions = [];
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの適用に失敗しました";
+  }
+}
+
 $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.id));
 </script>
 
@@ -76,6 +140,48 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 			{/each}
 		</div>
 
+		{#if showSuggestions}
+			<div class="suggestions-section">
+				<div class="suggestions-header">
+					<h4>タグ候補</h4>
+					<button on:click={() => (showSuggestions = false)} class="close-btn">
+						×
+					</button>
+				</div>
+				{#if suggestions.length > 0}
+					<div class="suggestions-list">
+						{#each suggestions as suggestion (suggestion.name)}
+							<label class="suggestion-item">
+								<input
+									type="checkbox"
+									checked={selectedSuggestions.includes(suggestion.name)}
+									on:change={() => toggleSuggestion(suggestion.name)}
+								/>
+								<span class="suggestion-name">{suggestion.name}</span>
+								<span class="suggestion-method">
+									{suggestion.method === "llm" ? "🤖 LLM" : "📋 ルール"}
+								</span>
+								<span class="suggestion-confidence">
+									{Math.round(suggestion.confidence * 100)}%
+								</span>
+							</label>
+						{/each}
+					</div>
+					<div class="suggestions-actions">
+						<button
+							on:click={handleApplySuggestions}
+							disabled={selectedSuggestions.length === 0}
+							class="apply-btn"
+						>
+							選択したタグを適用 ({selectedSuggestions.length})
+						</button>
+					</div>
+				{:else}
+					<p class="no-suggestions">候補が見つかりませんでした</p>
+				{/if}
+			</div>
+		{/if}
+
 		{#if showAddTag}
 			<div class="add-tag-form">
 				<select bind:value={selectedTagId} class="tag-select">
@@ -90,9 +196,18 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 				<button on:click={() => (showAddTag = false)}>キャンセル</button>
 			</div>
 		{:else}
-			<button on:click={() => (showAddTag = true)} class="add-btn">
-				+ タグを追加
-			</button>
+			<div class="tag-actions">
+				<button on:click={() => (showAddTag = true)} class="add-btn">
+					+ タグを追加
+				</button>
+				<button
+					on:click={handleGenerateSuggestions}
+					disabled={generatingSuggestions}
+					class="suggest-btn"
+				>
+					{generatingSuggestions ? "生成中..." : "🤖 タグ候補を生成"}
+				</button>
+			</div>
 		{/if}
 	{/if}
 </div>
@@ -207,8 +322,13 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 		transform: none;
 	}
 
-	.add-btn {
+	.tag-actions {
+		display: flex;
+		gap: 0.75rem;
 		margin-top: 0.75rem;
+	}
+
+	.add-btn {
 		padding: 0.625rem 1.25rem;
 		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
 		color: white;
@@ -223,6 +343,153 @@ $: availableTags = allTags.filter((tag) => !noteTags.some((nt) => nt.id === tag.
 	.add-btn:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+	}
+
+	.suggest-btn {
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		color: white;
+		border: none;
+		border-radius: 10px;
+		cursor: pointer;
+		font-weight: 600;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+	}
+
+	.suggest-btn:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+	}
+
+	.suggest-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.suggestions-section {
+		margin-top: 1.5rem;
+		padding: 1.25rem;
+		background: rgba(249, 250, 251, 0.9);
+		border-radius: 12px;
+		border: 2px solid rgba(99, 102, 241, 0.2);
+	}
+
+	.suggestions-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1rem;
+	}
+
+	.suggestions-header h4 {
+		margin: 0;
+		font-size: 1.125rem;
+		color: #1a1a1a;
+	}
+
+	.close-btn {
+		background: none;
+		border: none;
+		color: #6b7280;
+		cursor: pointer;
+		font-size: 1.5rem;
+		line-height: 1;
+		padding: 0;
+		width: 2rem;
+		height: 2rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: all 0.2s;
+	}
+
+	.close-btn:hover {
+		background-color: rgba(107, 114, 128, 0.1);
+		color: #1a1a1a;
+	}
+
+	.suggestions-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
+	}
+
+	.suggestion-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem 1rem;
+		background: white;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: 2px solid transparent;
+	}
+
+	.suggestion-item:hover {
+		border-color: rgba(99, 102, 241, 0.3);
+		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
+	}
+
+	.suggestion-item input[type="checkbox"] {
+		width: 1.25rem;
+		height: 1.25rem;
+		cursor: pointer;
+	}
+
+	.suggestion-name {
+		flex: 1;
+		font-weight: 500;
+		color: #1a1a1a;
+	}
+
+	.suggestion-method {
+		font-size: 0.875rem;
+		color: #6b7280;
+	}
+
+	.suggestion-confidence {
+		font-size: 0.875rem;
+		color: #6b7280;
+		font-weight: 500;
+	}
+
+	.suggestions-actions {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.apply-btn {
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+		color: white;
+		border: none;
+		border-radius: 10px;
+		cursor: pointer;
+		font-weight: 600;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+	}
+
+	.apply-btn:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+	}
+
+	.apply-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	.no-suggestions {
+		color: #6b7280;
+		text-align: center;
+		padding: 1rem;
 	}
 </style>
 

@@ -5,6 +5,10 @@ export default defineConfig({
   plugins: [sveltekit()],
   server: {
     port: 5173,
+    hmr: {
+      // HMRの設定を改善
+      overlay: true,
+    },
     proxy: {
       "/api": {
         target: "http://localhost:3000",
