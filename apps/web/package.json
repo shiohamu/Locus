@@ -15,7 +15,8 @@
   "dependencies": {
     "@locus/shared": "workspace:*",
     "idb": "^8.0.3",
-    "marked": "^17.0.1"
+    "marked": "^17.0.1",
+    "vis-network": "^10.0.2"
   },
   "devDependencies": {
     "@sveltejs/adapter-auto": "^3.0.0",

@@ -19,6 +19,8 @@ export interface NoteCore {
   updated_at: number;
   /** 削除日時（Unix timestamp、秒単位、削除されていない場合はnull） */
   deleted_at: number | null;
+  /** 公開設定（0 = 非公開、1 = 公開） */
+  public?: number;
 }
 
 /**

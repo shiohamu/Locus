@@ -9,6 +9,7 @@ import { page } from "$app/stores";
 	<a href="/rss" class:active={$page.url.pathname === "/rss"}>RSS</a>
 	<a href="/web-clips" class:active={$page.url.pathname === "/web-clips"}>Webクリップ</a>
 	<a href="/files" class:active={$page.url.pathname === "/files"}>ファイル</a>
+	<a href="/graph" class:active={$page.url.pathname === "/graph"}>知識グラフ</a>
 	<a href="/search" class:active={$page.url.pathname === "/search"}>検索</a>
 	<a href="/settings" class:active={$page.url.pathname === "/settings"}>設定</a>
 </nav>

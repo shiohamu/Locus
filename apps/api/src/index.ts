@@ -5,10 +5,12 @@ import { errorHandler } from "./middleware/error-handler.js";
 import { logger } from "./middleware/logger.js";
 import exportRoutes from "./routes/export.js";
 import filesRoutes from "./routes/files.js";
+import graphRoutes from "./routes/graph.js";
 import linksRoutes from "./routes/links.js";
 import llmRoutes from "./routes/llm.js";
 import notesRoutes from "./routes/notes.js";
 import notesMDRoutes from "./routes/notes_md.js";
+import publicRoutes from "./routes/public.js";
 import rssRoutes from "./routes/rss.js";
 import searchRoutes from "./routes/search.js";
 import settingsRoutes from "./routes/settings.js";
@@ -85,6 +87,8 @@ app.route("/export", exportRoutes);
 app.route("/sync", syncRoutes);
 app.route("/llm", llmRoutes);
 app.route("/settings", settingsRoutes);
+app.route("/graph", graphRoutes);
+app.route("/public", publicRoutes);
 
 // ヘルスチェック
 app.get("/health", (c) => {

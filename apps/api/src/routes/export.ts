@@ -1,6 +1,8 @@
 import { Hono } from "hono";
+import JSZip from "jszip";
 import { exportJSON } from "../services/export/json.js";
 import { exportMarkdown } from "../services/export/markdown.js";
+import { generateStaticHTML } from "../services/export/static-html.js";
 
 const app = new Hono();
 
@@ -51,6 +53,38 @@ app.get("/json", async (c) => {
     return c.json(
       {
         error: error instanceof Error ? error.message : "Failed to export JSON",
+      },
+      500
+    );
+  }
+});
+
+/**
+ * 静的HTMLエクスポート（公開ノート用）
+ * GET /export/static-html
+ */
+app.get("/static-html", async (c) => {
+  try {
+    const htmlFiles = await generateStaticHTML();
+
+    // ZIPファイルとして返す
+    const zip = new JSZip();
+    for (const [filename, content] of htmlFiles) {
+      zip.file(filename, content);
+    }
+
+    const zipBuffer = await zip.generateAsync({ type: "nodebuffer" });
+
+    return new Response(zipBuffer, {
+      headers: {
+        "Content-Type": "application/zip",
+        "Content-Disposition": 'attachment; filename="locus-public-site.zip"',
+      },
+    });
+  } catch (error) {
+    return c.json(
+      {
+        error: error instanceof Error ? error.message : "Failed to export static HTML",
       },
       500
     );

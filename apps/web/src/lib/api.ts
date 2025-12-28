@@ -499,3 +499,22 @@ export async function extractKeyPoints(content: string) {
     body: JSON.stringify({ content }),
   });
 }
+
+/**
+ * グラフデータ取得
+ */
+export async function getGraphData(options?: {
+  type?: "md" | "rss" | "web_clip";
+  tags?: string[];
+  limit?: number;
+}) {
+  const params = new URLSearchParams();
+  if (options?.type) params.set("type", options.type);
+  if (options?.tags && options.tags.length > 0) params.set("tags", options.tags.join(","));
+  if (options?.limit) params.set("limit", String(options.limit));
+
+  const query = params.toString();
+  return apiRequest<{ nodes: Array<{ id: string; label: string; type: string; tags: string[] }>; edges: Array<{ from: string; to: string }> }>(
+    `/graph${query ? `?${query}` : ""}`
+  );
+}

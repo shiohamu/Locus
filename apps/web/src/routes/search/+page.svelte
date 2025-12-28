@@ -72,11 +72,23 @@ function highlightText(text: string, query: string): string {
 		<p class="results-count">{results.length}件の結果</p>
 		<ul class="results-list">
 			{#each results as note}
-				<li class="result-item" on:click={() => goto(`/notes/${note.id}`)}>
-					<h3 class="result-title" set:html={highlightText(note.title, query)}></h3>
-					<p class="result-meta">
-						{formatDate(note.updated_at)} 更新
-					</p>
+				<li class="result-item">
+					<button
+						type="button"
+						class="result-button"
+						on:click={() => goto(`/notes/${note.id}`)}
+						on:keydown={(e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								goto(`/notes/${note.id}`);
+							}
+						}}
+					>
+						<h3 class="result-title">{@html highlightText(note.title, query)}</h3>
+						<p class="result-meta">
+							{formatDate(note.updated_at)} 更新
+						</p>
+					</button>
 				</li>
 			{/each}
 		</ul>
@@ -141,19 +153,36 @@ function highlightText(text: string, query: string): string {
 	}
 
 	.result-item {
+		list-style: none;
+		margin-bottom: 1rem;
+	}
+
+	.result-button {
+		width: 100%;
 		background: white;
 		border: 1px solid #e5e7eb;
 		border-radius: 8px;
 		padding: 1.5rem;
-		margin-bottom: 1rem;
 		cursor: pointer;
 		transition: all 0.2s;
+		text-align: left;
+		font-family: inherit;
 	}
 
-	.result-item:hover {
+	.result-button:hover {
 		border-color: #6366f1;
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.1);
 		transform: translateY(-2px);
+	}
+
+	.result-button:focus {
+		outline: none;
+		border-color: #6366f1;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.result-button:active {
+		transform: translateY(0);
 	}
 
 	.result-title {

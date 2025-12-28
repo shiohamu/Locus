@@ -29,6 +29,7 @@ async function migrate() {
       "002_add_web_clips.sql",
       "003_add_files.sql",
       "004_add_settings.sql",
+      "005_add_public_flag.sql",
     ];
 
     // 各マイグレーションファイルを実行
