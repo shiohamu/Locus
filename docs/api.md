@@ -1,6 +1,6 @@
 # API ドキュメント
 
-自動生成日時: 2025-12-28 16:49:14
+自動生成日時: 2025-12-29 18:54:22
 
 ---
 
@@ -349,7 +349,7 @@ function getNote(...)
 
 ノートを取得する
 
-*定義場所: apps/api/src/db/notes.ts:24*
+*定義場所: apps/api/src/db/notes.ts:25*
 
 ---
 
@@ -364,7 +364,7 @@ function if(...)
 
 *説明なし*
 
-*定義場所: apps/api/src/db/notes.ts:36*
+*定義場所: apps/api/src/db/notes.ts:37*
 
 ---
 
@@ -381,7 +381,7 @@ function updateNote(...)
 
 ノートを更新する
 
-*定義場所: apps/api/src/db/notes.ts:51*
+*定義場所: apps/api/src/db/notes.ts:53*
 
 ---
 
@@ -398,7 +398,7 @@ function deleteNote(...)
 
 ノートを削除する（論理削除）
 
-*定義場所: apps/api/src/db/notes.ts:65*
+*定義場所: apps/api/src/db/notes.ts:74*
 
 ---
 
@@ -415,7 +415,42 @@ function listNotes(...)
 
 ノート一覧を取得する
 
-*定義場所: apps/api/src/db/notes.ts:76*
+*定義場所: apps/api/src/db/notes.ts:85*
+
+---
+
+### listNotesByTags
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function listNotesByTags(...)
+```
+
+**説明**:
+
+タグでフィルタリングされたノート一覧を取得する
+複数のタグが指定された場合はOR条件（いずれかのタグが含まれている）
+
+*定義場所: apps/api/src/db/notes.ts:122*
+
+---
+
+### listPublicNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function listPublicNotes(...)
+```
+
+**説明**:
+
+公開ノート一覧を取得する
+
+*定義場所: apps/api/src/db/notes.ts:171*
 
 ---
 
@@ -1159,7 +1194,7 @@ function if(...)
 
 *説明なし*
 
-*定義場所: apps/api/src/index.ts:42*
+*定義場所: apps/api/src/index.ts:44*
 
 ---
 
@@ -1174,7 +1209,7 @@ function catch(...)
 
 *説明なし*
 
-*定義場所: apps/api/src/index.ts:63*
+*定義場所: apps/api/src/index.ts:65*
 
 ---
 
@@ -1289,7 +1324,22 @@ function catch(...)
 
 *説明なし*
 
-*定義場所: apps/api/src/routes/export.ts:25*
+*定義場所: apps/api/src/routes/export.ts:27*
+
+---
+
+### for
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function for(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/export.ts:72*
 
 ---
 
@@ -1341,6 +1391,54 @@ function catch(...)
 *説明なし*
 
 *定義場所: apps/api/src/routes/files.ts:45*
+
+---
+
+
+## apps/api/src/routes/graph.ts
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/graph.ts:37*
+
+---
+
+### for
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function for(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/graph.ts:79*
+
+---
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/graph.ts:102*
 
 ---
 
@@ -1460,6 +1558,39 @@ function for(...)
 *説明なし*
 
 *定義場所: apps/api/src/routes/notes_md.ts:47*
+
+---
+
+
+## apps/api/src/routes/public.ts
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/public.ts:28*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/routes/public.ts:43*
 
 ---
 
@@ -1886,6 +2017,107 @@ function for(...)
 *説明なし*
 
 *定義場所: apps/api/src/services/export/markdown.ts:79*
+
+---
+
+
+## apps/api/src/services/export/static-html.ts
+
+### generateHTMLTemplate
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function generateHTMLTemplate(...)
+```
+
+**説明**:
+
+HTMLテンプレート（シンプルなWikiスタイル）
+
+*定義場所: apps/api/src/services/export/static-html.ts:10*
+
+---
+
+### generateIndexHTML
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function generateIndexHTML(...)
+```
+
+**説明**:
+
+インデックスページのHTMLを生成
+
+*定義場所: apps/api/src/services/export/static-html.ts:205*
+
+---
+
+### escapeHtml
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function escapeHtml(...)
+```
+
+**説明**:
+
+HTMLエスケープ
+
+*定義場所: apps/api/src/services/export/static-html.ts:290*
+
+---
+
+### generateStaticHTML
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function generateStaticHTML()
+```
+
+**説明**:
+
+静的HTMLを生成
+
+*定義場所: apps/api/src/services/export/static-html.ts:304*
+
+---
+
+### for
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function for(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/services/export/static-html.ts:317*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/api/src/services/export/static-html.ts:322*
 
 ---
 
@@ -2869,7 +3101,32 @@ function json(...)
 ---
 
 
-## apps/web/src/lib/api.ts
+## apps/web/src/lib/api/base.ts
+
+### getApiBaseUrl
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getApiBaseUrl()
+```
+
+**説明**:
+
+API共通処理
+/
+
+import type { APIError } from "@locus/shared";
+import { apiCache } from "./cache.js";
+
+/**
+APIベースURLを取得
+@returns APIベースURL
+
+*定義場所: apps/web/src/lib/api/base.ts:1*
+
+---
 
 ### apiRequest
 
@@ -2882,17 +3139,15 @@ function apiRequest(...)
 
 **説明**:
 
-APIクライアント関数
-/
-
-// 開発環境ではViteのプロキシ経由（/api）、本番環境では環境変数から取得
-const API_BASE_URL =
-import.meta.env.VITE_API_URL || (import.meta.env.DEV ? "/api" : "http://localhost:3000");
-
-/**
 APIリクエストの共通処理
+@param endpoint APIエンドポイント
+@param options リクエストオプション
+@param options.useCache キャッシュを使用するか（デフォルト: false）
+@param options.cacheTTL キャッシュの有効期限（ミリ秒、デフォルト: 5分）
+@returns レスポンスデータ
+@throws {Error} APIエラーが発生した場合
 
-*定義場所: apps/web/src/lib/api.ts:1*
+*定義場所: apps/web/src/lib/api/base.ts:16*
 
 ---
 
@@ -2907,604 +3162,57 @@ function if(...)
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/api.ts:22*
+*定義場所: apps/web/src/lib/api/base.ts:38*
 
 ---
 
-### getNotes
 
-**型**: `function`
+## apps/web/src/lib/api/cache.ts
+
+### APICache
+
+**型**: `class`
 
 **シグネチャ**:
 ```
-function getNotes(...)
+class APICache
 ```
 
 **説明**:
 
-ノート一覧取得
+APIリクエストキャッシュ
+/
 
-*定義場所: apps/web/src/lib/api.ts:32*
+interface CacheEntry<T> {
+data: T;
+timestamp: number;
+expiresAt: number;
+}
+
+/**
+シンプルなメモリキャッシュ
+
+*定義場所: apps/web/src/lib/api/cache.ts:1*
 
 ---
 
-### getNote
+### if
 
-**型**: `function`
+**型**: `method`
 
 **シグネチャ**:
 ```
-function getNote(...)
+function if(...)
 ```
 
-**説明**:
+*説明なし*
 
-ノート取得
-
-*定義場所: apps/web/src/lib/api.ts:49*
+*定義場所: apps/web/src/lib/api/cache.ts:25*
 
 ---
 
-### createNote
 
-**型**: `function`
-
-**シグネチャ**:
-```
-function createNote(...)
-```
-
-**説明**:
-
-ノート作成
-
-*定義場所: apps/web/src/lib/api.ts:56*
-
----
-
-### updateNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function updateNote(...)
-```
-
-**説明**:
-
-ノート更新
-
-*定義場所: apps/web/src/lib/api.ts:66*
-
----
-
-### deleteNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function deleteNote(...)
-```
-
-**説明**:
-
-ノート削除
-
-*定義場所: apps/web/src/lib/api.ts:76*
-
----
-
-### createNoteMD
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function createNoteMD(...)
-```
-
-**説明**:
-
-Markdownノート作成
-
-*定義場所: apps/web/src/lib/api.ts:85*
-
----
-
-### getNoteMD
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getNoteMD(...)
-```
-
-**説明**:
-
-Markdownノート取得
-
-*定義場所: apps/web/src/lib/api.ts:95*
-
----
-
-### updateNoteMD
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function updateNoteMD(...)
-```
-
-**説明**:
-
-Markdownノート更新
-
-*定義場所: apps/web/src/lib/api.ts:102*
-
----
-
-### getTags
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getTags()
-```
-
-**説明**:
-
-タグ一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:112*
-
----
-
-### createTag
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function createTag(...)
-```
-
-**説明**:
-
-タグ作成
-
-*定義場所: apps/web/src/lib/api.ts:119*
-
----
-
-### addTagToNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function addTagToNote(...)
-```
-
-**説明**:
-
-ノートにタグ追加
-
-*定義場所: apps/web/src/lib/api.ts:129*
-
----
-
-### getTagsByNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getTagsByNote(...)
-```
-
-**説明**:
-
-ノートに紐づくタグ一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:139*
-
----
-
-### removeTagFromNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function removeTagFromNote(...)
-```
-
-**説明**:
-
-ノートからタグ削除
-
-*定義場所: apps/web/src/lib/api.ts:146*
-
----
-
-### deleteTag
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function deleteTag(...)
-```
-
-**説明**:
-
-タグ削除
-
-*定義場所: apps/web/src/lib/api.ts:155*
-
----
-
-### generateTagSuggestions
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function generateTagSuggestions(...)
-```
-
-**説明**:
-
-タグ候補生成
-
-*定義場所: apps/web/src/lib/api.ts:164*
-
----
-
-### getNoteLinks
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getNoteLinks(...)
-```
-
-**説明**:
-
-ノートのリンク取得
-
-*定義場所: apps/web/src/lib/api.ts:176*
-
----
-
-### searchNotes
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function searchNotes(...)
-```
-
-**説明**:
-
-全文検索
-
-*定義場所: apps/web/src/lib/api.ts:183*
-
----
-
-### getRSSFeeds
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getRSSFeeds()
-```
-
-**説明**:
-
-RSSフィード一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:200*
-
----
-
-### createRSSFeed
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function createRSSFeed(...)
-```
-
-**説明**:
-
-RSSフィード登録
-
-*定義場所: apps/web/src/lib/api.ts:207*
-
----
-
-### deleteRSSFeed
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function deleteRSSFeed(...)
-```
-
-**説明**:
-
-RSSフィード削除
-
-*定義場所: apps/web/src/lib/api.ts:217*
-
----
-
-### fetchRSSFeed
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function fetchRSSFeed(...)
-```
-
-**説明**:
-
-RSSフィード取得・更新
-
-*定義場所: apps/web/src/lib/api.ts:226*
-
----
-
-### getRSSItem
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getRSSItem(...)
-```
-
-**説明**:
-
-RSSアイテム取得（ノートIDで取得）
-
-*定義場所: apps/web/src/lib/api.ts:236*
-
----
-
-### createWebClip
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function createWebClip(...)
-```
-
-**説明**:
-
-Webクリップ作成
-
-*定義場所: apps/web/src/lib/api.ts:243*
-
----
-
-### getWebClips
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getWebClips(...)
-```
-
-**説明**:
-
-Webクリップ一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:253*
-
----
-
-### getWebClip
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getWebClip(...)
-```
-
-**説明**:
-
-Webクリップ取得
-
-*定義場所: apps/web/src/lib/api.ts:268*
-
----
-
-### refetchWebClip
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function refetchWebClip(...)
-```
-
-**説明**:
-
-Webクリップ更新（再取得）
-
-*定義場所: apps/web/src/lib/api.ts:275*
-
----
-
-### deleteWebClip
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function deleteWebClip(...)
-```
-
-**説明**:
-
-Webクリップ削除
-
-*定義場所: apps/web/src/lib/api.ts:284*
-
----
-
-### uploadFile
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function uploadFile(...)
-```
-
-**説明**:
-
-ファイルアップロード
-
-*定義場所: apps/web/src/lib/api.ts:293*
-
----
-
-### getFiles
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getFiles(...)
-```
-
-**説明**:
-
-ファイル一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:319*
-
----
-
-### getFile
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getFile(...)
-```
-
-**説明**:
-
-ファイル取得
-
-*定義場所: apps/web/src/lib/api.ts:334*
-
----
-
-### getFileDownloadUrl
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getFileDownloadUrl(...)
-```
-
-**説明**:
-
-ファイルダウンロードURL取得
-
-*定義場所: apps/web/src/lib/api.ts:341*
-
----
-
-### deleteFile
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function deleteFile(...)
-```
-
-**説明**:
-
-ファイル削除
-
-*定義場所: apps/web/src/lib/api.ts:350*
-
----
-
-### linkFileToNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function linkFileToNote(...)
-```
-
-**説明**:
-
-ノートにファイルを関連付け
-
-*定義場所: apps/web/src/lib/api.ts:359*
-
----
-
-### unlinkFileFromNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function unlinkFileFromNote(...)
-```
-
-**説明**:
-
-ノートからファイルの関連を解除
-
-*定義場所: apps/web/src/lib/api.ts:369*
-
----
-
-### getFilesByNote
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function getFilesByNote(...)
-```
-
-**説明**:
-
-ノートに紐づくファイル一覧取得
-
-*定義場所: apps/web/src/lib/api.ts:378*
-
----
+## apps/web/src/lib/api/export.ts
 
 ### getMarkdownExportUrl
 
@@ -3517,9 +3225,15 @@ function getMarkdownExportUrl(...)
 
 **説明**:
 
+エクスポート関連API
+/
+
+import { getApiBaseUrl } from "./base.js";
+
+/**
 Markdownエクスポート
 
-*定義場所: apps/web/src/lib/api.ts:389*
+*定義場所: apps/web/src/lib/api/export.ts:1*
 
 ---
 
@@ -3536,43 +3250,226 @@ function getJSONExportUrl()
 
 JSONエクスポート
 
-*定義場所: apps/web/src/lib/api.ts:402*
+*定義場所: apps/web/src/lib/api/export.ts:18*
 
 ---
 
-### syncPull
+
+## apps/web/src/lib/api/files.ts
+
+### uploadFile
 
 **型**: `function`
 
 **シグネチャ**:
 ```
-function syncPull(...)
+function uploadFile(...)
 ```
 
 **説明**:
 
-同期プル
+ファイル関連API
+/
 
-*定義場所: apps/web/src/lib/api.ts:411*
+import type { File as FileType } from "$lib/types";
+import type { UploadFileResponse } from "$lib/types/api";
+import type { APIError } from "@locus/shared";
+import { apiRequest, getApiBaseUrl } from "./base.js";
+
+/**
+ファイルアップロード
+@param file アップロードするファイル
+@returns アップロードされたファイル情報
+@throws {Error} アップロードに失敗した場合
+
+*定義場所: apps/web/src/lib/api/files.ts:1*
 
 ---
 
-### syncPush
+### if
 
 **型**: `function`
 
 **シグネチャ**:
 ```
-function syncPush(...)
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/api/files.ts:27*
+
+---
+
+### getFiles
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getFiles(...)
 ```
 
 **説明**:
 
-同期プッシュ
+ファイル一覧取得
 
-*定義場所: apps/web/src/lib/api.ts:418*
+*定義場所: apps/web/src/lib/api/files.ts:42*
 
 ---
+
+### getFile
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getFile(...)
+```
+
+**説明**:
+
+ファイル取得
+
+*定義場所: apps/web/src/lib/api/files.ts:57*
+
+---
+
+### getFileDownloadUrl
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getFileDownloadUrl(...)
+```
+
+**説明**:
+
+ファイルダウンロードURL取得
+
+*定義場所: apps/web/src/lib/api/files.ts:64*
+
+---
+
+### deleteFile
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deleteFile(...)
+```
+
+**説明**:
+
+ファイル削除
+
+*定義場所: apps/web/src/lib/api/files.ts:71*
+
+---
+
+### linkFileToNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function linkFileToNote(...)
+```
+
+**説明**:
+
+ノートにファイルを関連付け
+
+*定義場所: apps/web/src/lib/api/files.ts:80*
+
+---
+
+### unlinkFileFromNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function unlinkFileFromNote(...)
+```
+
+**説明**:
+
+ノートからファイルの関連を解除
+
+*定義場所: apps/web/src/lib/api/files.ts:90*
+
+---
+
+### getFilesByNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getFilesByNote(...)
+```
+
+**説明**:
+
+ノートに紐づくファイル一覧取得
+
+*定義場所: apps/web/src/lib/api/files.ts:99*
+
+---
+
+
+## apps/web/src/lib/api/graph.ts
+
+### getGraphData
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getGraphData(...)
+```
+
+**説明**:
+
+グラフ関連API
+/
+
+import type { GraphEdge, GraphNode } from "$lib/types";
+import { apiRequest } from "./base.js";
+
+/**
+グラフデータ取得
+@param options 取得オプション
+@param options.type ノートタイプ（"md" | "rss" | "web_clip"）
+@param options.tags タグフィルター
+@param options.limit 取得件数
+@returns グラフデータ（ノードとエッジ）
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/graph.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/api/graph.ts:31*
+
+---
+
+
+## apps/web/src/lib/api/llm.ts
 
 ### getLLMConfig
 
@@ -3585,9 +3482,23 @@ function getLLMConfig()
 
 **説明**:
 
+LLM関連API
+/
+
+import type { LLMConfig } from "$lib/types";
+import type {
+ExtractKeyPointsRequest,
+ExtractKeyPointsResponse,
+LLMSettingsResponse,
+SaveLLMSettingsRequest,
+SummaryResponse,
+} from "$lib/types/api";
+import { apiRequest } from "./base.js";
+
+/**
 LLM設定取得（互換性のため残す）
 
-*定義場所: apps/web/src/lib/api.ts:428*
+*定義場所: apps/web/src/lib/api/llm.ts:1*
 
 ---
 
@@ -3604,7 +3515,7 @@ function getLLMSettings()
 
 LLM設定取得（設定ページ用）
 
-*定義場所: apps/web/src/lib/api.ts:435*
+*定義場所: apps/web/src/lib/api/llm.ts:22*
 
 ---
 
@@ -3621,7 +3532,7 @@ function saveLLMSettings(...)
 
 LLM設定保存
 
-*定義場所: apps/web/src/lib/api.ts:449*
+*定義場所: apps/web/src/lib/api/llm.ts:29*
 
 ---
 
@@ -3638,7 +3549,7 @@ function deleteLLMSettings()
 
 LLM設定削除
 
-*定義場所: apps/web/src/lib/api.ts:466*
+*定義場所: apps/web/src/lib/api/llm.ts:39*
 
 ---
 
@@ -3655,7 +3566,7 @@ function summarizeNote(...)
 
 ノート要約
 
-*定義場所: apps/web/src/lib/api.ts:475*
+*定義場所: apps/web/src/lib/api/llm.ts:48*
 
 ---
 
@@ -3672,7 +3583,7 @@ function summarizeRSSArticle(...)
 
 RSS記事要約
 
-*定義場所: apps/web/src/lib/api.ts:484*
+*定義場所: apps/web/src/lib/api/llm.ts:57*
 
 ---
 
@@ -3689,7 +3600,1128 @@ function extractKeyPoints(...)
 
 要点抽出
 
-*定義場所: apps/web/src/lib/api.ts:493*
+*定義場所: apps/web/src/lib/api/llm.ts:66*
+
+---
+
+
+## apps/web/src/lib/api/notes.ts
+
+### getNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getNotes(...)
+```
+
+**説明**:
+
+ノート関連API
+/
+
+import type { NoteCore, NoteMD } from "$lib/types";
+import type {
+CreateNoteMDRequest,
+NoteLinksResponse,
+TagSuggestionsResponse,
+UpdateNoteMDRequest,
+} from "$lib/types/api";
+import { apiRequest } from "./base.js";
+import { apiCache } from "./cache.js";
+
+/**
+ノート一覧取得
+@param options 取得オプション
+@param options.type ノートタイプ（"md" | "rss"）
+@param options.limit 取得件数
+@param options.offset オフセット
+@returns ノート一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:1*
+
+---
+
+### getNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getNote(...)
+```
+
+**説明**:
+
+ノート取得
+@param id ノートID
+@returns ノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:41*
+
+---
+
+### createNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createNote(...)
+```
+
+**説明**:
+
+ノート作成
+@param note ノート情報
+@returns 作成されたノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:54*
+
+---
+
+### updateNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function updateNote(...)
+```
+
+**説明**:
+
+ノート更新
+@param id ノートID
+@param note 更新するノート情報
+@returns 更新されたノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:70*
+
+---
+
+### deleteNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deleteNote(...)
+```
+
+**説明**:
+
+ノート削除
+@param id ノートID
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:88*
+
+---
+
+### createNoteMD
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createNoteMD(...)
+```
+
+**説明**:
+
+Markdownノート作成
+@param data ノート作成データ
+@returns 作成されたMarkdownノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:102*
+
+---
+
+### getNoteMD
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getNoteMD(...)
+```
+
+**説明**:
+
+Markdownノート取得
+@param noteId ノートID
+@returns Markdownノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:118*
+
+---
+
+### updateNoteMD
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function updateNoteMD(...)
+```
+
+**説明**:
+
+Markdownノート更新
+@param id ノートID
+@param data 更新データ
+@returns 更新されたMarkdownノート情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:131*
+
+---
+
+### getNoteLinks
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getNoteLinks(...)
+```
+
+**説明**:
+
+ノートのリンク取得
+@param noteId ノートID
+@returns ノートのリンク一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/notes.ts:149*
+
+---
+
+
+## apps/web/src/lib/api/rss.ts
+
+### getRSSFeeds
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getRSSFeeds()
+```
+
+**説明**:
+
+RSS関連API
+/
+
+import type { RSSFeed, RSSItem } from "$lib/types";
+import type { CreateRSSFeedRequest, MessageResponse } from "$lib/types/api";
+import { apiRequest } from "./base.js";
+
+/**
+RSSフィード一覧取得
+
+*定義場所: apps/web/src/lib/api/rss.ts:1*
+
+---
+
+### createRSSFeed
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createRSSFeed(...)
+```
+
+**説明**:
+
+RSSフィード登録
+
+*定義場所: apps/web/src/lib/api/rss.ts:16*
+
+---
+
+### deleteRSSFeed
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deleteRSSFeed(...)
+```
+
+**説明**:
+
+RSSフィード削除
+
+*定義場所: apps/web/src/lib/api/rss.ts:26*
+
+---
+
+### fetchRSSFeed
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function fetchRSSFeed(...)
+```
+
+**説明**:
+
+RSSフィード取得・更新
+
+*定義場所: apps/web/src/lib/api/rss.ts:35*
+
+---
+
+### getRSSItem
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getRSSItem(...)
+```
+
+**説明**:
+
+RSSアイテム取得（ノートIDで取得）
+
+*定義場所: apps/web/src/lib/api/rss.ts:45*
+
+---
+
+
+## apps/web/src/lib/api/search.ts
+
+### searchNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function searchNotes(...)
+```
+
+**説明**:
+
+検索関連API
+/
+
+import type { NoteCore } from "$lib/types";
+import { apiRequest } from "./base.js";
+
+/**
+全文検索
+@param query 検索クエリ
+@param options 検索オプション
+@param options.limit 取得件数
+@param options.offset オフセット
+@returns 検索結果のノート一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/search.ts:1*
+
+---
+
+
+## apps/web/src/lib/api/sync.ts
+
+### syncPull
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function syncPull(...)
+```
+
+**説明**:
+
+同期関連API
+/
+
+import type { SyncPullResponse, SyncPushRequest } from "$lib/types";
+import type { MessageResponse } from "$lib/types/api";
+import { apiRequest } from "./base.js";
+
+/**
+同期プル
+
+*定義場所: apps/web/src/lib/api/sync.ts:1*
+
+---
+
+### syncPush
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function syncPush(...)
+```
+
+**説明**:
+
+同期プッシュ
+
+*定義場所: apps/web/src/lib/api/sync.ts:16*
+
+---
+
+
+## apps/web/src/lib/api/tags.ts
+
+### getTags
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getTags()
+```
+
+**説明**:
+
+タグ関連API
+/
+
+import type { Tag } from "$lib/types";
+import type { CreateTagRequest, TagSuggestionsResponse } from "$lib/types/api";
+import { apiRequest } from "./base.js";
+
+/**
+タグ一覧取得
+@returns タグ一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:1*
+
+---
+
+### createTag
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createTag(...)
+```
+
+**説明**:
+
+タグ作成
+@param tag タグ作成データ
+@returns 作成されたタグ情報
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:21*
+
+---
+
+### addTagToNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function addTagToNote(...)
+```
+
+**説明**:
+
+ノートにタグ追加
+@param noteId ノートID
+@param tagId タグID
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:34*
+
+---
+
+### getTagsByNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getTagsByNote(...)
+```
+
+**説明**:
+
+ノートに紐づくタグ一覧取得
+@param noteId ノートID
+@returns タグ一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:47*
+
+---
+
+### removeTagFromNote
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function removeTagFromNote(...)
+```
+
+**説明**:
+
+ノートからタグ削除
+@param noteId ノートID
+@param tagId タグID
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:57*
+
+---
+
+### deleteTag
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deleteTag(...)
+```
+
+**説明**:
+
+タグ削除
+@param tagId タグID
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:69*
+
+---
+
+### generateTagSuggestions
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function generateTagSuggestions(...)
+```
+
+**説明**:
+
+タグ候補生成
+@param noteId ノートID
+@returns タグ候補一覧
+@throws {Error} APIエラーが発生した場合
+
+*定義場所: apps/web/src/lib/api/tags.ts:80*
+
+---
+
+
+## apps/web/src/lib/api/web-clips.ts
+
+### createWebClip
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createWebClip(...)
+```
+
+**説明**:
+
+Webクリップ関連API
+/
+
+import type { WebClip } from "$lib/types";
+import { apiRequest } from "./base.js";
+
+/**
+Webクリップ作成
+
+*定義場所: apps/web/src/lib/api/web-clips.ts:1*
+
+---
+
+### getWebClips
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getWebClips(...)
+```
+
+**説明**:
+
+Webクリップ一覧取得
+
+*定義場所: apps/web/src/lib/api/web-clips.ts:18*
+
+---
+
+### getWebClip
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getWebClip(...)
+```
+
+**説明**:
+
+Webクリップ取得
+
+*定義場所: apps/web/src/lib/api/web-clips.ts:33*
+
+---
+
+### refetchWebClip
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function refetchWebClip(...)
+```
+
+**説明**:
+
+Webクリップ更新（再取得）
+
+*定義場所: apps/web/src/lib/api/web-clips.ts:40*
+
+---
+
+### deleteWebClip
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deleteWebClip(...)
+```
+
+**説明**:
+
+Webクリップ削除
+
+*定義場所: apps/web/src/lib/api/web-clips.ts:49*
+
+---
+
+
+## apps/web/src/lib/hooks/useAutoSave.ts
+
+### AutoSaveManager
+
+**型**: `class`
+
+**シグネチャ**:
+```
+class AutoSaveManager
+```
+
+**説明**:
+
+自動保存カスタムフック
+/
+
+/**
+自動保存の設定
+/
+export interface AutoSaveConfig {
+/** 自動保存の遅延時間（ミリ秒） */
+delay: number;
+/** 変更がない場合に保存をスキップするか */
+skipIfUnchanged: boolean;
+}
+
+const DEFAULT_CONFIG: AutoSaveConfig = {
+delay: 3000, // 3秒
+skipIfUnchanged: true,
+};
+
+/**
+自動保存マネージャー
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:1*
+
+---
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:29*
+
+---
+
+### onSave
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function onSave(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:39*
+
+---
+
+### if
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:51*
+
+---
+
+
+## apps/web/src/lib/hooks/useNote.ts
+
+### loadNoteData
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function loadNoteData(...)
+```
+
+**説明**:
+
+ノート管理カスタムフック
+
+このフックは、ノートの読み込み、保存、削除のロジックを提供します。
+Svelte 4では、関数ベースのアプローチを使用します。
+/
+
+import { getNote, getNoteMD, getRSSItem, getWebClip, updateNoteMD } from "$lib/api";
+import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
+import { nowTimestamp } from "$lib/utils";
+
+export interface NoteData {
+note: NoteCore | null;
+noteMD: NoteMD | null;
+rssItem: RSSItem | null;
+webClip: WebClip | null;
+}
+
+/**
+ノートを読み込む
+
+*定義場所: apps/web/src/lib/hooks/useNote.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useNote.ts:25*
+
+---
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useNote.ts:54*
+
+---
+
+### saveNoteData
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function saveNoteData(...)
+```
+
+**説明**:
+
+ノートを保存する
+
+*定義場所: apps/web/src/lib/hooks/useNote.ts:65*
+
+---
+
+
+## apps/web/src/lib/hooks/useNoteSummary.ts
+
+### generateNoteSummary
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function generateNoteSummary(...)
+```
+
+**説明**:
+
+ノート要約カスタムフック
+/
+
+import { summarizeNote, summarizeRSSArticle } from "$lib/api";
+import type { NoteCore } from "$lib/types";
+
+/**
+ノートの要約を生成
+
+*定義場所: apps/web/src/lib/hooks/useNoteSummary.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/hooks/useNoteSummary.ts:17*
+
+---
+
+
+## apps/web/src/lib/services/filtering.ts
+
+### filterNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function filterNotes(...)
+```
+
+**説明**:
+
+フィルタリングサービス
+
+ノートのフィルタリングロジックを提供します。
+/
+
+import type { NoteCore } from "$lib/types";
+
+export type FilterType = "all" | "md" | "rss" | "web_clip";
+
+/**
+ノートをフィルタリングする
+@param notes ノート一覧
+@param filterType フィルタタイプ
+@returns フィルタリングされたノート一覧
+
+*定義場所: apps/web/src/lib/services/filtering.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/services/filtering.ts:18*
+
+---
+
+### getFilteredCount
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getFilteredCount(...)
+```
+
+**説明**:
+
+フィルタリングされたノートの数を取得する
+@param notes ノート一覧
+@param filterType フィルタタイプ
+@returns フィルタリングされたノートの数
+
+*定義場所: apps/web/src/lib/services/filtering.ts:24*
+
+---
+
+
+## apps/web/src/lib/services/notes.ts
+
+### NotesService
+
+**型**: `class`
+
+**シグネチャ**:
+```
+class NotesService
+```
+
+**説明**:
+
+ノートサービス
+
+ノート関連のビジネスロジックを提供します。
+/
+
+import { createNote, deleteNote, getNote, getNotes, updateNote } from "$lib/api";
+import type { NoteCore } from "$lib/types";
+import { type FilterType, filterNotes } from "./filtering";
+import { paginate } from "./pagination";
+import { type SortBy, type SortOrder, sortNotes } from "./sorting";
+
+export interface NotesServiceOptions {
+filterType?: FilterType;
+sortBy?: SortBy;
+sortOrder?: SortOrder;
+currentPage?: number;
+itemsPerPage?: number;
+}
+
+export interface NotesServiceResult {
+notes: NoteCore[];
+total: number;
+}
+
+/**
+ノートサービス
+
+*定義場所: apps/web/src/lib/services/notes.ts:1*
+
+---
+
+### if
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/services/notes.ts:39*
+
+---
+
+
+## apps/web/src/lib/services/pagination.ts
+
+### paginate
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function paginate(...)
+```
+
+**説明**:
+
+ページネーションサービス
+
+配列のページネーションロジックを提供します。
+/
+
+/**
+配列をページネーションする
+@param items アイテム一覧
+@param currentPage 現在のページ（1から始まる）
+@param itemsPerPage 1ページあたりのアイテム数
+@returns ページネーションされたアイテム一覧
+
+*定義場所: apps/web/src/lib/services/pagination.ts:1*
+
+---
+
+### calculateTotalPages
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function calculateTotalPages(...)
+```
+
+**説明**:
+
+総ページ数を計算する
+@param totalItems 総アイテム数
+@param itemsPerPage 1ページあたりのアイテム数
+@returns 総ページ数
+
+*定義場所: apps/web/src/lib/services/pagination.ts:20*
+
+---
+
+
+## apps/web/src/lib/services/sorting.ts
+
+### sortNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function sortNotes(...)
+```
+
+**説明**:
+
+ソートサービス
+
+ノートのソートロジックを提供します。
+/
+
+import type { NoteCore } from "$lib/types";
+
+export type SortBy = "updated_at" | "created_at" | "title";
+export type SortOrder = "desc" | "asc";
+
+/**
+ノートをソートする
+@param notes ノート一覧
+@param sortBy ソート基準
+@param sortOrder ソート順序
+@returns ソートされたノート一覧
+
+*定義場所: apps/web/src/lib/services/sorting.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/services/sorting.ts:23*
+
+---
+
+
+## apps/web/src/lib/services/tags.ts
+
+### TagsService
+
+**型**: `class`
+
+**シグネチャ**:
+```
+class TagsService
+```
+
+**説明**:
+
+タグサービス
+
+タグ関連のビジネスロジックを提供します。
+/
+
+import { createTag, deleteTag, getTags } from "$lib/api";
+import type { CreateTagRequest } from "$lib/types/api";
+
+/**
+タグサービス
+
+*定義場所: apps/web/src/lib/services/tags.ts:1*
+
+---
+
+### getTags
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function getTags(...)
+```
+
+**説明**:
+
+タグ一覧を取得する
+
+*定義場所: apps/web/src/lib/services/tags.ts:14*
+
+---
+
+### createTag
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function createTag(...)
+```
+
+**説明**:
+
+タグを作成する
+
+*定義場所: apps/web/src/lib/services/tags.ts:21*
 
 ---
 
@@ -4016,6 +5048,432 @@ function clearAll()
 ---
 
 
+## apps/web/src/lib/stores/notes.ts
+
+### loadNotes
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function loadNotes(...)
+```
+
+**説明**:
+
+ノートストア
+
+ノート一覧の状態管理を行います。
+/
+
+import { getNotes } from "$lib/api";
+import { type FilterType, filterNotes } from "$lib/services/filtering";
+import { type SortBy, type SortOrder, sortNotes } from "$lib/services/sorting";
+import type { NoteCore } from "$lib/types";
+import { derived, writable } from "svelte/store";
+
+// 型を再エクスポート
+export type { FilterType } from "$lib/services/filtering";
+export type { SortBy, SortOrder } from "$lib/services/sorting";
+import { calculateTotalPages, paginate } from "$lib/services/pagination";
+
+export interface NotesState {
+allNotes: NoteCore[];
+loading: boolean;
+error: unknown | null;
+filterType: FilterType;
+sortBy: SortBy;
+sortOrder: SortOrder;
+currentPage: number;
+itemsPerPage: number;
+}
+
+const initialState: NotesState = {
+allNotes: [],
+loading: false,
+error: null,
+filterType: "all",
+sortBy: "updated_at",
+sortOrder: "desc",
+currentPage: 1,
+itemsPerPage: 20,
+};
+
+function createNotesStore() {
+const { subscribe, set, update } = writable<NotesState>(initialState);
+
+return {
+subscribe,
+/**
+ノートを読み込む
+
+*定義場所: apps/web/src/lib/stores/notes.ts:1*
+
+---
+
+### createNotesStore
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createNotesStore()
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/stores/notes.ts:40*
+
+---
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/stores/notes.ts:53*
+
+---
+
+### setFilter
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function setFilter(...)
+```
+
+**説明**:
+
+フィルタを設定
+
+*定義場所: apps/web/src/lib/stores/notes.ts:57*
+
+---
+
+### setSort
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function setSort(...)
+```
+
+**説明**:
+
+ソートを設定
+
+*定義場所: apps/web/src/lib/stores/notes.ts:63*
+
+---
+
+### setPage
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function setPage(...)
+```
+
+**説明**:
+
+ページを設定
+
+*定義場所: apps/web/src/lib/stores/notes.ts:69*
+
+---
+
+### setItemsPerPage
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function setItemsPerPage(...)
+```
+
+**説明**:
+
+1ページあたりのアイテム数を設定
+
+*定義場所: apps/web/src/lib/stores/notes.ts:75*
+
+---
+
+### addNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function addNote(...)
+```
+
+**説明**:
+
+ノートを追加（新規作成時など）
+
+*定義場所: apps/web/src/lib/stores/notes.ts:81*
+
+---
+
+### updateNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function updateNote(...)
+```
+
+**説明**:
+
+ノートを更新
+
+*定義場所: apps/web/src/lib/stores/notes.ts:90*
+
+---
+
+### removeNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function removeNote(...)
+```
+
+**説明**:
+
+ノートを削除
+
+*定義場所: apps/web/src/lib/stores/notes.ts:99*
+
+---
+
+### reset
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function reset(...)
+```
+
+**説明**:
+
+リセット
+
+*定義場所: apps/web/src/lib/stores/notes.ts:108*
+
+---
+
+### filteredNotes
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function filteredNotes(...)
+```
+
+**説明**:
+
+フィルタリング・ソート・ページネーションされたノートを導出
+
+*定義場所: apps/web/src/lib/stores/notes.ts:119*
+
+---
+
+### totalPages
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function totalPages(...)
+```
+
+**説明**:
+
+総ページ数を導出
+
+*定義場所: apps/web/src/lib/stores/notes.ts:128*
+
+---
+
+### filteredCount
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function filteredCount(...)
+```
+
+**説明**:
+
+フィルタリングされたノートの総数を導出
+
+*定義場所: apps/web/src/lib/stores/notes.ts:136*
+
+---
+
+
+## apps/web/src/lib/stores/tags.ts
+
+### loadTags
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function loadTags(...)
+```
+
+**説明**:
+
+タグストア
+
+タグ一覧の状態管理を行います。
+/
+
+import { getTags } from "$lib/api";
+import type { Tag } from "$lib/types";
+import { writable } from "svelte/store";
+
+export interface TagsState {
+tags: Tag[];
+loading: boolean;
+error: unknown | null;
+}
+
+const initialState: TagsState = {
+tags: [],
+loading: false,
+error: null,
+};
+
+function createTagsStore() {
+const { subscribe, set, update } = writable<TagsState>(initialState);
+
+return {
+subscribe,
+/**
+タグを読み込む
+
+*定義場所: apps/web/src/lib/stores/tags.ts:1*
+
+---
+
+### createTagsStore
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function createTagsStore()
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/stores/tags.ts:23*
+
+---
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/stores/tags.ts:36*
+
+---
+
+### addTag
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function addTag(...)
+```
+
+**説明**:
+
+タグを追加
+
+*定義場所: apps/web/src/lib/stores/tags.ts:40*
+
+---
+
+### updateTag
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function updateTag(...)
+```
+
+**説明**:
+
+タグを更新
+
+*定義場所: apps/web/src/lib/stores/tags.ts:49*
+
+---
+
+### removeTag
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function removeTag(...)
+```
+
+**説明**:
+
+タグを削除
+
+*定義場所: apps/web/src/lib/stores/tags.ts:58*
+
+---
+
+### reset
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function reset(...)
+```
+
+**説明**:
+
+リセット
+
+*定義場所: apps/web/src/lib/stores/tags.ts:67*
+
+---
+
+
 ## apps/web/src/lib/sync.ts
 
 ### pullSync
@@ -4118,6 +5576,8 @@ function timestampToDate(...)
 
 /**
 Unix timestamp（秒）をDateオブジェクトに変換
+@param timestamp Unix timestamp（秒）
+@returns Dateオブジェクト
 
 *定義場所: apps/web/src/lib/utils.ts:1*
 
@@ -4135,8 +5595,10 @@ function dateToTimestamp(...)
 **説明**:
 
 DateオブジェクトをUnix timestamp（秒）に変換
+@param date Dateオブジェクト
+@returns Unix timestamp（秒）
 
-*定義場所: apps/web/src/lib/utils.ts:12*
+*定義場所: apps/web/src/lib/utils.ts:14*
 
 ---
 
@@ -4152,8 +5614,9 @@ function nowTimestamp()
 **説明**:
 
 現在のUnix timestamp（秒）を取得
+@returns 現在のUnix timestamp（秒）
 
-*定義場所: apps/web/src/lib/utils.ts:19*
+*定義場所: apps/web/src/lib/utils.ts:23*
 
 ---
 
@@ -4169,8 +5632,9 @@ function generateId()
 **説明**:
 
 UUID v4を生成
+@returns UUID v4文字列
 
-*定義場所: apps/web/src/lib/utils.ts:26*
+*定義場所: apps/web/src/lib/utils.ts:31*
 
 ---
 
@@ -4186,8 +5650,349 @@ function formatDate(...)
 **説明**:
 
 日時をフォーマット
+@param timestamp Unix timestamp（秒）、またはnull
+@param defaultValue nullの場合に返すデフォルト値（デフォルト: ""）
 
-*定義場所: apps/web/src/lib/utils.ts:33*
+*定義場所: apps/web/src/lib/utils.ts:39*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils.ts:45*
+
+---
+
+
+## apps/web/src/lib/utils/error-handling.ts
+
+### handleApiError
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function handleApiError(...)
+```
+
+**説明**:
+
+エラーハンドリングユーティリティ
+/
+
+import { getErrorMessage as getErrorMessageFromMap } from "./error-messages";
+import { logError } from "./logger";
+
+/**
+APIエラーを処理し、ユーザーフレンドリーなメッセージを返す
+@param error エラーオブジェクト（Error、unknown、またはstring）
+@param defaultMessage デフォルトのエラーメッセージ（エラーメッセージマッピングが使用できない場合）
+@returns エラーメッセージ文字列
+
+*定義場所: apps/web/src/lib/utils/error-handling.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils/error-handling.ts:25*
+
+---
+
+### getErrorMessage
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getErrorMessage(...)
+```
+
+**説明**:
+
+エラーメッセージを取得（簡易版）
+@param error エラーオブジェクト
+@returns エラーメッセージ文字列
+
+*定義場所: apps/web/src/lib/utils/error-handling.ts:32*
+
+---
+
+### getErrorType
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getErrorType(...)
+```
+
+**説明**:
+
+エラーの種類を判定
+/
+export type ErrorType = "api" | "network" | "validation" | "unknown";
+
+/**
+エラーの種類を判定する
+@param error エラーオブジェクト
+@returns エラーの種類
+
+*定義場所: apps/web/src/lib/utils/error-handling.ts:41*
+
+---
+
+
+## apps/web/src/lib/utils/error-messages.ts
+
+### getErrorMessage
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function getErrorMessage(...)
+```
+
+**説明**:
+
+エラーメッセージマッピング
+
+エラーの種類に応じたユーザーフレンドリーなメッセージを提供します。
+/
+
+import type { ErrorType } from "./error-handling";
+
+export interface ErrorMessageMap {
+[key: string]: string;
+}
+
+const errorMessages: Record<ErrorType, ErrorMessageMap> = {
+network: {
+default: "ネットワークエラーが発生しました。インターネット接続を確認してください。",
+timeout: "リクエストがタイムアウトしました。しばらくしてから再度お試しください。",
+offline: "オフラインです。インターネット接続を確認してください。",
+fetch: "ネットワークエラーが発生しました。インターネット接続を確認してください。",
+},
+api: {
+default: "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
+notFound: "リソースが見つかりませんでした。",
+unauthorized: "認証が必要です。ログインしてください。",
+forbidden: "この操作を実行する権限がありません。",
+badRequest: "リクエストが不正です。入力内容を確認してください。",
+internalServerError: "サーバーエラーが発生しました。しばらくしてから再度お試しください。",
+},
+validation: {
+default: "入力内容に誤りがあります。確認してください。",
+required: "必須項目が入力されていません。",
+invalid: "無効な値が入力されています。",
+},
+unknown: {
+default: "予期しないエラーが発生しました。",
+},
+};
+
+/**
+エラーメッセージを取得する
+@param error エラーオブジェクト
+@param errorType エラーの種類
+@returns エラーメッセージ文字列
+
+*定義場所: apps/web/src/lib/utils/error-messages.ts:1*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils/error-messages.ts:45*
+
+---
+
+
+## apps/web/src/lib/utils/logger.ts
+
+### logError
+
+**型**: `class`
+
+**シグネチャ**:
+```
+class logError
+```
+
+**説明**:
+
+ロガーユーティリティ
+
+エラーログの記録と管理を行います。
+開発環境と本番環境で異なるログレベルを適用します。
+/
+
+import { dev } from "$app/environment";
+
+export type LogLevel = "debug" | "info" | "warn" | "error";
+
+export interface LogContext {
+[key: string]: unknown;
+}
+
+class Logger {
+/**
+ログを記録する
+/
+private log(level: LogLevel, message: string, context?: LogContext): void {
+// 本番環境ではdebugログを記録しない
+if (!dev && level === "debug") {
+return;
+}
+
+const timestamp = new Date().toISOString();
+const logEntry = {
+timestamp,
+level,
+message,
+...context,
+};
+
+switch (level) {
+case "error":
+console.error(`[${timestamp}] ${level.toUpperCase()}:`, message, context);
+break;
+case "warn":
+console.warn(`[${timestamp}] ${level.toUpperCase()}:`, message, context);
+break;
+default:
+console.log(`[${timestamp}] ${level.toUpperCase()}:`, message, context);
+}
+
+// 本番環境では、エラーログを外部サービスに送信する可能性がある
+// TODO: エラートラッキングサービスへの送信（Sentry等）
+if (!dev && level === "error") {
+// 将来的にエラートラッキングサービスに送信
+}
+}
+
+/**
+デバッグログを記録する
+/
+debug(message: string, context?: LogContext): void {
+this.log("debug", message, context);
+}
+
+/**
+情報ログを記録する
+/
+info(message: string, context?: LogContext): void {
+this.log("info", message, context);
+}
+
+/**
+警告ログを記録する
+/
+warn(message: string, context?: LogContext): void {
+this.log("warn", message, context);
+}
+
+/**
+エラーログを記録する
+/
+error(message: string, error?: unknown, context?: LogContext): void {
+const errorMessage = error instanceof Error ? error.message : String(error);
+const errorContext = {
+...context,
+error:
+error instanceof Error
+? {
+name: error.name,
+message: error.message,
+stack: error.stack,
+}
+: error,
+};
+this.log("error", errorMessage, errorContext);
+}
+}
+
+export const logger = new Logger();
+
+/**
+エラーをログに記録する
+@param error エラーオブジェクト
+@param context 追加のコンテキスト情報
+
+*定義場所: apps/web/src/lib/utils/logger.ts:1*
+
+---
+
+### Logger
+
+**型**: `class`
+
+**シグネチャ**:
+```
+class Logger
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:16*
+
+---
+
+### if
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:22*
+
+---
+
+### switch
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function switch(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:34*
 
 ---
 
@@ -4212,6 +6017,21 @@ function if(...)
 
 ## apps/web/vite.config.ts
 
+### manualChunks
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function manualChunks(...)
+```
+
+*説明なし*
+
+*定義場所: apps/web/vite.config.ts:9*
+
+---
+
 ### rewrite
 
 **型**: `function`
@@ -4223,7 +6043,7 @@ function rewrite(...)
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:16*
+*定義場所: apps/web/vite.config.ts:33*
 
 ---
 
@@ -4238,7 +6058,7 @@ function configure(...)
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:18*
+*定義場所: apps/web/vite.config.ts:35*
 
 ---
 
@@ -4253,7 +6073,7 @@ function if(...)
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:25*
+*定義場所: apps/web/vite.config.ts:42*
 
 ---
 
@@ -4569,6 +6389,71 @@ function for(...)
 ---
 
 
+## scripts/deploy-public-site.ts
+
+### deployPublicSite
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function deployPublicSite()
+```
+
+**説明**:
+
+公開サイトをデプロイ用ディレクトリに生成
+
+*定義場所: scripts/deploy-public-site.ts:5*
+
+---
+
+### for
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function for(...)
+```
+
+*説明なし*
+
+*定義場所: scripts/deploy-public-site.ts:23*
+
+---
+
+### catch
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function catch(...)
+```
+
+*説明なし*
+
+*定義場所: scripts/deploy-public-site.ts:38*
+
+---
+
+### if
+
+**型**: `function`
+
+**シグネチャ**:
+```
+function if(...)
+```
+
+*説明なし*
+
+*定義場所: scripts/deploy-public-site.ts:44*
+
+---
+
+
 ## scripts/migrate.ts
 
 ### migrate
@@ -4599,7 +6484,7 @@ function for(...)
 
 *説明なし*
 
-*定義場所: scripts/migrate.ts:35*
+*定義場所: scripts/migrate.ts:36*
 
 ---
 
@@ -4614,7 +6499,7 @@ function if(...)
 
 *説明なし*
 
-*定義場所: scripts/migrate.ts:48*
+*定義場所: scripts/migrate.ts:49*
 
 ---
 
@@ -4629,6 +6514,6 @@ function catch(...)
 
 *説明なし*
 
-*定義場所: scripts/migrate.ts:62*
+*定義場所: scripts/migrate.ts:63*
 
 ---
