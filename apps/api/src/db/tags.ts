@@ -1,5 +1,7 @@
 import type { NoteTag, Tag } from "@locus/shared";
 import { getDb } from "./db.js";
+import { mapRowToTag, mapRowsToTag } from "./utils/mappers.js";
+import { createQueryBuilder } from "./utils/query-builder.js";
 
 /**
  * タグを作成する
@@ -27,11 +29,7 @@ export async function getTag(id: string): Promise<Tag | null> {
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id as string,
-    name: row.name as string,
-  };
+  return mapRowToTag(result.rows[0]);
 }
 
 /**
@@ -48,11 +46,7 @@ export async function getTagByName(name: string): Promise<Tag | null> {
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id as string,
-    name: row.name as string,
-  };
+  return mapRowToTag(result.rows[0]);
 }
 
 /**
@@ -60,14 +54,17 @@ export async function getTagByName(name: string): Promise<Tag | null> {
  */
 export async function listTags(): Promise<Tag[]> {
   const db = getDb();
+  const query = createQueryBuilder()
+    .select(["id", "name"])
+    .from("tags")
+    .orderBy("name", "ASC");
+
   const result = await db.execute({
-    sql: "SELECT id, name FROM tags ORDER BY name",
+    sql: query.toSQL(),
+    args: query.getArgs(),
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    name: row.name as string,
-  }));
+  return mapRowsToTag(result.rows);
 }
 
 /**
@@ -97,19 +94,19 @@ export async function removeTagFromNote(noteId: string, tagId: string): Promise<
  */
 export async function getTagsByNote(noteId: string): Promise<Tag[]> {
   const db = getDb();
+  const query = createQueryBuilder()
+    .select(["t.id", "t.name"])
+    .from("tags", "t")
+    .join("note_tags", "nt", "t.id = nt.tag_id")
+    .where("nt.note_id = ?", noteId)
+    .orderBy("t.name", "ASC");
+
   const result = await db.execute({
-    sql: `SELECT t.id, t.name
-              FROM tags t
-              INNER JOIN note_tags nt ON t.id = nt.tag_id
-              WHERE nt.note_id = ?
-              ORDER BY t.name`,
-    args: [noteId],
+    sql: query.toSQL(),
+    args: query.getArgs(),
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    name: row.name as string,
-  }));
+  return mapRowsToTag(result.rows);
 }
 
 /**

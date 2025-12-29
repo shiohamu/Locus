@@ -1,5 +1,6 @@
 import type { NoteCore, NoteType } from "@locus/shared";
 import { Hono } from "hono";
+import { NotFoundError, ValidationError } from "../utils/errors.js";
 import * as notesDb from "../db/notes.js";
 
 const app = new Hono();
@@ -77,7 +78,7 @@ app.get("/:id", async (c) => {
   const note = await notesDb.getNote(id);
 
   if (!note) {
-    return c.json({ error: "Note not found" }, 404);
+    throw new NotFoundError("Note", id);
   }
 
   return c.json(note);
@@ -93,7 +94,7 @@ app.put("/:id", async (c) => {
 
   const existing = await notesDb.getNote(id);
   if (!existing) {
-    return c.json({ error: "Note not found" }, 404);
+    throw new NotFoundError("Note", id);
   }
 
   const updated: NoteCore = {
@@ -116,7 +117,7 @@ app.delete("/:id", async (c) => {
   const existing = await notesDb.getNote(id);
 
   if (!existing) {
-    return c.json({ error: "Note not found" }, 404);
+    throw new NotFoundError("Note", id);
   }
 
   const deletedAt = Math.floor(Date.now() / 1000);
@@ -134,7 +135,7 @@ app.delete("/batch", async (c) => {
     const body = await c.req.json<{ note_ids: string[] }>();
 
     if (!body.note_ids || !Array.isArray(body.note_ids) || body.note_ids.length === 0) {
-      return c.json({ error: "note_ids array is required and must not be empty" }, 400);
+      throw new ValidationError("note_ids array is required and must not be empty");
     }
 
     // 存在確認（オプション：存在しないIDがあってもエラーにしない）
@@ -147,7 +148,7 @@ app.delete("/batch", async (c) => {
     });
   } catch (error) {
     if (error instanceof SyntaxError) {
-      return c.json({ error: "Invalid JSON in request body" }, 400);
+      throw new ValidationError("Invalid JSON in request body");
     }
     throw error;
   }

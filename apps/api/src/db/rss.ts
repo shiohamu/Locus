@@ -1,4 +1,5 @@
 import type { RSSFeed, RSSItem } from "@locus/shared";
+import { DatabaseError } from "../utils/errors.js";
 import { getDb } from "./db.js";
 
 /**
@@ -150,7 +151,7 @@ export async function updateItem(noteId: string, content: string): Promise<RSSIt
 
   const updated = await getItemByNoteId(noteId);
   if (!updated) {
-    throw new Error("Failed to update RSS item");
+    throw new DatabaseError("Failed to update RSS item", { noteId });
   }
 
   return updated;

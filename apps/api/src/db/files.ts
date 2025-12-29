@@ -1,5 +1,8 @@
 import type { File, FileNote } from "@locus/shared";
+import { NotFoundError, DatabaseError } from "../utils/errors.js";
 import { getDb } from "./db.js";
+import { mapRowToFile, mapRowsToFile } from "./utils/mappers.js";
+import { createQueryBuilder } from "./utils/query-builder.js";
 
 /**
  * ファイルを作成する
@@ -35,15 +38,7 @@ export async function getFile(id: string): Promise<File | null> {
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id as string,
-    filename: row.filename as string,
-    mime_type: row.mime_type as string,
-    size: row.size as number,
-    created_at: row.created_at as number,
-    show_in_notes: (row.show_in_notes as number | null) === 1,
-  };
+  return mapRowToFile(result.rows[0]);
 }
 
 /**
@@ -56,22 +51,18 @@ export async function listFiles(options?: {
   const db = getDb();
   const { limit = 100, offset = 0 } = options || {};
 
+  const query = createQueryBuilder()
+    .select(["id", "filename", "mime_type", "size", "created_at", "show_in_notes"])
+    .from("files")
+    .orderBy("created_at", "DESC")
+    .limit(limit, offset);
+
   const result = await db.execute({
-    sql: `SELECT id, filename, mime_type, size, created_at, show_in_notes
-              FROM files
-              ORDER BY created_at DESC
-              LIMIT ? OFFSET ?`,
-    args: [limit, offset],
+    sql: query.toSQL(),
+    args: query.getArgs(),
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    filename: row.filename as string,
-    mime_type: row.mime_type as string,
-    size: row.size as number,
-    created_at: row.created_at as number,
-    show_in_notes: (row.show_in_notes as number | null) === 1,
-  }));
+  return mapRowsToFile(result.rows);
 }
 
 /**
@@ -120,23 +111,19 @@ export async function unlinkFileFromNote(fileId: string, noteId: string): Promis
  */
 export async function getFilesByNote(noteId: string): Promise<File[]> {
   const db = getDb();
+  const query = createQueryBuilder()
+    .select(["f.id", "f.filename", "f.mime_type", "f.size", "f.created_at", "f.show_in_notes"])
+    .from("files", "f")
+    .join("file_notes", "fn", "f.id = fn.file_id")
+    .where("fn.note_id = ?", noteId)
+    .orderBy("f.created_at", "DESC");
+
   const result = await db.execute({
-    sql: `SELECT f.id, f.filename, f.mime_type, f.size, f.created_at, f.show_in_notes
-              FROM files f
-              INNER JOIN file_notes fn ON f.id = fn.file_id
-              WHERE fn.note_id = ?
-              ORDER BY f.created_at DESC`,
-    args: [noteId],
+    sql: query.toSQL(),
+    args: query.getArgs(),
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    filename: row.filename as string,
-    mime_type: row.mime_type as string,
-    size: row.size as number,
-    created_at: row.created_at as number,
-    show_in_notes: (row.show_in_notes as number | null) === 1,
-  }));
+  return mapRowsToFile(result.rows);
 }
 
 /**
@@ -146,7 +133,7 @@ export async function updateFile(id: string, updates: Partial<File>): Promise<Fi
   const db = getDb();
   const existing = await getFile(id);
   if (!existing) {
-    throw new Error("File not found");
+    throw new NotFoundError("File", id);
   }
 
   const updated: File = {
@@ -189,19 +176,16 @@ export async function getNoteIdsByFile(fileId: string): Promise<string[]> {
  */
 export async function listFilesForNotes(): Promise<File[]> {
   const db = getDb();
+  const query = createQueryBuilder()
+    .select(["id", "filename", "mime_type", "size", "created_at", "show_in_notes"])
+    .from("files")
+    .where("show_in_notes = ?", 1)
+    .orderBy("created_at", "DESC");
+
   const result = await db.execute({
-    sql: `SELECT id, filename, mime_type, size, created_at, show_in_notes
-              FROM files
-              WHERE show_in_notes = 1
-              ORDER BY created_at DESC`,
+    sql: query.toSQL(),
+    args: query.getArgs(),
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    filename: row.filename as string,
-    mime_type: row.mime_type as string,
-    size: row.size as number,
-    created_at: row.created_at as number,
-    show_in_notes: (row.show_in_notes as number | null) === 1,
-  }));
+  return mapRowsToFile(result.rows);
 }

@@ -1,35 +1,41 @@
 import type { ErrorHandler } from "hono";
 import { HTTPException } from "hono/http-exception";
+import {
+  getStatusCode,
+  getErrorCode,
+  toErrorResponse,
+  toAppError,
+  type AppError,
+} from "../utils/errors.js";
 
 /**
  * エラーハンドリングミドルウェア
  */
 export const errorHandler: ErrorHandler = (err, c) => {
+  // HonoのHTTPExceptionの処理
   if (err instanceof HTTPException) {
-    return c.json({ error: err.message }, err.status);
+    return c.json({ error: err.message, code: "HTTP_EXCEPTION" }, err.status);
   }
 
-  // 詳細なエラー情報をログに出力
-  console.error("Unhandled error:", {
-    message: err instanceof Error ? err.message : String(err),
-    stack: err instanceof Error ? err.stack : undefined,
-    name: err instanceof Error ? err.name : undefined,
+  // AppErrorに変換
+  const appError = toAppError(err);
+  const statusCode = getStatusCode(appError);
+  const isDevelopment = process.env.NODE_ENV !== "production";
+
+  // エラーログの出力
+  console.error("Error occurred:", {
+    message: appError.message,
+    code: getErrorCode(appError),
+    statusCode,
     path: c.req.path,
     method: c.req.method,
     url: c.req.url,
+    stack: isDevelopment ? appError.stack : undefined,
+    details: appError instanceof AppError ? appError.details : undefined,
   });
 
-  // 開発環境では詳細なエラー情報を返す
-  const isDevelopment = process.env.NODE_ENV !== "production";
-  const errorMessage = err instanceof Error ? err.message : "Internal Server Error";
-  const errorDetails = isDevelopment
-    ? {
-        error: errorMessage,
-        stack: err instanceof Error ? err.stack : undefined,
-        path: c.req.path,
-        method: c.req.method,
-      }
-    : { error: "Internal Server Error" };
+  // エラーレスポンスの生成
+  const errorResponse = toErrorResponse(appError, isDevelopment);
 
-  return c.json(errorDetails, 500);
+  return c.json(errorResponse, statusCode);
 };

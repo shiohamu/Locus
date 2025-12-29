@@ -1,5 +1,7 @@
 import type { NoteCore, NoteType } from "@locus/shared";
 import { getDb } from "./db.js";
+import { mapRowToNoteCore, mapRowsToNoteCore } from "./utils/mappers.js";
+import { createQueryBuilder } from "./utils/query-builder.js";
 
 /**
  * ノートを作成する
@@ -38,16 +40,7 @@ export async function getNote(id: string): Promise<NoteCore | null> {
     return null;
   }
 
-  const row = result.rows[0];
-  return {
-    id: row.id as string,
-    type: row.type as NoteType,
-    title: row.title as string,
-    created_at: row.created_at as number,
-    updated_at: row.updated_at as number,
-    deleted_at: (row.deleted_at as number | null) ?? null,
-    public: (row.public as number | undefined) ?? 0,
-  };
+  return mapRowToNoteCore(result.rows[0]);
 }
 
 /**
@@ -110,30 +103,23 @@ export async function listNotes(options: {
   const db = getDb();
   const { type, limit = 100, offset = 0 } = options;
 
-  let sql = `SELECT id, type, title, created_at, updated_at, deleted_at, public
-               FROM notes_core
-               WHERE deleted_at IS NULL`;
-  const args: unknown[] = [];
+  const query = createQueryBuilder()
+    .select(["id", "type", "title", "created_at", "updated_at", "deleted_at", "public"])
+    .from("notes_core")
+    .where("deleted_at IS NULL");
 
   if (type) {
-    sql += " AND type = ?";
-    args.push(type);
+    query.andWhere("type = ?", type);
   }
 
-  sql += " ORDER BY updated_at DESC LIMIT ? OFFSET ?";
-  args.push(limit, offset);
+  query.orderBy("updated_at", "DESC").limit(limit, offset);
 
-  const result = await db.execute({ sql, args });
+  const result = await db.execute({
+    sql: query.toSQL(),
+    args: query.getArgs(),
+  });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    type: row.type as NoteType,
-    title: row.title as string,
-    created_at: row.created_at as number,
-    updated_at: row.updated_at as number,
-    deleted_at: (row.deleted_at as number | null) ?? null,
-    public: (row.public as number | undefined) ?? 0,
-  }));
+  return mapRowsToNoteCore(result.rows);
 }
 
 /**
@@ -155,34 +141,27 @@ export async function listNotesByTags(options: {
 
   // いずれかの指定されたタグが含まれているノートを取得（OR条件）
   // DISTINCTを使用して重複を除去
-  let sql = `SELECT DISTINCT nc.id, nc.type, nc.title, nc.created_at, nc.updated_at, nc.deleted_at, nc.public
-               FROM notes_core nc
-               INNER JOIN note_tags nt ON nc.id = nt.note_id
-               INNER JOIN tags t ON nt.tag_id = t.id
-               WHERE nc.deleted_at IS NULL
-                 AND t.name IN (${tagNames.map(() => "?").join(", ")})`;
-
-  const args: unknown[] = [...tagNames];
+  const query = createQueryBuilder()
+    .select(["nc.id", "nc.type", "nc.title", "nc.created_at", "nc.updated_at", "nc.deleted_at", "nc.public"])
+    .distinct()
+    .from("notes_core", "nc")
+    .join("note_tags", "nt", "nc.id = nt.note_id")
+    .join("tags", "t", "nt.tag_id = t.id")
+    .where("nc.deleted_at IS NULL")
+    .whereIn("t.name", tagNames);
 
   if (type) {
-    sql += " AND nc.type = ?";
-    args.push(type);
+    query.andWhere("nc.type = ?", type);
   }
 
-  sql += " ORDER BY nc.updated_at DESC LIMIT ? OFFSET ?";
-  args.push(limit, offset);
+  query.orderBy("nc.updated_at", "DESC").limit(limit, offset);
 
-  const result = await db.execute({ sql, args });
+  const result = await db.execute({
+    sql: query.toSQL(),
+    args: query.getArgs(),
+  });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    type: row.type as NoteType,
-    title: row.title as string,
-    created_at: row.created_at as number,
-    updated_at: row.updated_at as number,
-    deleted_at: (row.deleted_at as number | null) ?? null,
-    public: (row.public as number | undefined) ?? 0,
-  }));
+  return mapRowsToNoteCore(result.rows);
 }
 
 /**
@@ -196,30 +175,24 @@ export async function listPublicNotes(options: {
   const db = getDb();
   const { type, limit = 100, offset = 0 } = options;
 
-  let sql = `SELECT id, type, title, created_at, updated_at, deleted_at, public
-               FROM notes_core
-               WHERE deleted_at IS NULL AND public = 1`;
-  const args: unknown[] = [];
+  const query = createQueryBuilder()
+    .select(["id", "type", "title", "created_at", "updated_at", "deleted_at", "public"])
+    .from("notes_core")
+    .where("deleted_at IS NULL")
+    .andWhere("public = ?", 1);
 
   if (type) {
-    sql += " AND type = ?";
-    args.push(type);
+    query.andWhere("type = ?", type);
   }
 
-  sql += " ORDER BY updated_at DESC LIMIT ? OFFSET ?";
-  args.push(limit, offset);
+  query.orderBy("updated_at", "DESC").limit(limit, offset);
 
-  const result = await db.execute({ sql, args });
+  const result = await db.execute({
+    sql: query.toSQL(),
+    args: query.getArgs(),
+  });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    type: row.type as NoteType,
-    title: row.title as string,
-    created_at: row.created_at as number,
-    updated_at: row.updated_at as number,
-    deleted_at: (row.deleted_at as number | null) ?? null,
-    public: (row.public as number | undefined) ?? 1,
-  }));
+  return mapRowsToNoteCore(result.rows);
 }
 
 /**

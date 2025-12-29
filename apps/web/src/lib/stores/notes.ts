@@ -176,33 +176,52 @@ function fileToNoteCore(file: File): NoteCore {
 }
 
 /**
+ * ノートとファイルを結合した全アイテムを導出（重複計算を避けるため）
+ */
+const allItems = derived(notesStore, ($store) => {
+  const fileNotes = $store.allFiles.map(fileToNoteCore);
+  return [...$store.allNotes, ...fileNotes];
+});
+
+/**
+ * フィルタリングされたノートを導出（ソート・ページネーション前）
+ */
+const filteredItems = derived(
+  [notesStore, allItems],
+  ([$store, $allItems]) => {
+    return filterNotes($allItems, $store.filterType);
+  }
+);
+
+/**
  * フィルタリング・ソート・ページネーションされたノートを導出
  */
-export const filteredNotes = derived(notesStore, ($store) => {
-  // ノートとファイルを結合
-  const fileNotes = $store.allFiles.map(fileToNoteCore);
-  const allItems = [...$store.allNotes, ...fileNotes];
-
-  let filtered = filterNotes(allItems, $store.filterType);
-  filtered = sortNotes(filtered, $store.sortBy, $store.sortOrder, $store.noteTagsMap);
-  return paginate(filtered, $store.currentPage, $store.itemsPerPage);
-});
+export const filteredNotes = derived(
+  [notesStore, filteredItems],
+  ([$store, $filteredItems]) => {
+    const sorted = sortNotes(
+      $filteredItems,
+      $store.sortBy,
+      $store.sortOrder,
+      $store.noteTagsMap
+    );
+    return paginate(sorted, $store.currentPage, $store.itemsPerPage);
+  }
+);
 
 /**
  * 総ページ数を導出
  */
-export const totalPages = derived(notesStore, ($store) => {
-  const fileNotes = $store.allFiles.map(fileToNoteCore);
-  const allItems = [...$store.allNotes, ...fileNotes];
-  const filteredCount = filterNotes(allItems, $store.filterType).length;
-  return calculateTotalPages(filteredCount, $store.itemsPerPage);
-});
+export const totalPages = derived(
+  [notesStore, filteredItems],
+  ([$store, $filteredItems]) => {
+    return calculateTotalPages($filteredItems.length, $store.itemsPerPage);
+  }
+);
 
 /**
  * フィルタリングされたノートの総数を導出
  */
-export const filteredCount = derived(notesStore, ($store) => {
-  const fileNotes = $store.allFiles.map(fileToNoteCore);
-  const allItems = [...$store.allNotes, ...fileNotes];
-  return filterNotes(allItems, $store.filterType).length;
+export const filteredCount = derived(filteredItems, ($filteredItems) => {
+  return $filteredItems.length;
 });
