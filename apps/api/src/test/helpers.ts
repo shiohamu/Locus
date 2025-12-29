@@ -6,54 +6,22 @@ import { type Client, createClient } from "@libsql/client";
  * テスト用のインメモリデータベースを作成し、マイグレーションを実行する
  */
 export async function createTestDb(): Promise<Client> {
-  const db = createClient({
-    url: "file::memory:",
-  });
+	const db = createClient({
+		url: "file::memory:",
+	});
 
-  // 外部キー制約を有効にする
-  await db.execute("PRAGMA foreign_keys = ON;");
+	// 外部キー制約を有効にする
+	await db.execute("PRAGMA foreign_keys = ON;");
 
-  // マイグレーションファイルを読み込む
-  const migrationPath = join(
-    import.meta.dir || ".",
-    "../../../../scripts/migrations/001_initial_schema.sql"
-  );
-  const sql = readFileSync(migrationPath, "utf-8");
+	// すべてのマイグレーションファイルを順次実行
+	await executeMigration(db, "001_initial_schema.sql");
+	await executeMigration(db, "002_add_web_clips.sql");
+	await executeMigration(db, "003_add_files.sql");
+	await executeMigration(db, "004_add_settings.sql");
+	await executeMigration(db, "005_add_public_flag.sql");
+	await executeMigration(db, "006_add_file_show_in_notes.sql");
 
-  // SQLを実行（複数のステートメントを分割）
-  const statements = sql
-    .split("\n")
-    .map((line) => {
-      // 行コメントを除去
-      const commentIndex = line.indexOf("--");
-      if (commentIndex >= 0) {
-        return line.substring(0, commentIndex).trim();
-      }
-      return line.trim();
-    })
-    .join("\n")
-    .split(";")
-    .map((s) => s.trim())
-    .filter((s) => s.length > 0);
-
-  for (const statement of statements) {
-    if (statement) {
-      try {
-        await db.execute(statement);
-      } catch (error) {
-        // CREATE TABLE IF NOT EXISTS などのエラーは無視
-        if (
-          error instanceof Error &&
-          !error.message.includes("already exists") &&
-          !error.message.includes("duplicate")
-        ) {
-          throw error;
-        }
-      }
-    }
-  }
-
-  return db;
+	return db;
 }
 
 /**
@@ -121,12 +89,15 @@ export async function createTestDbFile(): Promise<{ db: Client; path: string }> 
   // 外部キー制約を有効にする
   await db.execute("PRAGMA foreign_keys = ON;");
 
-  // マイグレーションファイルを順次実行
-  await executeMigration(db, "001_initial_schema.sql");
-  await executeMigration(db, "002_add_web_clips.sql");
-  await executeMigration(db, "003_add_files.sql");
+	// マイグレーションファイルを順次実行
+	await executeMigration(db, "001_initial_schema.sql");
+	await executeMigration(db, "002_add_web_clips.sql");
+	await executeMigration(db, "003_add_files.sql");
+	await executeMigration(db, "004_add_settings.sql");
+	await executeMigration(db, "005_add_public_flag.sql");
+	await executeMigration(db, "006_add_file_show_in_notes.sql");
 
-  return { db, path: tmpPath };
+	return { db, path: tmpPath };
 }
 
 /**

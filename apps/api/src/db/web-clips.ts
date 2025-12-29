@@ -1,5 +1,9 @@
 import type { WebClip } from "@locus/shared";
 import { getDb } from "./db.js";
+import {
+	mapRowToWebClip,
+	mapRowsToWebClip,
+} from "./utils/mappers.js";
 
 /**
  * Webクリップを作成する
@@ -24,17 +28,11 @@ export async function getWebClip(noteId: string): Promise<WebClip | null> {
     args: [noteId],
   });
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+	if (result.rows.length === 0) {
+		return null;
+	}
 
-  const row = result.rows[0];
-  return {
-    note_id: row.note_id as string,
-    source_url: row.source_url as string,
-    fetched_at: row.fetched_at as number,
-    content: row.content as string,
-  };
+	return mapRowToWebClip(result.rows[0]);
 }
 
 /**
@@ -67,12 +65,7 @@ export async function listWebClips(options?: {
     args: [limit, offset],
   });
 
-  return result.rows.map((row) => ({
-    note_id: row.note_id as string,
-    source_url: row.source_url as string,
-    fetched_at: row.fetched_at as number,
-    content: row.content as string,
-  }));
+	return mapRowsToWebClip(result.rows);
 }
 
 /**

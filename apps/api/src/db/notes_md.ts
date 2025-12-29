@@ -1,5 +1,6 @@
 import type { NoteMD } from "@locus/shared";
 import { getDb } from "./db.js";
+import { mapRowToNoteMD } from "./utils/mappers.js";
 
 /**
  * Markdownノートを作成する
@@ -23,15 +24,11 @@ export async function getNoteMD(noteId: string): Promise<NoteMD | null> {
     args: [noteId],
   });
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+	if (result.rows.length === 0) {
+		return null;
+	}
 
-  const row = result.rows[0];
-  return {
-    note_id: row.note_id as string,
-    content: row.content as string,
-  };
+	return mapRowToNoteMD(result.rows[0]);
 }
 
 /**

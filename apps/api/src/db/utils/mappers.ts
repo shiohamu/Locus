@@ -3,16 +3,23 @@
  * 型安全性を確保し、重複コードを削減する
  */
 
-import { ValidationError } from "../../utils/errors.js";
-
-import type { File, NoteCore, NoteType, Tag } from "@locus/shared";
-
-/**
- * データベース行の型定義
- */
-interface DbRow {
-  [key: string]: unknown;
-}
+import type {
+	File,
+	Link,
+	NoteCore,
+	NoteMD,
+	RSSFeed,
+	RSSItem,
+	Tag,
+	WebClip,
+} from "@locus/shared";
+import {
+	assertNumber,
+	assertNumberOrNull,
+	assertNoteType,
+	assertString,
+} from "./validators.js";
+import type { DbRow } from "./type-guards.js";
 
 /**
  * NoteCoreにマッピングする
@@ -20,15 +27,15 @@ interface DbRow {
  * @returns NoteCoreオブジェクト
  */
 export function mapRowToNoteCore(row: DbRow): NoteCore {
-  return {
-    id: assertString(row.id, "id"),
-    type: assertNoteType(row.type, "type"),
-    title: assertString(row.title, "title"),
-    created_at: assertNumber(row.created_at, "created_at"),
-    updated_at: assertNumber(row.updated_at, "updated_at"),
-    deleted_at: row.deleted_at === null ? null : assertNumber(row.deleted_at, "deleted_at"),
-    public: row.public === undefined ? 0 : assertNumber(row.public, "public"),
-  };
+	return {
+		id: assertString(row.id, "id"),
+		type: assertNoteType(row.type, "type"),
+		title: assertString(row.title, "title"),
+		created_at: assertNumber(row.created_at, "created_at"),
+		updated_at: assertNumber(row.updated_at, "updated_at"),
+		deleted_at: assertNumberOrNull(row.deleted_at, "deleted_at"),
+		public: row.public === undefined ? 0 : assertNumber(row.public, "public"),
+	};
 }
 
 /**
@@ -49,14 +56,18 @@ export function mapRowToTag(row: DbRow): Tag {
  * @returns Fileオブジェクト
  */
 export function mapRowToFile(row: DbRow): File {
-  return {
-    id: assertString(row.id, "id"),
-    filename: assertString(row.filename, "filename"),
-    mime_type: assertString(row.mime_type, "mime_type"),
-    size: assertNumber(row.size, "size"),
-    created_at: assertNumber(row.created_at, "created_at"),
-    show_in_notes: (row.show_in_notes as number | null) === 1,
-  };
+	const showInNotes = row.show_in_notes;
+	return {
+		id: assertString(row.id, "id"),
+		filename: assertString(row.filename, "filename"),
+		mime_type: assertString(row.mime_type, "mime_type"),
+		size: assertNumber(row.size, "size"),
+		created_at: assertNumber(row.created_at, "created_at"),
+		show_in_notes:
+			showInNotes === null || showInNotes === undefined
+				? false
+				: assertNumber(showInNotes, "show_in_notes") === 1,
+	};
 }
 
 /**
@@ -83,48 +94,118 @@ export function mapRowsToTag(rows: DbRow[]): Tag[] {
  * @returns Fileの配列
  */
 export function mapRowsToFile(rows: DbRow[]): File[] {
-  return rows.map(mapRowToFile);
+	return rows.map(mapRowToFile);
 }
 
 /**
- * 型安全な文字列アサーション
- * @param value 値
- * @param fieldName フィールド名（エラーメッセージ用）
- * @returns 文字列
- * @throws Error 値が文字列でない場合
+ * RSSFeedにマッピングする
+ * @param row データベース行
+ * @returns RSSFeedオブジェクト
  */
-function assertString(value: unknown, fieldName: string): string {
-  if (typeof value !== "string") {
-    throw new ValidationError(`Expected string for field "${fieldName}", got ${typeof value}`);
-  }
-  return value;
+export function mapRowToRSSFeed(row: DbRow): RSSFeed {
+	return {
+		id: assertString(row.id, "id"),
+		url: assertString(row.url, "url"),
+		title: assertString(row.title, "title"),
+		last_fetched_at: assertNumberOrNull(row.last_fetched_at, "last_fetched_at"),
+	};
 }
 
 /**
- * 型安全な数値アサーション
- * @param value 値
- * @param fieldName フィールド名（エラーメッセージ用）
- * @returns 数値
- * @throws Error 値が数値でない場合
+ * 複数の行をRSSFeedの配列にマッピングする
+ * @param rows データベース行の配列
+ * @returns RSSFeedの配列
  */
-function assertNumber(value: unknown, fieldName: string): number {
-  if (typeof value !== "number") {
-    throw new ValidationError(`Expected number for field "${fieldName}", got ${typeof value}`);
-  }
-  return value;
+export function mapRowsToRSSFeed(rows: DbRow[]): RSSFeed[] {
+	return rows.map(mapRowToRSSFeed);
 }
 
 /**
- * 型安全なNoteTypeアサーション
- * @param value 値
- * @param fieldName フィールド名（エラーメッセージ用）
- * @returns NoteType
- * @throws Error 値がNoteTypeでない場合
+ * RSSItemにマッピングする
+ * @param row データベース行
+ * @returns RSSItemオブジェクト
  */
-function assertNoteType(value: unknown, fieldName: string): NoteType {
-  if (typeof value !== "string" || !["md", "rss", "web_clip"].includes(value)) {
-    throw new ValidationError(`Expected NoteType for field "${fieldName}", got ${typeof value}`);
-  }
-  return value as NoteType;
+export function mapRowToRSSItem(row: DbRow): RSSItem {
+	return {
+		note_id: assertString(row.note_id, "note_id"),
+		feed_id: assertString(row.feed_id, "feed_id"),
+		url: assertString(row.url, "url"),
+		content: assertString(row.content, "content"),
+		published_at: assertNumber(row.published_at, "published_at"),
+	};
+}
+
+/**
+ * 複数の行をRSSItemの配列にマッピングする
+ * @param rows データベース行の配列
+ * @returns RSSItemの配列
+ */
+export function mapRowsToRSSItem(rows: DbRow[]): RSSItem[] {
+	return rows.map(mapRowToRSSItem);
+}
+
+/**
+ * WebClipにマッピングする
+ * @param row データベース行
+ * @returns WebClipオブジェクト
+ */
+export function mapRowToWebClip(row: DbRow): WebClip {
+	return {
+		note_id: assertString(row.note_id, "note_id"),
+		source_url: assertString(row.source_url, "source_url"),
+		fetched_at: assertNumber(row.fetched_at, "fetched_at"),
+		content: assertString(row.content, "content"),
+	};
+}
+
+/**
+ * 複数の行をWebClipの配列にマッピングする
+ * @param rows データベース行の配列
+ * @returns WebClipの配列
+ */
+export function mapRowsToWebClip(rows: DbRow[]): WebClip[] {
+	return rows.map(mapRowToWebClip);
+}
+
+/**
+ * Linkにマッピングする
+ * @param row データベース行
+ * @returns Linkオブジェクト
+ */
+export function mapRowToLink(row: DbRow): Link {
+	return {
+		from_note_id: assertString(row.from_note_id, "from_note_id"),
+		to_note_id: assertString(row.to_note_id, "to_note_id"),
+	};
+}
+
+/**
+ * 複数の行をLinkの配列にマッピングする
+ * @param rows データベース行の配列
+ * @returns Linkの配列
+ */
+export function mapRowsToLink(rows: DbRow[]): Link[] {
+	return rows.map(mapRowToLink);
+}
+
+/**
+ * NoteMDにマッピングする
+ * @param row データベース行
+ * @returns NoteMDオブジェクト
+ */
+export function mapRowToNoteMD(row: DbRow): NoteMD {
+	return {
+		note_id: assertString(row.note_id, "note_id"),
+		content: assertString(row.content, "content"),
+	};
+}
+
+/**
+ * 複数の行をNoteMDの配列にマッピングする
+ * @param rows データベース行の配列
+ * @returns NoteMDの配列
+ */
+export function mapRowsToNoteMD(rows: DbRow[]): NoteMD[] {
+	return rows.map(mapRowToNoteMD);
 }
 

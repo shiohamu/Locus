@@ -3,6 +3,7 @@ import { NotFoundError, DatabaseError } from "../utils/errors.js";
 import { getDb } from "./db.js";
 import { mapRowToFile, mapRowsToFile } from "./utils/mappers.js";
 import { createQueryBuilder } from "./utils/query-builder.js";
+import { assertString } from "./utils/validators.js";
 
 /**
  * ファイルを作成する
@@ -168,7 +169,7 @@ export async function getNoteIdsByFile(fileId: string): Promise<string[]> {
     args: [fileId],
   });
 
-  return result.rows.map((row) => row.note_id as string);
+	return result.rows.map((row) => assertString(row.note_id, "note_id"));
 }
 
 /**

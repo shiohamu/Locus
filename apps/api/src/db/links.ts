@@ -1,5 +1,6 @@
 import type { Link } from "@locus/shared";
 import { getDb } from "./db.js";
+import { mapRowsToLink } from "./utils/mappers.js";
 
 /**
  * リンクを作成する
@@ -38,16 +39,10 @@ export async function getLinksByNote(noteId: string): Promise<{
     args: [noteId],
   });
 
-  return {
-    outgoing: outgoingResult.rows.map((row) => ({
-      from_note_id: row.from_note_id as string,
-      to_note_id: row.to_note_id as string,
-    })),
-    incoming: incomingResult.rows.map((row) => ({
-      from_note_id: row.from_note_id as string,
-      to_note_id: row.to_note_id as string,
-    })),
-  };
+	return {
+		outgoing: mapRowsToLink(outgoingResult.rows),
+		incoming: mapRowsToLink(incomingResult.rows),
+	};
 }
 
 /**

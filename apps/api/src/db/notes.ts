@@ -2,6 +2,7 @@ import type { NoteCore, NoteType } from "@locus/shared";
 import { getDb } from "./db.js";
 import { mapRowToNoteCore, mapRowsToNoteCore } from "./utils/mappers.js";
 import { createQueryBuilder } from "./utils/query-builder.js";
+import { assertString } from "./utils/validators.js";
 
 /**
  * ノートを作成する
@@ -237,15 +238,15 @@ export async function getNotesWithTags(options: {
     args: noteIds,
   });
 
-  // ノートID -> タグ名の配列のマップを作成
-  const tagsMap = new Map<string, string[]>();
-  for (const row of tagsResult.rows) {
-    const noteId = row.note_id as string;
-    const tagName = row.name as string;
-    const existing = tagsMap.get(noteId) || [];
-    existing.push(tagName);
-    tagsMap.set(noteId, existing);
-  }
+	// ノートID -> タグ名の配列のマップを作成
+	const tagsMap = new Map<string, string[]>();
+	for (const row of tagsResult.rows) {
+		const noteId = assertString(row.note_id, "note_id");
+		const tagName = assertString(row.name, "name");
+		const existing = tagsMap.get(noteId) || [];
+		existing.push(tagName);
+		tagsMap.set(noteId, existing);
+	}
 
   // タグがないノートもマップに含める（空配列）
   for (const note of notes) {

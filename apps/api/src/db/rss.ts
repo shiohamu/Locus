@@ -1,6 +1,12 @@
 import type { RSSFeed, RSSItem } from "@locus/shared";
 import { DatabaseError } from "../utils/errors.js";
 import { getDb } from "./db.js";
+import {
+	mapRowToRSSFeed,
+	mapRowToRSSItem,
+	mapRowsToRSSFeed,
+	mapRowsToRSSItem,
+} from "./utils/mappers.js";
 
 /**
  * RSSフィードを作成する
@@ -25,17 +31,11 @@ export async function getFeed(id: string): Promise<RSSFeed | null> {
     args: [id],
   });
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+	if (result.rows.length === 0) {
+		return null;
+	}
 
-  const row = result.rows[0];
-  return {
-    id: row.id as string,
-    url: row.url as string,
-    title: row.title as string,
-    last_fetched_at: (row.last_fetched_at as number | null) ?? null,
-  };
+	return mapRowToRSSFeed(result.rows[0]);
 }
 
 /**
@@ -55,16 +55,11 @@ export async function updateFeed(feed: RSSFeed): Promise<RSSFeed> {
  */
 export async function listFeeds(): Promise<RSSFeed[]> {
   const db = getDb();
-  const result = await db.execute({
-    sql: "SELECT id, url, title, last_fetched_at FROM rss_feeds ORDER BY title",
-  });
+	const result = await db.execute({
+		sql: "SELECT id, url, title, last_fetched_at FROM rss_feeds ORDER BY title",
+	});
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    url: row.url as string,
-    title: row.title as string,
-    last_fetched_at: (row.last_fetched_at as number | null) ?? null,
-  }));
+	return mapRowsToRSSFeed(result.rows);
 }
 
 /**
@@ -103,18 +98,11 @@ export async function getItemByNoteId(noteId: string): Promise<RSSItem | null> {
     args: [noteId],
   });
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+	if (result.rows.length === 0) {
+		return null;
+	}
 
-  const row = result.rows[0];
-  return {
-    note_id: row.note_id as string,
-    feed_id: row.feed_id as string,
-    url: row.url as string,
-    content: row.content as string,
-    published_at: row.published_at as number,
-  };
+	return mapRowToRSSItem(result.rows[0]);
 }
 
 /**
@@ -130,13 +118,7 @@ export async function getItemsByFeed(feedId: string): Promise<RSSItem[]> {
     args: [feedId],
   });
 
-  return result.rows.map((row) => ({
-    note_id: row.note_id as string,
-    feed_id: row.feed_id as string,
-    url: row.url as string,
-    content: row.content as string,
-    published_at: row.published_at as number,
-  }));
+	return mapRowsToRSSItem(result.rows);
 }
 
 /**

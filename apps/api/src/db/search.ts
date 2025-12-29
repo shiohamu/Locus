@@ -1,5 +1,6 @@
 import type { NoteCore } from "@locus/shared";
 import { getDb } from "./db.js";
+import { mapRowsToNoteCore } from "./utils/mappers.js";
 
 /**
  * 全文検索を実行する
@@ -22,14 +23,7 @@ export async function searchNotes(
     args: [query, limit, offset],
   });
 
-  return result.rows.map((row) => ({
-    id: row.id as string,
-    type: row.type as "md" | "rss",
-    title: row.title as string,
-    created_at: row.created_at as number,
-    updated_at: row.updated_at as number,
-    deleted_at: (row.deleted_at as number | null) ?? null,
-  }));
+	return mapRowsToNoteCore(result.rows);
 }
 
 /**

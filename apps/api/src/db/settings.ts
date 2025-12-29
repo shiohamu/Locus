@@ -1,5 +1,6 @@
 import type { LLMConfig } from "@locus/shared";
 import { getDb } from "./db.js";
+import { assertLLMConfig, assertString } from "./utils/validators.js";
 
 /**
  * 設定を取得する
@@ -11,11 +12,11 @@ export async function getSetting(key: string): Promise<string | null> {
     args: [key],
   });
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+	if (result.rows.length === 0) {
+		return null;
+	}
 
-  return result.rows[0].value as string;
+	return assertString(result.rows[0].value, "value");
 }
 
 /**
@@ -40,11 +41,17 @@ export async function getLLMConfig(): Promise<LLMConfig | null> {
   if (!configJson) {
     return null;
   }
-  try {
-    return JSON.parse(configJson) as LLMConfig;
-  } catch {
-    return null;
-  }
+	try {
+		const parsed = JSON.parse(configJson);
+		return assertLLMConfig(parsed);
+	} catch (error) {
+		if (error instanceof SyntaxError) {
+			return null;
+		}
+		// ValidationErrorの場合は再スロー
+		throw error;
+	}
+}
 }
 
 /**
