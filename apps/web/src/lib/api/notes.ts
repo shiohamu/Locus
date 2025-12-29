@@ -208,3 +208,40 @@ export async function getNotesByTags(options: {
     cacheTTL: 2 * 60 * 1000, // 2分
   });
 }
+
+/**
+ * ノート一覧とタグ情報を一度に取得（最適化版）
+ * @param options 取得オプション
+ * @param options.tagNames タグ名の配列
+ * @param options.type ノートタイプ（"md" | "rss"）
+ * @param options.limit 取得件数
+ * @param options.offset オフセット
+ * @returns ノート一覧とタグマップ
+ * @throws {Error} APIエラーが発生した場合
+ */
+export async function getNotesWithTags(options: {
+  tagNames?: string[];
+  type?: "md" | "rss";
+  limit?: number;
+  offset?: number;
+}): Promise<{
+  notes: NoteCore[];
+  tagsMap: Record<string, string[]>;
+}> {
+  const params = new URLSearchParams();
+  if (options.tagNames && options.tagNames.length > 0) {
+    params.set("tags", options.tagNames.join(","));
+  }
+  if (options.type) params.set("type", options.type);
+  if (options.limit) params.set("limit", String(options.limit));
+  if (options.offset) params.set("offset", String(options.offset));
+
+  const query = params.toString();
+  return apiRequest<{ notes: NoteCore[]; tagsMap: Record<string, string[]> }>(
+    `/notes/with-tags${query ? `?${query}` : ""}`,
+    {
+      useCache: true,
+      cacheTTL: 2 * 60 * 1000, // 2分
+    }
+  );
+}

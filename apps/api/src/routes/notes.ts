@@ -37,6 +37,38 @@ app.post("/", async (c) => {
 });
 
 /**
+ * ノート一覧とタグ情報を一度に取得（最適化版）
+ * GET /notes/with-tags?type=md&tags=tag1,tag2&limit=100&offset=0
+ */
+app.get("/with-tags", async (c) => {
+  const type = c.req.query("type") as NoteType | undefined;
+  const tagsParam = c.req.query("tags");
+  const tagNames = tagsParam ? tagsParam.split(",").map((t) => t.trim()).filter(Boolean) : [];
+  const limitParam = c.req.query("limit");
+  const limit = limitParam ? Number.parseInt(limitParam, 10) : undefined;
+  const offsetParam = c.req.query("offset");
+  const offset = offsetParam ? Number.parseInt(offsetParam, 10) : undefined;
+
+  const { notes, tagsMap } = await notesDb.getNotesWithTags({
+    type,
+    tagNames,
+    limit,
+    offset,
+  });
+
+  // Mapをオブジェクトに変換（JSONシリアライズ可能にする）
+  const tagsMapObj: Record<string, string[]> = {};
+  for (const [noteId, tags] of tagsMap.entries()) {
+    tagsMapObj[noteId] = tags;
+  }
+
+  return c.json({
+    notes,
+    tagsMap: tagsMapObj,
+  });
+});
+
+/**
  * ノート取得
  * GET /notes/:id
  */

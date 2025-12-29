@@ -221,3 +221,65 @@ export async function listPublicNotes(options: {
     public: (row.public as number | undefined) ?? 1,
   }));
 }
+
+/**
+ * ノート一覧とタグ情報を一度に取得する（最適化版）
+ * ノートID -> タグ名の配列のマップを返す
+ */
+export async function getNotesWithTags(options: {
+  type?: NoteType;
+  tagNames?: string[];
+  limit?: number;
+  offset?: number;
+}): Promise<{
+  notes: NoteCore[];
+  tagsMap: Map<string, string[]>;
+}> {
+  const db = getDb();
+  const { type, tagNames = [], limit = 10000, offset = 0 } = options;
+
+  // ノート一覧を取得
+  let notes: NoteCore[];
+  if (tagNames.length > 0) {
+    notes = await listNotesByTags({ type, tagNames, limit, offset });
+  } else {
+    notes = await listNotes({ type, limit, offset });
+  }
+
+  if (notes.length === 0) {
+    return { notes: [], tagsMap: new Map() };
+  }
+
+  // ノートIDのリストを作成
+  const noteIds = notes.map((n) => n.id);
+  const placeholders = noteIds.map(() => "?").join(",");
+
+  // すべてのノートのタグを一度に取得（JOINクエリで効率化）
+  const tagsResult = await db.execute({
+    sql: `SELECT nt.note_id, t.name
+          FROM note_tags nt
+          INNER JOIN tags t ON nt.tag_id = t.id
+          WHERE nt.note_id IN (${placeholders})
+          ORDER BY nt.note_id, t.name`,
+    args: noteIds,
+  });
+
+  // ノートID -> タグ名の配列のマップを作成
+  const tagsMap = new Map<string, string[]>();
+  for (const row of tagsResult.rows) {
+    const noteId = row.note_id as string;
+    const tagName = row.name as string;
+    const existing = tagsMap.get(noteId) || [];
+    existing.push(tagName);
+    tagsMap.set(noteId, existing);
+  }
+
+  // タグがないノートもマップに含める（空配列）
+  for (const note of notes) {
+    if (!tagsMap.has(note.id)) {
+      tagsMap.set(note.id, []);
+    }
+  }
+
+  return { notes, tagsMap };
+}

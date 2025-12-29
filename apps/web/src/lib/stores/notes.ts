@@ -4,9 +4,8 @@
  * ノート一覧の状態管理を行います。
  */
 
-import { getNotes, getNotesByTags } from "$lib/api";
+import { getNotes, getNotesByTags, getNotesWithTags } from "$lib/api";
 import { getFiles } from "$lib/api/files";
-import { getTagsByNote } from "$lib/api/tags";
 import { type FilterType, filterNotes } from "$lib/services/filtering";
 import { type SortBy, type SortOrder, sortNotes } from "$lib/services/sorting";
 import type { File, NoteCore } from "$lib/types";
@@ -52,39 +51,31 @@ function createNotesStore() {
   return {
     subscribe,
     /**
-     * ノートを読み込む
+     * ノートを読み込む（最適化版：N+1クエリを解消）
      */
     async loadNotes() {
       update((state) => ({ ...state, loading: true, error: null }));
       try {
         const currentState = get(store);
-        let notes: NoteCore[];
-        if (currentState.filterTags.length > 0) {
-          notes = await getNotesByTags({
-            tagNames: currentState.filterTags,
-            type: currentState.filterType !== "all" ? currentState.filterType : undefined,
-            limit: 10000,
-          });
-        } else {
-          notes = await getNotes({
-            type: currentState.filterType !== "all" ? currentState.filterType : undefined,
-            limit: 10000,
-          });
-        }
 
-        // タグ情報を取得（バッチ処理で効率化）
+        // ノート一覧とタグ情報を一度に取得（最適化版APIを使用）
+        const { notes, tagsMap: tagsMapObj } = await getNotesWithTags({
+          tagNames: currentState.filterTags.length > 0 ? currentState.filterTags : undefined,
+          type: currentState.filterType !== "all" ? currentState.filterType : undefined,
+          limit: 10000,
+        });
+
+        // オブジェクトからMapに変換（タグ名をソート）
         const tagsMap = new Map<string, string[]>();
-        await Promise.all(
-          notes.map(async (note) => {
-            try {
-              const tags = await getTagsByNote(note.id);
-              tagsMap.set(note.id, tags.map((t) => t.name).sort());
-            } catch {
-              // タグ取得に失敗した場合は空配列
-              tagsMap.set(note.id, []);
-            }
-          })
-        );
+        for (const [noteId, tags] of Object.entries(tagsMapObj)) {
+          tagsMap.set(noteId, tags.sort());
+        }
+        // タグがないノートもマップに含める（空配列）
+        for (const note of notes) {
+          if (!tagsMap.has(note.id)) {
+            tagsMap.set(note.id, []);
+          }
+        }
 
         // ノート一覧に表示するファイルを取得
         const allFiles = await getFiles({ limit: 10000 });

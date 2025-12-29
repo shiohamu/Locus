@@ -9,6 +9,7 @@ export { getApiBaseUrl, apiRequest } from "./base.js";
 export {
   getNotes,
   getNotesByTags,
+  getNotesWithTags,
   getNote,
   createNote,
   updateNote,
