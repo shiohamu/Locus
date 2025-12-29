@@ -52,7 +52,6 @@ export async function getLLMConfig(): Promise<LLMConfig | null> {
 		throw error;
 	}
 }
-}
 
 /**
  * LLM設定を保存する

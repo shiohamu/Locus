@@ -3,124 +3,137 @@ import { getDb } from "./db.js";
 import { mapRowToNoteCore, mapRowsToNoteCore } from "./utils/mappers.js";
 import { createQueryBuilder } from "./utils/query-builder.js";
 import { assertString } from "./utils/validators.js";
+import { handleDbOperation, handleDbOperationNullable } from "./utils/error-handler.js";
 
 /**
  * ノートを作成する
  */
 export async function createNote(note: NoteCore): Promise<NoteCore> {
-  const db = getDb();
-  await db.execute({
-    sql: `INSERT INTO notes_core (id, type, title, created_at, updated_at, deleted_at, public)
+	return handleDbOperation(`createNote(${note.id})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: `INSERT INTO notes_core (id, type, title, created_at, updated_at, deleted_at, public)
               VALUES (?, ?, ?, ?, ?, ?, ?)`,
-    args: [
-      note.id,
-      note.type,
-      note.title,
-      note.created_at,
-      note.updated_at,
-      note.deleted_at ?? null,
-      note.public ?? 0,
-    ],
-  });
-  return note;
+			args: [
+				note.id,
+				note.type,
+				note.title,
+				note.created_at,
+				note.updated_at,
+				note.deleted_at ?? null,
+				note.public ?? 0,
+			],
+		});
+		return note;
+	});
 }
 
 /**
  * ノートを取得する
  */
 export async function getNote(id: string): Promise<NoteCore | null> {
-  const db = getDb();
-  const result = await db.execute({
-    sql: `SELECT id, type, title, created_at, updated_at, deleted_at, public
+	return handleDbOperationNullable(`getNote(${id})`, async () => {
+		const db = getDb();
+		const result = await db.execute({
+			sql: `SELECT id, type, title, created_at, updated_at, deleted_at, public
               FROM notes_core
               WHERE id = ? AND deleted_at IS NULL`,
-    args: [id],
-  });
+			args: [id],
+		});
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+		if (result.rows.length === 0) {
+			return null;
+		}
 
-  return mapRowToNoteCore(result.rows[0]);
+		return mapRowToNoteCore(result.rows[0]);
+	});
 }
 
 /**
  * ノートを更新する
  */
 export async function updateNote(note: NoteCore): Promise<NoteCore> {
-  const db = getDb();
-  await db.execute({
-    sql: `UPDATE notes_core
+	return handleDbOperation(`updateNote(${note.id})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: `UPDATE notes_core
               SET type = ?, title = ?, updated_at = ?, deleted_at = ?, public = ?
               WHERE id = ?`,
-    args: [
-      note.type,
-      note.title,
-      note.updated_at,
-      note.deleted_at ?? null,
-      note.public ?? 0,
-      note.id,
-    ],
-  });
-  return note;
+			args: [
+				note.type,
+				note.title,
+				note.updated_at,
+				note.deleted_at ?? null,
+				note.public ?? 0,
+				note.id,
+			],
+		});
+		return note;
+	});
 }
 
 /**
  * ノートを削除する（論理削除）
  */
 export async function deleteNote(id: string, deletedAt: number): Promise<void> {
-  const db = getDb();
-  await db.execute({
-    sql: "UPDATE notes_core SET deleted_at = ? WHERE id = ?",
-    args: [deletedAt, id],
-  });
+	return handleDbOperation(`deleteNote(${id})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: "UPDATE notes_core SET deleted_at = ? WHERE id = ?",
+			args: [deletedAt, id],
+		});
+	});
 }
 
 /**
  * 複数のノートを一括削除する（論理削除）
  */
 export async function deleteNotesBatch(ids: string[], deletedAt: number): Promise<void> {
-  if (ids.length === 0) {
-    return;
-  }
+	if (ids.length === 0) {
+		return;
+	}
 
-  const db = getDb();
-  // プレースホルダーを生成
-  const placeholders = ids.map(() => "?").join(",");
-  await db.execute({
-    sql: `UPDATE notes_core SET deleted_at = ? WHERE id IN (${placeholders})`,
-    args: [deletedAt, ...ids],
-  });
+	return handleDbOperation(`deleteNotesBatch(${ids.length} notes)`, async () => {
+		const db = getDb();
+		// プレースホルダーを生成
+		const placeholders = ids.map(() => "?").join(",");
+		await db.execute({
+			sql: `UPDATE notes_core SET deleted_at = ? WHERE id IN (${placeholders})`,
+			args: [deletedAt, ...ids],
+		});
+	});
 }
 
 /**
  * ノート一覧を取得する
  */
 export async function listNotes(options: {
-  type?: NoteType;
-  limit?: number;
-  offset?: number;
+	type?: NoteType;
+	limit?: number;
+	offset?: number;
 }): Promise<NoteCore[]> {
-  const db = getDb();
-  const { type, limit = 100, offset = 0 } = options;
+	return handleDbOperation("listNotes", async () => {
+		const db = getDb();
+		const { type, limit = 100, offset = 0 } = options;
 
-  const query = createQueryBuilder()
-    .select(["id", "type", "title", "created_at", "updated_at", "deleted_at", "public"])
-    .from("notes_core")
-    .where("deleted_at IS NULL");
+		const query = createQueryBuilder()
+			.select(["id", "type", "title", "created_at", "updated_at", "deleted_at", "public"])
+			.from("notes_core")
+			.where("deleted_at IS NULL");
 
-  if (type) {
-    query.andWhere("type = ?", type);
-  }
+		if (type) {
+			query.andWhere("type = ?", type);
+		}
 
-  query.orderBy("updated_at", "DESC").limit(limit, offset);
+		query.orderBy("updated_at", "DESC").limit(limit, offset);
 
-  const result = await db.execute({
-    sql: query.toSQL(),
-    args: query.getArgs(),
-  });
+		const result = await db.execute({
+			sql: query.toSQL(),
+			args: query.getArgs(),
+		});
 
-  return mapRowsToNoteCore(result.rows);
+		return mapRowsToNoteCore(result.rows);
+	});
 }
 
 /**

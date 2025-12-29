@@ -4,42 +4,47 @@ import { getDb } from "./db.js";
 import { mapRowToFile, mapRowsToFile } from "./utils/mappers.js";
 import { createQueryBuilder } from "./utils/query-builder.js";
 import { assertString } from "./utils/validators.js";
+import { handleDbOperation, handleDbOperationNullable } from "./utils/error-handler.js";
 
 /**
  * ファイルを作成する
  */
 export async function createFile(file: File): Promise<File> {
-  const db = getDb();
-  await db.execute({
-    sql: `INSERT INTO files (id, filename, mime_type, size, created_at, show_in_notes)
+	return handleDbOperation(`createFile(${file.id})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: `INSERT INTO files (id, filename, mime_type, size, created_at, show_in_notes)
               VALUES (?, ?, ?, ?, ?, ?)`,
-    args: [
-      file.id,
-      file.filename,
-      file.mime_type,
-      file.size,
-      file.created_at,
-      file.show_in_notes ? 1 : 0,
-    ],
-  });
-  return file;
+			args: [
+				file.id,
+				file.filename,
+				file.mime_type,
+				file.size,
+				file.created_at,
+				file.show_in_notes ? 1 : 0,
+			],
+		});
+		return file;
+	});
 }
 
 /**
  * ファイルを取得する
  */
 export async function getFile(id: string): Promise<File | null> {
-  const db = getDb();
-  const result = await db.execute({
-    sql: "SELECT id, filename, mime_type, size, created_at, show_in_notes FROM files WHERE id = ?",
-    args: [id],
-  });
+	return handleDbOperationNullable(`getFile(${id})`, async () => {
+		const db = getDb();
+		const result = await db.execute({
+			sql: "SELECT id, filename, mime_type, size, created_at, show_in_notes FROM files WHERE id = ?",
+			args: [id],
+		});
 
-  if (result.rows.length === 0) {
-    return null;
-  }
+		if (result.rows.length === 0) {
+			return null;
+		}
 
-  return mapRowToFile(result.rows[0]);
+		return mapRowToFile(result.rows[0]);
+	});
 }
 
 /**
@@ -131,32 +136,34 @@ export async function getFilesByNote(noteId: string): Promise<File[]> {
  * ファイルを更新する
  */
 export async function updateFile(id: string, updates: Partial<File>): Promise<File> {
-  const db = getDb();
-  const existing = await getFile(id);
-  if (!existing) {
-    throw new NotFoundError("File", id);
-  }
+	return handleDbOperation(`updateFile(${id})`, async () => {
+		const db = getDb();
+		const existing = await getFile(id);
+		if (!existing) {
+			throw new NotFoundError("File", id);
+		}
 
-  const updated: File = {
-    ...existing,
-    ...updates,
-    id, // IDは変更不可
-  };
+		const updated: File = {
+			...existing,
+			...updates,
+			id, // IDは変更不可
+		};
 
-  await db.execute({
-    sql: `UPDATE files SET filename = ?, mime_type = ?, size = ?, created_at = ?, show_in_notes = ?
+		await db.execute({
+			sql: `UPDATE files SET filename = ?, mime_type = ?, size = ?, created_at = ?, show_in_notes = ?
               WHERE id = ?`,
-    args: [
-      updated.filename,
-      updated.mime_type,
-      updated.size,
-      updated.created_at,
-      updated.show_in_notes ? 1 : 0,
-      id,
-    ],
-  });
+			args: [
+				updated.filename,
+				updated.mime_type,
+				updated.size,
+				updated.created_at,
+				updated.show_in_notes ? 1 : 0,
+				id,
+			],
+		});
 
-  return updated;
+		return updated;
+	});
 }
 
 /**

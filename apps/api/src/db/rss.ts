@@ -7,35 +7,40 @@ import {
 	mapRowsToRSSFeed,
 	mapRowsToRSSItem,
 } from "./utils/mappers.js";
+import { handleDbOperation, handleDbOperationNullable } from "./utils/error-handler.js";
 
 /**
  * RSSフィードを作成する
  */
 export async function createFeed(feed: RSSFeed): Promise<RSSFeed> {
-  const db = getDb();
-  await db.execute({
-    sql: `INSERT INTO rss_feeds (id, url, title, last_fetched_at)
+	return handleDbOperation(`createFeed(${feed.id})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: `INSERT INTO rss_feeds (id, url, title, last_fetched_at)
               VALUES (?, ?, ?, ?)`,
-    args: [feed.id, feed.url, feed.title, feed.last_fetched_at ?? null],
-  });
-  return feed;
+			args: [feed.id, feed.url, feed.title, feed.last_fetched_at ?? null],
+		});
+		return feed;
+	});
 }
 
 /**
  * RSSフィードを取得する
  */
 export async function getFeed(id: string): Promise<RSSFeed | null> {
-  const db = getDb();
-  const result = await db.execute({
-    sql: "SELECT id, url, title, last_fetched_at FROM rss_feeds WHERE id = ?",
-    args: [id],
-  });
+	return handleDbOperationNullable(`getFeed(${id})`, async () => {
+		const db = getDb();
+		const result = await db.execute({
+			sql: "SELECT id, url, title, last_fetched_at FROM rss_feeds WHERE id = ?",
+			args: [id],
+		});
 
-	if (result.rows.length === 0) {
-		return null;
-	}
+		if (result.rows.length === 0) {
+			return null;
+		}
 
-	return mapRowToRSSFeed(result.rows[0]);
+		return mapRowToRSSFeed(result.rows[0]);
+	});
 }
 
 /**
@@ -125,16 +130,18 @@ export async function getItemsByFeed(feedId: string): Promise<RSSItem[]> {
  * RSSアイテムのコンテンツを更新する
  */
 export async function updateItem(noteId: string, content: string): Promise<RSSItem> {
-  const db = getDb();
-  await db.execute({
-    sql: "UPDATE rss_items SET content = ? WHERE note_id = ?",
-    args: [content, noteId],
-  });
+	return handleDbOperation(`updateItem(${noteId})`, async () => {
+		const db = getDb();
+		await db.execute({
+			sql: "UPDATE rss_items SET content = ? WHERE note_id = ?",
+			args: [content, noteId],
+		});
 
-  const updated = await getItemByNoteId(noteId);
-  if (!updated) {
-    throw new DatabaseError("Failed to update RSS item", { noteId });
-  }
+		const updated = await getItemByNoteId(noteId);
+		if (!updated) {
+			throw new DatabaseError("Failed to update RSS item", { noteId });
+		}
 
-  return updated;
+		return updated;
+	});
 }

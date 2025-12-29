@@ -81,7 +81,7 @@ describe("export json", () => {
     await notesMDDb.createNoteMD({ note_id: note1.id, content: "Content 1" });
 
     const tag = await tagsDb.createTag({ id: crypto.randomUUID(), name: "test-tag" });
-    await tagsDb.linkTagToNote(tag.id, note1.id);
+    await tagsDb.addTagToNote({ note_id: note1.id, tag_id: tag.id });
 
     const data = await exportJSON();
 
