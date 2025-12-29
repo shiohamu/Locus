@@ -56,7 +56,7 @@ export default defineConfig({
           proxy.on("proxyRes", (proxyRes, req, _res) => {
             console.log("Received Response from the Target:", proxyRes.statusCode, req.url);
             // Keep-Aliveを有効にする
-            proxyRes.headers["connection"] = "keep-alive";
+            proxyRes.headers.connection = "keep-alive";
           });
         },
       },

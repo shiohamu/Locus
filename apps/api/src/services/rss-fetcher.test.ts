@@ -26,7 +26,7 @@ const mockParseURL = spyOn(Parser.prototype, "parseURL").mockImplementation(asyn
         pubDate: new Date().toISOString(),
       },
     ],
-  } as any;
+  } as Awaited<ReturnType<typeof Parser.prototype.parseURL>>;
 });
 
 describe("rss-fetcher", () => {

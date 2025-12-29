@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, spyOn, test } from "bun:test";
+import type { MessageResponse } from "$lib/types/api";
 import type { SyncPullResponse } from "@locus/shared";
 import * as api from "./api/index.js";
 import * as storage from "./storage.js";
@@ -73,7 +74,7 @@ describe("sync", () => {
     };
 
     mockGetLastSync.mockResolvedValue(null);
-    mockSyncPull.mockResolvedValue(mockResponse as any);
+    mockSyncPull.mockResolvedValue(mockResponse);
     mockGetNote.mockResolvedValue(null);
     mockSaveNote.mockResolvedValue();
     mockSaveNoteMD.mockResolvedValue();
@@ -123,7 +124,7 @@ describe("sync", () => {
     };
 
     mockGetLastSync.mockResolvedValue(null);
-    mockSyncPull.mockResolvedValue(mockResponse as any);
+    mockSyncPull.mockResolvedValue(mockResponse);
     mockGetNote.mockResolvedValue(existingNote);
     mockSaveNote.mockResolvedValue();
     mockSaveLastSync.mockResolvedValue();
@@ -165,7 +166,7 @@ describe("sync", () => {
     };
 
     mockGetLastSync.mockResolvedValue(null);
-    mockSyncPull.mockResolvedValue(mockResponse as any);
+    mockSyncPull.mockResolvedValue(mockResponse);
     mockGetNote.mockResolvedValue(existingNote);
     mockSaveLastSync.mockResolvedValue();
 
@@ -196,7 +197,7 @@ describe("sync", () => {
       note_id: "1",
       content: "Test content",
     });
-    mockSyncPush.mockResolvedValue({} as any);
+    mockSyncPush.mockResolvedValue({ message: "ok" } as MessageResponse);
     mockSaveLastSync.mockResolvedValue();
 
     await sync.pushSync();
@@ -215,13 +216,13 @@ describe("sync", () => {
     };
 
     mockGetLastSync.mockResolvedValue(null);
-    mockSyncPull.mockResolvedValue(mockPullResponse as any);
+    mockSyncPull.mockResolvedValue(mockPullResponse);
     mockGetNote.mockResolvedValue(null);
     mockGetAllNotes.mockResolvedValue([]);
     mockGetAllTags.mockResolvedValue([]);
     mockGetAllLinks.mockResolvedValue([]);
     mockGetAllFeeds.mockResolvedValue([]);
-    mockSyncPush.mockResolvedValue({} as any);
+    mockSyncPush.mockResolvedValue({ message: "ok" } as MessageResponse);
     mockSaveLastSync.mockResolvedValue();
 
     const result = await sync.sync();

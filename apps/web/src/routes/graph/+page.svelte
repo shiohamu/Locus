@@ -4,10 +4,19 @@ import { getGraphData, getTags } from "$lib/api";
 import type { GraphData } from "@locus/shared";
 import { onDestroy, onMount, tick } from "svelte";
 
+// vis-networkのNetwork型の簡易定義
+interface VisNetwork {
+  on(event: string, callback: (params: { nodes: string[] }) => void): void;
+  off(event: string, callback?: (params: { nodes: string[] }) => void): void;
+  destroy(): void;
+  focus(nodeId: string, options?: { scale?: number; animation?: boolean }): void;
+  setOptions(options: { physics?: { enabled: boolean } }): void;
+}
+
 let graphData: GraphData | null = null;
 let loading = true;
 let error: string | null = null;
-let network: any = null;
+let network: VisNetwork | null = null;
 let networkContainer: HTMLDivElement | null = null;
 let visNetworkLoaded = false;
 let isRendering = false;
@@ -122,7 +131,7 @@ async function loadTags() {
 }
 
 // vis-networkを動的に読み込む
-let visNetworkModule: any = null;
+let visNetworkModule: unknown = null;
 async function loadVisNetwork() {
   if (!browser) return null;
 
@@ -137,8 +146,7 @@ async function loadVisNetwork() {
     return visNetwork;
   } catch (e) {
     console.error("Failed to load vis-network:", e);
-    error =
-      "グラフライブラリの読み込みに失敗しました: " + (e instanceof Error ? e.message : String(e));
+    error = `グラフライブラリの読み込みに失敗しました: ${e instanceof Error ? e.message : String(e)}`;
     return null;
   }
 }
@@ -224,7 +232,7 @@ async function renderGraph() {
     const color = getNodeColor(node.type);
     return {
       id: node.id,
-      label: node.label.length > 30 ? node.label.substring(0, 30) + "..." : node.label,
+      label: node.label.length > 30 ? `${node.label.substring(0, 30)}...` : node.label,
       title: `${node.label}\nタイプ: ${node.type}\nタグ: ${node.tags.join(", ") || "なし"}`,
       color: {
         background: color.background,
@@ -313,13 +321,13 @@ async function renderGraph() {
     if (dev) {
       console.log("Creating network with", nodes.length, "nodes,", edges.length, "edges");
     }
-    network = new Network(networkContainer, data, options);
+    network = new Network(networkContainer, data, options) as VisNetwork;
     if (dev) {
       console.log("Network created successfully");
     }
 
     // ノードクリック時のイベント
-    network.on("click", (params: any) => {
+    network.on("click", (params: { nodes: string[] }) => {
       if (params.nodes.length > 0) {
         const nodeId = params.nodes[0] as string;
         // ノートページに遷移
@@ -328,7 +336,7 @@ async function renderGraph() {
     });
 
     // ダブルクリックでズーム
-    network.on("doubleClick", (params: any) => {
+    network.on("doubleClick", (params: { nodes: string[] }) => {
       if (params.nodes.length > 0) {
         const nodeId = params.nodes[0] as string;
         network?.focus(nodeId, {

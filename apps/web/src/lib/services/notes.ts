@@ -6,7 +6,6 @@
 
 import { createNote, deleteNote, getNote, getNotes, updateNote } from "$lib/api";
 import type { NoteCore } from "$lib/types";
-import type { NoteCore } from "$lib/types";
 import { type FilterType, filterNotes } from "./filtering";
 import { paginate } from "./pagination";
 import { type SortBy, type SortOrder, sortNotes } from "./sorting";
