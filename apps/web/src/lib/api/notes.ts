@@ -100,6 +100,28 @@ export async function deleteNote(id: string): Promise<void> {
 }
 
 /**
+ * ノート一括削除
+ * @param noteIds ノートIDの配列
+ * @throws {Error} APIエラーが発生した場合
+ */
+export async function deleteNotesBatch(noteIds: string[]): Promise<void> {
+  if (noteIds.length === 0) {
+    return;
+  }
+
+  await apiRequest<void>("/notes/batch", {
+    method: "DELETE",
+    body: JSON.stringify({ note_ids: noteIds }),
+  });
+  // ノート一覧のキャッシュを無効化
+  apiCache.deletePattern("/notes");
+  // 各ノートのキャッシュも無効化
+  noteIds.forEach((id) => {
+    apiCache.delete(`/notes/${id}`);
+  });
+}
+
+/**
  * Markdownノート作成
  * @param data ノート作成データ
  * @returns 作成されたMarkdownノート情報
@@ -154,4 +176,35 @@ export async function updateNoteMD(id: string, data: UpdateNoteMDRequest): Promi
  */
 export async function getNoteLinks(noteId: string): Promise<NoteLinksResponse[]> {
   return apiRequest<NoteLinksResponse[]>(`/notes/${noteId}/links`);
+}
+
+/**
+ * タグでフィルタリングされたノート一覧取得
+ * @param options 取得オプション
+ * @param options.tagNames タグ名の配列
+ * @param options.type ノートタイプ（"md" | "rss"）
+ * @param options.limit 取得件数
+ * @param options.offset オフセット
+ * @returns ノート一覧
+ * @throws {Error} APIエラーが発生した場合
+ */
+export async function getNotesByTags(options: {
+  tagNames: string[];
+  type?: "md" | "rss";
+  limit?: number;
+  offset?: number;
+}): Promise<NoteCore[]> {
+  const params = new URLSearchParams();
+  if (options.tagNames.length > 0) {
+    params.set("tags", options.tagNames.join(","));
+  }
+  if (options.type) params.set("type", options.type);
+  if (options.limit) params.set("limit", String(options.limit));
+  if (options.offset) params.set("offset", String(options.offset));
+
+  const query = params.toString();
+  return apiRequest<NoteCore[]>(`/notes${query ? `?${query}` : ""}`, {
+    useCache: true,
+    cacheTTL: 2 * 60 * 1000, // 2分
+  });
 }

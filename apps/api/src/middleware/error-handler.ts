@@ -9,6 +9,27 @@ export const errorHandler: ErrorHandler = (err, c) => {
     return c.json({ error: err.message }, err.status);
   }
 
-  console.error("Unhandled error:", err);
-  return c.json({ error: "Internal Server Error" }, 500);
+  // 詳細なエラー情報をログに出力
+  console.error("Unhandled error:", {
+    message: err instanceof Error ? err.message : String(err),
+    stack: err instanceof Error ? err.stack : undefined,
+    name: err instanceof Error ? err.name : undefined,
+    path: c.req.path,
+    method: c.req.method,
+    url: c.req.url,
+  });
+
+  // 開発環境では詳細なエラー情報を返す
+  const isDevelopment = process.env.NODE_ENV !== "production";
+  const errorMessage = err instanceof Error ? err.message : "Internal Server Error";
+  const errorDetails = isDevelopment
+    ? {
+        error: errorMessage,
+        stack: err instanceof Error ? err.stack : undefined,
+        path: c.req.path,
+        method: c.req.method,
+      }
+    : { error: "Internal Server Error" };
+
+  return c.json(errorDetails, 500);
 };

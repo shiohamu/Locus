@@ -100,9 +100,18 @@ export async function unlinkFileFromNote(fileId: string, noteId: string): Promis
  * ノートに紐づくファイル一覧取得
  */
 export async function getFilesByNote(noteId: string): Promise<FileType[]> {
-  // このエンドポイントは実装されていないため、全ファイルを取得してフィルタリング
-  // 将来的には専用エンドポイントを追加することを推奨
-  const files = await getFiles();
-  // 注意: この実装は非効率なので、将来的に改善が必要
-  return files;
+  return apiRequest<FileType[]>(`/files?note_id=${noteId}`);
+}
+
+/**
+ * ファイル更新
+ */
+export async function updateFile(
+  id: string,
+  updates: { filename?: string; show_in_notes?: boolean }
+): Promise<FileType> {
+  return apiRequest<FileType>(`/files/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(updates),
+  });
 }

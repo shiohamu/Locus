@@ -6,6 +6,7 @@ import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import NoteActions from "$lib/components/NoteActions.svelte";
 import NoteEdit from "$lib/components/NoteEdit.svelte";
 import NoteHeader from "$lib/components/NoteHeader.svelte";
+import FileEmbedder from "$lib/components/FileEmbedder.svelte";
 import NoteLinks from "$lib/components/NoteLinks.svelte";
 import NoteMeta from "$lib/components/NoteMeta.svelte";
 import NoteSummary from "$lib/components/NoteSummary.svelte";
@@ -56,21 +57,26 @@ async function loadNote() {
   webClip = result.webClip;
   error = result.error;
 
-  if (note && noteMD) {
+  if (note) {
     title = note.title;
-    content = noteMD.content;
-    autoSaveManager?.updateSavedState(title, content);
-  } else if (rssItem) {
-    content = rssItem.content || "";
-  } else if (webClip) {
-    content = webClip.content || "";
+    if (note.type === "md" && noteMD) {
+      content = noteMD.content;
+      autoSaveManager?.updateSavedState(title, content);
+    } else if (note.type === "rss" && rssItem) {
+      content = rssItem.content || "";
+      autoSaveManager?.updateSavedState(title, content);
+    } else if (note.type === "web_clip" && webClip) {
+      content = webClip.content || "";
+    }
   }
 
   loading = false;
 }
 
 async function handleSave(silent = false) {
-  if (!note || !noteMD) return;
+  if (!note) return;
+  if (note.type === "md" && !noteMD) return;
+  if (note.type === "rss" && !rssItem) return;
 
   if (!silent) {
     saving = true;
@@ -78,7 +84,7 @@ async function handleSave(silent = false) {
   error = null;
 
   try {
-    await saveNoteData(noteId, note, noteMD, title, content);
+    await saveNoteData(noteId, note, noteMD, rssItem, title, content);
     autoSaveManager?.updateSavedState(title, content);
 
     if (!silent) {
@@ -121,20 +127,33 @@ async function handleDelete() {
 }
 
 function startEdit() {
-  if (note && noteMD) {
-    title = note.title;
+  if (!note) return;
+
+  title = note.title;
+  if (note.type === "md" && noteMD) {
     content = noteMD.content;
-    autoSaveManager?.updateSavedState(title, content);
-    editing = true;
+  } else if (note.type === "rss" && rssItem) {
+    content = rssItem.content || "";
+  } else if (note.type === "web_clip" && webClip) {
+    content = webClip.content || "";
   }
+
+  autoSaveManager?.updateSavedState(title, content);
+  editing = true;
 }
 
 function cancelEdit() {
   autoSaveManager?.clear();
   editing = false;
-  if (note && noteMD) {
-    title = note.title;
+  if (!note) return;
+
+  title = note.title;
+  if (note.type === "md" && noteMD) {
     content = noteMD.content;
+  } else if (note.type === "rss" && rssItem) {
+    content = rssItem.content || "";
+  } else if (note.type === "web_clip" && webClip) {
+    content = webClip.content || "";
   }
 }
 
@@ -183,7 +202,7 @@ $: hasContent = !!(noteMD?.content || rssItem?.content || webClip?.content);
 
 		<NoteSummary {summary} show={showSummary} onClose={() => (showSummary = false)} />
 
-		{#if editing && note.type === "md"}
+		{#if editing && (note.type === "md" || note.type === "rss")}
 			<NoteEdit bind:title bind:content bind:showPreview {saving} />
 		{:else}
 			<NoteView {noteMD} {rssItem} {webClip} />
@@ -191,6 +210,7 @@ $: hasContent = !!(noteMD?.content || rssItem?.content || webClip?.content);
 
 		<NoteTags {noteId} />
 		<NoteLinks {noteId} />
+		<FileEmbedder {noteId} />
 	</div>
 {/if}
 

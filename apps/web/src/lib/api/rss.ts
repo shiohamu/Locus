@@ -48,3 +48,13 @@ export async function fetchRSSFeed(feedId?: string): Promise<MessageResponse> {
 export async function getRSSItem(noteId: string): Promise<RSSItem> {
   return apiRequest<RSSItem>(`/rss/items/${noteId}`);
 }
+
+/**
+ * RSSアイテムのコンテンツを更新
+ */
+export async function updateRSSItem(noteId: string, content: string): Promise<RSSItem> {
+  return apiRequest<RSSItem>(`/rss/items/${noteId}`, {
+    method: "PUT",
+    body: JSON.stringify({ content }),
+  });
+}

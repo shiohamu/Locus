@@ -8,15 +8,28 @@ const app = new Hono();
 
 /**
  * Markdownエクスポート
- * GET /export/markdown?type=md&tags=tag1,tag2
+ * GET /export/markdown?type=md&tags=tag1,tag2&dateFrom=1234567890&dateTo=1234567890&includeFiles=true
  */
 app.get("/markdown", async (c) => {
   try {
     const type = c.req.query("type");
     const tagsParam = c.req.query("tags");
-    const tags = tagsParam ? tagsParam.split(",") : undefined;
+    const tags = tagsParam ? tagsParam.split(",").map((t) => t.trim()) : undefined;
+    const dateFromParam = c.req.query("dateFrom");
+    const dateToParam = c.req.query("dateTo");
+    const includeFilesParam = c.req.query("includeFiles");
 
-    const zipBuffer = await exportMarkdown({ type, tags });
+    const dateFrom = dateFromParam ? Number.parseInt(dateFromParam, 10) : undefined;
+    const dateTo = dateToParam ? Number.parseInt(dateToParam, 10) : undefined;
+    const includeFiles = includeFilesParam === "true";
+
+    const zipBuffer = await exportMarkdown({
+      type,
+      tags,
+      includeFiles,
+      dateFrom,
+      dateTo,
+    });
 
     return new Response(zipBuffer, {
       headers: {
@@ -36,11 +49,28 @@ app.get("/markdown", async (c) => {
 
 /**
  * JSONエクスポート
- * GET /export/json
+ * GET /export/json?includeFiles=true&type=md&tags=tag1,tag2&dateFrom=1234567890&dateTo=1234567890
  */
 app.get("/json", async (c) => {
   try {
-    const data = await exportJSON();
+    const includeFilesParam = c.req.query("includeFiles");
+    const type = c.req.query("type");
+    const tagsParam = c.req.query("tags");
+    const dateFromParam = c.req.query("dateFrom");
+    const dateToParam = c.req.query("dateTo");
+
+    const includeFiles = includeFilesParam !== "false";
+    const tags = tagsParam ? tagsParam.split(",").map((t) => t.trim()) : undefined;
+    const dateFrom = dateFromParam ? Number.parseInt(dateFromParam, 10) : undefined;
+    const dateTo = dateToParam ? Number.parseInt(dateToParam, 10) : undefined;
+
+    const data = await exportJSON({
+      includeFiles,
+      type,
+      tags,
+      dateFrom,
+      dateTo,
+    });
     const jsonString = JSON.stringify(data, null, 2);
 
     return new Response(jsonString, {

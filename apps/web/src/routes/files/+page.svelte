@@ -1,5 +1,5 @@
 <script lang="ts">
-import { deleteFile, getFileDownloadUrl, getFiles, uploadFile } from "$lib/api";
+import { deleteFile, getFileDownloadUrl, getFiles, updateFile, uploadFile } from "$lib/api";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import { formatDate } from "$lib/utils";
 import { handleApiError } from "$lib/utils/error-handling";
@@ -59,6 +59,16 @@ async function handleDeleteFile(fileId: string) {
   }
 }
 
+async function handleToggleShowInNotes(fileId: string, currentValue: boolean) {
+  error = null;
+  try {
+    await updateFile(fileId, { show_in_notes: !currentValue });
+    await loadFiles();
+  } catch (e) {
+    error = e;
+  }
+}
+
 function formatFileSize(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
@@ -98,6 +108,14 @@ function formatFileSize(bytes: number): string {
 					</p>
 				</div>
 				<div class="file-actions">
+					<label class="toggle-label">
+						<input
+							type="checkbox"
+							checked={file.show_in_notes}
+							on:change={() => handleToggleShowInNotes(file.id, file.show_in_notes)}
+						/>
+						<span>ノート一覧に表示</span>
+					</label>
 					<a href={getFileDownloadUrl(file.id)} download={file.filename} class="download-button">
 						ダウンロード
 					</a>
@@ -176,6 +194,23 @@ function formatFileSize(bytes: number): string {
 	.file-actions {
 		display: flex;
 		gap: 0.5rem;
+		align-items: center;
+	}
+
+	.toggle-label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 0.875rem;
+		color: #374151;
+		cursor: pointer;
+	}
+
+	.toggle-label input[type="checkbox"] {
+		width: 1.125rem;
+		height: 1.125rem;
+		cursor: pointer;
+		accent-color: #6366f1;
 	}
 
 	.download-button {

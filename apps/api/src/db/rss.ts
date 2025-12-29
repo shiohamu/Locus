@@ -137,3 +137,21 @@ export async function getItemsByFeed(feedId: string): Promise<RSSItem[]> {
     published_at: row.published_at as number,
   }));
 }
+
+/**
+ * RSSアイテムのコンテンツを更新する
+ */
+export async function updateItem(noteId: string, content: string): Promise<RSSItem> {
+  const db = getDb();
+  await db.execute({
+    sql: "UPDATE rss_items SET content = ? WHERE note_id = ?",
+    args: [content, noteId],
+  });
+
+  const updated = await getItemByNoteId(noteId);
+  if (!updated) {
+    throw new Error("Failed to update RSS item");
+  }
+
+  return updated;
+}

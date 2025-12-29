@@ -101,4 +101,35 @@ app.post("/fetch", async (c) => {
   }
 });
 
+/**
+ * RSSアイテムのコンテンツを更新
+ * PUT /rss/items/:noteId
+ * リクエストボディ: { content: string }
+ */
+app.put("/items/:noteId", async (c) => {
+  const noteId = c.req.param("noteId");
+  const body = await c.req.json<{ content: string }>();
+
+  if (!body.content) {
+    return c.json({ error: "content is required" }, 400);
+  }
+
+  const existingItem = await rssDb.getItemByNoteId(noteId);
+  if (!existingItem) {
+    return c.json({ error: "RSS item not found" }, 404);
+  }
+
+  try {
+    const updated = await rssDb.updateItem(noteId, body.content);
+    return c.json(updated);
+  } catch (error) {
+    return c.json(
+      {
+        error: error instanceof Error ? error.message : "Failed to update RSS item",
+      },
+      500
+    );
+  }
+});
+
 export default app;

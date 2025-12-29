@@ -1,19 +1,80 @@
 <script lang="ts">
-import type { NoteCore } from "$lib/types";
+import { getFileDownloadUrl } from "$lib/api/files";
+import type { File, NoteCore } from "$lib/types";
 import { formatDate } from "$lib/utils";
+import { notesStore } from "$lib/stores/notes";
 
 export let notes: NoteCore[];
+export let selectable = false; // 選択可能モード
+export let selectedNoteIds: string[] = []; // 選択されたノートIDの配列
+export let onSelectionChange: (noteIds: string[]) => void = () => {};
+
+function toggleSelection(noteId: string, event: Event) {
+	event.preventDefault();
+	event.stopPropagation();
+	if (selectedNoteIds.includes(noteId)) {
+		selectedNoteIds = selectedNoteIds.filter((id) => id !== noteId);
+	} else {
+		selectedNoteIds = [...selectedNoteIds, noteId];
+	}
+	onSelectionChange(selectedNoteIds);
+}
+
+function handleItemClick(noteId: string, event: Event) {
+	if (selectable) {
+		toggleSelection(noteId, event);
+	}
+}
 </script>
 
 <div class="note-list">
 	{#each notes as note (note.id)}
-		<a href="/notes/{note.id}" class="note-item">
-			<h3>{note.title}</h3>
-			<div class="note-meta">
-				<span class="note-type">{note.type}</span>
-				<span class="note-date">更新: {formatDate(note.updated_at)}</span>
-			</div>
-		</a>
+		{@const isSelected = selectedNoteIds.includes(note.id)}
+		{@const isFile = $notesStore.allFiles.some((f) => f.id === note.id)}
+		<div
+			class="note-item-wrapper"
+			class:selectable
+			class:selected={isSelected}
+		>
+			{#if selectable}
+				<input
+					type="checkbox"
+					class="note-checkbox"
+					checked={isSelected}
+					on:change={(e) => {
+						e.stopPropagation();
+						toggleSelection(note.id, e);
+					}}
+					on:click={(e) => e.stopPropagation()}
+				/>
+			{/if}
+			{#if isFile}
+				<a
+					href={getFileDownloadUrl(note.id)}
+					class="note-item file-item"
+					download
+					on:click={(e) => handleItemClick(note.id, e)}
+				>
+					<h3>{note.title}</h3>
+					<div class="note-meta">
+						<span class="note-type file-type">ファイル</span>
+						<span class="note-date">作成: {formatDate(note.created_at)}</span>
+					</div>
+				</a>
+			{:else}
+				<a
+					href="/notes/{note.id}"
+					class="note-item"
+					on:click={(e) => handleItemClick(note.id, e)}
+				>
+					<h3>{note.title}</h3>
+					<div class="note-meta">
+						<span class="note-type">{note.type}</span>
+						<span class="note-date">更新: {formatDate(note.updated_at)}</span>
+					</div>
+				</a>
+			{/if}
+		</div>
 	{:else}
 		<p>ノートがありません</p>
 	{/each}
@@ -24,6 +85,30 @@ export let notes: NoteCore[];
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
 		gap: 1.5rem;
+	}
+
+	.note-item-wrapper {
+		position: relative;
+	}
+
+	.note-item-wrapper.selectable {
+		cursor: pointer;
+	}
+
+	.note-item-wrapper.selected .note-item {
+		border-color: rgba(99, 102, 241, 0.5);
+		background: rgba(99, 102, 241, 0.05);
+	}
+
+	.note-checkbox {
+		position: absolute;
+		top: 1rem;
+		left: 1rem;
+		width: 1.25rem;
+		height: 1.25rem;
+		cursor: pointer;
+		z-index: 10;
+		accent-color: #6366f1;
 	}
 
 	.note-item {
@@ -37,6 +122,10 @@ export let notes: NoteCore[];
 		color: inherit;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	}
+
+	.note-item-wrapper.selectable .note-item {
+		padding-left: 3.5rem;
 	}
 
 	.note-item:hover {
@@ -69,6 +158,15 @@ export let notes: NoteCore[];
 		font-weight: 500;
 		color: #6366f1;
 		font-size: 0.8125rem;
+	}
+
+	.file-type {
+		background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+		color: #d97706;
+	}
+
+	.file-item {
+		border-left: 4px solid #fbbf24;
 	}
 </style>
 

@@ -1,4 +1,6 @@
 <script lang="ts">
+import { afterNavigate } from "$app/navigation";
+import { deleteNotesBatch } from "$lib/api";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import NoteList from "$lib/components/NoteList.svelte";
 import { filteredNotes, notesStore, totalPages } from "$lib/stores/notes";
@@ -10,14 +12,32 @@ onMount(async () => {
   await Promise.all([notesStore.loadNotes(), tagsStore.loadTags()]);
 });
 
+// ホームページにアクセスした際に必ず一覧を更新
+afterNavigate(({ to }) => {
+  if (to?.url.pathname === "/") {
+    notesStore.loadNotes();
+    tagsStore.loadTags();
+  }
+});
+
 // ローカル変数でフィルタとソートを管理
 let filterType: FilterType = $notesStore.filterType;
+let filterTags: string[] = $notesStore.filterTags;
 let sortBy: SortBy = $notesStore.sortBy;
 let sortOrder: SortOrder = $notesStore.sortOrder;
+
+// 一括削除用の状態
+let selectMode = false;
+let selectedNoteIds: string[] = [];
+let deleting = false;
 
 // ストアの変更を監視
 $: if ($notesStore.filterType !== filterType) {
   filterType = $notesStore.filterType;
+}
+$: if ($notesStore.filterTags.length !== filterTags.length ||
+      $notesStore.filterTags.some((t, i) => t !== filterTags[i])) {
+  filterTags = $notesStore.filterTags;
 }
 $: if ($notesStore.sortBy !== sortBy) {
   sortBy = $notesStore.sortBy;
@@ -29,6 +49,57 @@ $: if ($notesStore.sortOrder !== sortOrder) {
 function handleFilterChange() {
   notesStore.setFilter(filterType);
   notesStore.setPage(1);
+  notesStore.loadNotes();
+}
+
+function handleTagFilterRemove(tagName: string) {
+  const newTags = filterTags.filter((t) => t !== tagName);
+  notesStore.setTagFilter(newTags);
+  notesStore.loadNotes();
+}
+
+function clearTagFilters() {
+  notesStore.setTagFilter([]);
+  notesStore.loadNotes();
+}
+
+function handleSelectionChange(noteIds: string[]) {
+	selectedNoteIds = noteIds;
+}
+
+function toggleSelectMode() {
+	selectMode = !selectMode;
+	if (!selectMode) {
+		selectedNoteIds = [];
+	}
+}
+
+async function handleBatchDelete() {
+	if (selectedNoteIds.length === 0) {
+		return;
+	}
+
+	if (!confirm(`${selectedNoteIds.length}件のノートを削除しますか？この操作は取り消せません。`)) {
+		return;
+	}
+
+	deleting = true;
+	try {
+		await deleteNotesBatch(selectedNoteIds);
+		// ストアからも削除
+		selectedNoteIds.forEach((id) => {
+			notesStore.removeNote(id);
+		});
+		selectedNoteIds = [];
+		selectMode = false;
+		// 一覧を再読み込み
+		await notesStore.loadNotes();
+	} catch (error) {
+		console.error("一括削除に失敗しました:", error);
+		alert("一括削除に失敗しました");
+	} finally {
+		deleting = false;
+	}
 }
 
 function handleSortChange() {
@@ -42,7 +113,25 @@ function goToPage(page: number) {
 
 <div class="page-header">
 	<h1>ノート一覧</h1>
-	<a href="/notes/new" class="new-button">新規ノート作成</a>
+	<div class="header-actions">
+		{#if selectMode}
+			<button
+				class="delete-button"
+				on:click={handleBatchDelete}
+				disabled={selectedNoteIds.length === 0 || deleting}
+			>
+				{deleting ? "削除中..." : `選択したノートを削除 (${selectedNoteIds.length})`}
+			</button>
+			<button class="cancel-button" on:click={toggleSelectMode}>
+				キャンセル
+			</button>
+		{:else}
+			<button class="select-button" on:click={toggleSelectMode}>
+				選択モード
+			</button>
+			<a href="/notes/new" class="new-button">新規ノート作成</a>
+		{/if}
+	</div>
 </div>
 
 {#if $notesStore.loading}
@@ -64,6 +153,29 @@ function goToPage(page: number) {
 			</select>
 		</div>
 
+		{#if filterTags.length > 0}
+			<div class="tag-filters">
+				<span>タグフィルター:</span>
+				<div class="tag-filter-list">
+					{#each filterTags as tagName}
+						<span class="tag-filter-item">
+							{tagName}
+							<button
+								class="remove-tag-btn"
+								on:click={() => handleTagFilterRemove(tagName)}
+								title="タグフィルターを削除"
+							>
+								×
+							</button>
+						</span>
+					{/each}
+					<button class="clear-tags-btn" on:click={clearTagFilters}>
+						すべてクリア
+					</button>
+				</div>
+			</div>
+		{/if}
+
 		<div class="filter-group">
 			<label for="sort-by">並び替え:</label>
 			<select
@@ -74,6 +186,7 @@ function goToPage(page: number) {
 				<option value="updated_at">更新日時</option>
 				<option value="created_at">作成日時</option>
 				<option value="title">タイトル</option>
+				<option value="tag">タグ</option>
 			</select>
 			<select
 				bind:value={sortOrder}
@@ -85,7 +198,12 @@ function goToPage(page: number) {
 		</div>
 	</div>
 
-	<NoteList notes={$filteredNotes} />
+	<NoteList
+		notes={$filteredNotes}
+		selectable={selectMode}
+		bind:selectedNoteIds
+		onSelectionChange={handleSelectionChange}
+	/>
 
 	{#if $totalPages > 1}
 		<div class="pagination">
@@ -121,6 +239,57 @@ function goToPage(page: number) {
 		backdrop-filter: blur(10px);
 		border-radius: 16px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	.header-actions {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+	}
+
+	.select-button,
+	.cancel-button {
+		padding: 0.75rem 1.5rem;
+		background: rgba(107, 114, 128, 0.1);
+		color: #6b7280;
+		border: none;
+		border-radius: 12px;
+		text-decoration: none;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		font-weight: 600;
+		cursor: pointer;
+		font-size: 0.9375rem;
+	}
+
+	.select-button:hover,
+	.cancel-button:hover {
+		background: rgba(107, 114, 128, 0.2);
+		color: #1a1a1a;
+		transform: translateY(-2px);
+	}
+
+	.delete-button {
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+		color: white;
+		border: none;
+		border-radius: 12px;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		font-weight: 600;
+		box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+		cursor: pointer;
+		font-size: 0.9375rem;
+	}
+
+	.delete-button:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+	}
+
+	.delete-button:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
 	}
 
 	.new-button {
@@ -183,6 +352,78 @@ function goToPage(page: number) {
 		outline: none;
 		border-color: #6366f1;
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.tag-filters {
+		display: flex;
+		gap: 0.75rem;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.tag-filters > span {
+		font-weight: 600;
+		font-size: 0.9375rem;
+		color: #1a1a1a;
+	}
+
+	.tag-filter-list {
+		display: flex;
+		gap: 0.5rem;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.tag-filter-item {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.875rem;
+		background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+		color: white;
+		border-radius: 8px;
+		font-size: 0.875rem;
+		font-weight: 500;
+		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+	}
+
+	.remove-tag-btn {
+		background: none;
+		border: none;
+		color: white;
+		cursor: pointer;
+		font-size: 1.125rem;
+		line-height: 1;
+		padding: 0;
+		width: 1.25rem;
+		height: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: all 0.2s;
+	}
+
+	.remove-tag-btn:hover {
+		background-color: rgba(255, 255, 255, 0.25);
+		transform: scale(1.1);
+	}
+
+	.clear-tags-btn {
+		padding: 0.375rem 0.875rem;
+		background: rgba(107, 114, 128, 0.1);
+		color: #6b7280;
+		border: none;
+		border-radius: 8px;
+		cursor: pointer;
+		font-size: 0.875rem;
+		font-weight: 500;
+		transition: all 0.2s;
+	}
+
+	.clear-tags-btn:hover {
+		background: rgba(107, 114, 128, 0.2);
+		color: #1a1a1a;
 	}
 
 	.pagination {

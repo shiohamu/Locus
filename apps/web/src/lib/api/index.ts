@@ -8,10 +8,12 @@ export { getApiBaseUrl, apiRequest } from "./base.js";
 // ノート関連
 export {
   getNotes,
+  getNotesByTags,
   getNote,
   createNote,
   updateNote,
   deleteNote,
+  deleteNotesBatch,
   createNoteMD,
   getNoteMD,
   updateNoteMD,
@@ -36,6 +38,7 @@ export {
   deleteRSSFeed,
   fetchRSSFeed,
   getRSSItem,
+  updateRSSItem,
 } from "./rss.js";
 
 // Webクリップ関連
@@ -57,6 +60,7 @@ export {
   linkFileToNote,
   unlinkFileFromNote,
   getFilesByNote,
+  updateFile,
 } from "./files.js";
 
 // 検索関連

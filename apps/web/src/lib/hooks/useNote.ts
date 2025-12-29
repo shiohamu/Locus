@@ -5,7 +5,7 @@
  * Svelte 4では、関数ベースのアプローチを使用します。
  */
 
-import { getNote, getNoteMD, getRSSItem, getWebClip, updateNoteMD } from "$lib/api";
+import { getNote, getNoteMD, getRSSItem, getWebClip, updateNote, updateNoteMD, updateRSSItem } from "$lib/api";
 import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
 import { nowTimestamp } from "$lib/utils";
 
@@ -68,7 +68,8 @@ export async function loadNoteData(noteId: string): Promise<NoteData & { error: 
 export async function saveNoteData(
   noteId: string,
   note: NoteCore,
-  noteMD: NoteMD,
+  noteMD: NoteMD | null,
+  rssItem: RSSItem | null,
   title: string,
   content: string
 ): Promise<void> {
@@ -78,10 +79,18 @@ export async function saveNoteData(
     updated_at: nowTimestamp(),
   };
 
-  const updatedMD: NoteMD = {
-    ...noteMD,
-    content: content,
-  };
+  // ノートコアを更新
+  await updateNote(noteId, updatedCore);
 
-  await updateNoteMD(noteId, { core: updatedCore, md: updatedMD });
+  // ノートタイプに応じてコンテンツを更新
+  if (note.type === "md" && noteMD) {
+    const updatedMD: NoteMD = {
+      ...noteMD,
+      content: content,
+    };
+    await updateNoteMD(noteId, { core: updatedCore, md: updatedMD });
+  } else if (note.type === "rss" && rssItem) {
+    await updateRSSItem(noteId, content);
+  }
+  // web_clip の編集は現時点では未対応
 }

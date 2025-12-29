@@ -1,50 +1,64 @@
 <script lang="ts">
 import { goto } from "$app/navigation";
-import { createNoteMD } from "$lib/api";
+import { addTagToNote, createNoteMD } from "$lib/api";
 import ErrorDisplay from "$lib/components/ErrorDisplay.svelte";
 import NoteEditor from "$lib/components/NoteEditor.svelte";
+import TagSelector from "$lib/components/TagSelector.svelte";
 import type { NoteCore, NoteMD } from "$lib/types";
 import { generateId, nowTimestamp } from "$lib/utils";
 
 let title = "";
 let content = "";
+let selectedTagIds: string[] = [];
 let saving = false;
 let error: unknown | null = null;
 
+function handleTagsChange(tagIds: string[]) {
+	selectedTagIds = tagIds;
+}
+
 async function handleSave() {
-  if (!title.trim()) {
-    error = "タイトルを入力してください";
-    return;
-  }
+	if (!title.trim()) {
+		error = "タイトルを入力してください";
+		return;
+	}
 
-  saving = true;
-  error = null;
+	saving = true;
+	error = null;
 
-  try {
-    const now = nowTimestamp();
-    const id = generateId();
+	try {
+		const now = nowTimestamp();
+		const id = generateId();
 
-    const core: NoteCore = {
-      id,
-      type: "md",
-      title: title.trim(),
-      created_at: now,
-      updated_at: now,
-      deleted_at: null,
-    };
+		const core: NoteCore = {
+			id,
+			type: "md",
+			title: title.trim(),
+			created_at: now,
+			updated_at: now,
+			deleted_at: null,
+		};
 
-    const md: NoteMD = {
-      note_id: id,
-      content: content,
-    };
+		const md: NoteMD = {
+			note_id: id,
+			content: content,
+		};
 
-    await createNoteMD({ core, md });
-    goto(`/notes/${id}`);
-  } catch (e) {
-    error = e;
-  } finally {
-    saving = false;
-  }
+		await createNoteMD({ core, md });
+
+		// タグを関連付け
+		if (selectedTagIds.length > 0) {
+			await Promise.all(
+				selectedTagIds.map((tagId) => addTagToNote(id, tagId))
+			);
+		}
+
+		goto(`/notes/${id}`);
+	} catch (e) {
+		error = e;
+	} finally {
+		saving = false;
+	}
 }
 </script>
 
@@ -53,6 +67,8 @@ async function handleSave() {
 <ErrorDisplay {error} defaultMessage="ノートの作成に失敗しました" />
 
 <NoteEditor bind:title bind:content />
+
+<TagSelector bind:selectedTagIds onTagsChange={handleTagsChange} />
 
 <div class="actions">
 	<button class="btn-primary" on:click={handleSave} disabled={saving || !title.trim()}>

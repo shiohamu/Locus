@@ -36,6 +36,7 @@ app.post("/", async (c) => {
       mime_type: mimeType,
       size,
       created_at: now,
+      show_in_notes: false,
     };
 
     // ファイルをアップロード
@@ -54,12 +55,20 @@ app.post("/", async (c) => {
 
 /**
  * ファイル一覧取得
- * GET /files
+ * GET /files?note_id=xxx
  */
 app.get("/", async (c) => {
+  const noteIdParam = c.req.query("note_id");
   const limitParam = c.req.query("limit");
   const offsetParam = c.req.query("offset");
 
+  // ノートIDが指定されている場合は、そのノートに紐づくファイルを取得
+  if (noteIdParam) {
+    const files = await filesDb.getFilesByNote(noteIdParam);
+    return c.json(files);
+  }
+
+  // 通常のファイル一覧取得
   const limit = limitParam ? Number.parseInt(limitParam, 10) : undefined;
   const offset = offsetParam ? Number.parseInt(offsetParam, 10) : undefined;
 
@@ -193,6 +202,41 @@ app.delete("/:id/notes/:noteId", async (c) => {
     return c.json(
       {
         error: error instanceof Error ? error.message : "Failed to unlink file from note",
+      },
+      500
+    );
+  }
+});
+
+/**
+ * ファイル更新
+ * PUT /files/:id
+ * リクエストボディ: { filename?: string, show_in_notes?: boolean }
+ */
+app.put("/:id", async (c) => {
+  const id = c.req.param("id");
+  const body = await c.req.json<{ filename?: string; show_in_notes?: boolean }>();
+
+  const file = await filesDb.getFile(id);
+  if (!file) {
+    return c.json({ error: "File not found" }, 404);
+  }
+
+  try {
+    const updates: Partial<File> = {};
+    if (body.filename !== undefined) {
+      updates.filename = body.filename;
+    }
+    if (body.show_in_notes !== undefined) {
+      updates.show_in_notes = body.show_in_notes;
+    }
+
+    const updated = await filesDb.updateFile(id, updates);
+    return c.json(updated);
+  } catch (error) {
+    return c.json(
+      {
+        error: error instanceof Error ? error.message : "Failed to update file",
       },
       500
     );

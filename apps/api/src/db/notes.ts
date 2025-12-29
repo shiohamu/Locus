@@ -83,6 +83,23 @@ export async function deleteNote(id: string, deletedAt: number): Promise<void> {
 }
 
 /**
+ * 複数のノートを一括削除する（論理削除）
+ */
+export async function deleteNotesBatch(ids: string[], deletedAt: number): Promise<void> {
+  if (ids.length === 0) {
+    return;
+  }
+
+  const db = getDb();
+  // プレースホルダーを生成
+  const placeholders = ids.map(() => "?").join(",");
+  await db.execute({
+    sql: `UPDATE notes_core SET deleted_at = ? WHERE id IN (${placeholders})`,
+    args: [deletedAt, ...ids],
+  });
+}
+
+/**
  * ノート一覧を取得する
  */
 export async function listNotes(options: {

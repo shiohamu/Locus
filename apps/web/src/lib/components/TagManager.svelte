@@ -3,12 +3,14 @@ import type { Tag } from "$lib/types";
 import { createEventDispatcher } from "svelte";
 
 export let tags: Tag[];
+export let clickable = false; // タグをクリック可能にするか
 export const creating = false;
 export const deleting = false;
 
 const dispatch = createEventDispatcher<{
   create: string;
   delete: string;
+  click: string; // タグ名
 }>();
 
 let newTagName = "";
@@ -73,11 +75,26 @@ function handleDelete(tagId: string) {
 		{:else}
 			<div class="tags-list">
 				{#each tags as tag (tag.id)}
-					<span class="tag-item">
+					<span
+						class="tag-item"
+						class:clickable
+						on:click={clickable ? () => dispatch("click", tag.name) : undefined}
+						role={clickable ? "button" : undefined}
+						tabindex={clickable ? 0 : undefined}
+						on:keydown={clickable ? (e) => {
+							if (e.key === "Enter" || e.key === " ") {
+								e.preventDefault();
+								dispatch("click", tag.name);
+							}
+						} : undefined}
+					>
 						{tag.name}
 						<button
 							class="delete-btn"
-							on:click={() => handleDelete(tag.id)}
+							on:click={(e) => {
+								e.stopPropagation();
+								handleDelete(tag.id);
+							}}
 							disabled={deleting}
 							title="タグを削除"
 						>
@@ -175,7 +192,17 @@ function handleDelete(tagId: string) {
 		transition: all 0.2s;
 	}
 
-	.tag-item:hover {
+	.tag-item.clickable {
+		cursor: pointer;
+	}
+
+	.tag-item.clickable:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
+		background: linear-gradient(135deg, #c7d2fe 0%, #a5b4fc 100%);
+	}
+
+	.tag-item:not(.clickable):hover {
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.25);
 	}

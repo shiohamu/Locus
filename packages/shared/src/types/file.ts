@@ -12,6 +12,8 @@ export interface File {
   size: number;
   /** 作成日時（Unix timestamp、秒単位） */
   created_at: number;
+  /** ノート一覧に表示するかどうか */
+  show_in_notes: boolean;
 }
 
 /**

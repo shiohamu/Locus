@@ -13,9 +13,17 @@ try {
 } catch (error) {
   if (error instanceof Error && error.message.includes("EADDRINUSE")) {
     console.error(
-      `Error: Port ${port} is already in use. Please stop the process using this port or set a different PORT environment variable.`
+      `\n❌ Error: Port ${port} is already in use.\n`
     );
+    console.error(`To fix this issue, you can:`);
+    console.error(`  1. Stop the process using port ${port}:`);
+    console.error(`     lsof -ti:${port} | xargs kill -9`);
+    console.error(`     or`);
+    console.error(`     fuser -k ${port}/tcp`);
+    console.error(`  2. Use a different port:`);
+    console.error(`     PORT=3001 bun run dev:api\n`);
     process.exit(1);
   }
+  console.error("Failed to start server:", error);
   throw error;
 }
