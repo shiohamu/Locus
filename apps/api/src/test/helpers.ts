@@ -167,6 +167,31 @@ export function createTestWebClip(
   };
 }
 
+export function createTestNoteMD(
+  overrides?: Partial<import("@locus/shared").NoteMD>
+): import("@locus/shared").NoteMD {
+  return {
+    note_id: crypto.randomUUID(),
+    content: "Test content",
+    ...overrides,
+  };
+}
+
+export function createTestRSSItem(
+  overrides?: Partial<import("@locus/shared").RSSItem>
+): import("@locus/shared").RSSItem {
+  const now = Math.floor(Date.now() / 1000);
+  return {
+    note_id: crypto.randomUUID(),
+    feed_id: crypto.randomUUID(),
+    title: "Test RSS Item",
+    link: "https://example.com/item",
+    content: "Test content",
+    published_at: now,
+    ...overrides,
+  };
+}
+
 export function createTestFile(
   overrides?: Partial<import("@locus/shared").File>
 ): import("@locus/shared").File {

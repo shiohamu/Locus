@@ -3,11 +3,20 @@ import { getFileDownloadUrl } from "$lib/api/files";
 import type { File, NoteCore } from "$lib/types";
 import { formatDate } from "$lib/utils";
 import { notesStore } from "$lib/stores/notes";
+import { derived } from "svelte/store";
 
 export let notes: NoteCore[];
 export let selectable = false; // 選択可能モード
 export let selectedNoteIds: string[] = []; // 選択されたノートIDの配列
 export let onSelectionChange: (noteIds: string[]) => void = () => {};
+
+// ファイルIDのSetを導出（O(1)検索のため）
+const fileIdsSet = derived(notesStore, ($store) => {
+	return new Set($store.allFiles.map((f) => f.id));
+});
+
+// 選択されたノートIDのSetを導出（O(1)検索のため）
+$: selectedNoteIdsSet = new Set(selectedNoteIds);
 
 function toggleSelection(noteId: string, event: Event) {
 	event.preventDefault();
@@ -29,8 +38,8 @@ function handleItemClick(noteId: string, event: Event) {
 
 <div class="note-list">
 	{#each notes as note (note.id)}
-		{@const isSelected = selectedNoteIds.includes(note.id)}
-		{@const isFile = $notesStore.allFiles.some((f) => f.id === note.id)}
+		{@const isSelected = $selectedNoteIdsSet.has(note.id)}
+		{@const isFile = $fileIdsSet.has(note.id)}
 		<div
 			class="note-item-wrapper"
 			class:selectable

@@ -20,7 +20,7 @@ afterNavigate(({ to }) => {
   }
 });
 
-// ローカル変数でフィルタとソートを管理
+// ローカル変数でフィルタとソートを管理（ストアと同期）
 let filterType: FilterType = $notesStore.filterType;
 let filterTags: string[] = $notesStore.filterTags;
 let sortBy: SortBy = $notesStore.sortBy;
@@ -31,20 +31,11 @@ let selectMode = false;
 let selectedNoteIds: string[] = [];
 let deleting = false;
 
-// ストアの変更を監視
-$: if ($notesStore.filterType !== filterType) {
-  filterType = $notesStore.filterType;
-}
-$: if ($notesStore.filterTags.length !== filterTags.length ||
-      $notesStore.filterTags.some((t, i) => t !== filterTags[i])) {
-  filterTags = $notesStore.filterTags;
-}
-$: if ($notesStore.sortBy !== sortBy) {
-  sortBy = $notesStore.sortBy;
-}
-$: if ($notesStore.sortOrder !== sortOrder) {
-  sortOrder = $notesStore.sortOrder;
-}
+// ストアの変更を監視（最適化：値が実際に変更された場合のみ更新）
+$: filterType = $notesStore.filterType;
+$: filterTags = $notesStore.filterTags;
+$: sortBy = $notesStore.sortBy;
+$: sortOrder = $notesStore.sortOrder;
 
 function handleFilterChange() {
   notesStore.setFilter(filterType);

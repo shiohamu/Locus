@@ -142,4 +142,104 @@ describe("notes API", () => {
     const getRes = await app.request(`/notes/${note.id}`);
     expect(getRes.status).toBe(404);
   });
+
+  test("GET /notes/with-tags - ノートとタグ情報を取得できる", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "md" });
+    const tag1 = { id: crypto.randomUUID(), name: "tag1" };
+
+    const { createNote } = await import("../db/notes.js");
+    const { createTag, addTagToNote } = await import("../db/tags.js");
+
+    await createNote(note1);
+    await createNote(note2);
+    await createTag(tag1);
+    await addTagToNote({ note_id: note1.id, tag_id: tag1.id });
+
+    const res = await app.request("/notes/with-tags");
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body).toHaveProperty("notes");
+    expect(body).toHaveProperty("tagsMap");
+    expect(Array.isArray(body.notes)).toBe(true);
+    expect(typeof body.tagsMap).toBe("object");
+    expect(body.notes.length).toBeGreaterThanOrEqual(2);
+    expect(body.tagsMap[note1.id]).toContain("tag1");
+  });
+
+  test("GET /notes/with-tags?type=md - タイプでフィルタリングできる", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "rss" });
+
+    const { createNote } = await import("../db/notes.js");
+    await createNote(note1);
+    await createNote(note2);
+
+    const res = await app.request("/notes/with-tags?type=md");
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.notes.length).toBe(1);
+    expect(body.notes[0].type).toBe("md");
+  });
+
+  test("GET /notes/with-tags?tags=tag1 - タグでフィルタリングできる", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "md" });
+    const tag1 = { id: crypto.randomUUID(), name: "tag1" };
+
+    const { createNote } = await import("../db/notes.js");
+    const { createTag, addTagToNote } = await import("../db/tags.js");
+
+    await createNote(note1);
+    await createNote(note2);
+    await createTag(tag1);
+    await addTagToNote({ note_id: note1.id, tag_id: tag1.id });
+
+    const res = await app.request("/notes/with-tags?tags=tag1");
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.notes.length).toBe(1);
+    expect(body.notes[0].id).toBe(note1.id);
+  });
+
+  test("GET /notes?tags=tag1 - タグでフィルタリングできる", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "md" });
+    const tag1 = { id: crypto.randomUUID(), name: "tag1" };
+
+    const { createNote } = await import("../db/notes.js");
+    const { createTag, addTagToNote } = await import("../db/tags.js");
+
+    await createNote(note1);
+    await createNote(note2);
+    await createTag(tag1);
+    await addTagToNote({ note_id: note1.id, tag_id: tag1.id });
+
+    const res = await app.request("/notes?tags=tag1");
+    expect(res.status).toBe(200);
+
+    const notes = await res.json();
+    expect(notes.length).toBe(1);
+    expect(notes[0].id).toBe(note1.id);
+  });
+
+  test("GET /notes?limit=1&offset=1 - limitとoffsetが機能する", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "md" });
+    const note3 = createTestNoteCore({ title: "Note 3", type: "md" });
+
+    const { createNote } = await import("../db/notes.js");
+    await createNote(note1);
+    await createNote(note2);
+    await createNote(note3);
+
+    const res = await app.request("/notes?limit=1&offset=1");
+    expect(res.status).toBe(200);
+
+    const notes = await res.json();
+    expect(notes.length).toBe(1);
+  });
 });

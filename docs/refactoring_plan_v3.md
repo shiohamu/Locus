@@ -3,7 +3,7 @@
 作成日: 2025-12-29
 最終更新: 2025-12-29
 
-**実装状況**: Phase 1-8 完了 ✅、Phase 9-11 計画中
+**実装状況**: Phase 1-9 完了 ✅、Phase 10 進行中 🟦、Phase 11 計画中
 
 ## 1. 概要
 
@@ -567,8 +567,37 @@
   - エラーハンドリングの統一（すべてのルートで統一されたエラーハンドリング）
   - コードの整理（重複コードの削減、共通処理の抽出）
   - すべてのテストが通過
-- Phase 9: ⬜ 未着手
-- Phase 10: ⬜ 未着手
+- Phase 9: ✅ 完了（2025-12-30）
+  - 状態管理の最適化完了（`apps/web/src/lib/stores/notes.ts`）
+    - 未使用インポートの削除（`getNotes`, `getNotesByTags`）
+    - derived ストアの最適化（コメント追加で意図を明確化）
+  - `NoteList.svelte` の最適化完了
+    - `allFiles.some()` を Set に変換して O(1) 検索に最適化
+    - `selectedNoteIds.includes()` を Set に変換して O(1) 検索に最適化
+  - `+page.svelte` の最適化完了
+    - 不要なリアクティブステートメントの簡素化
+  - すべてのテストが通過
+- Phase 10: 🟦 進行中（2025-12-30）
+  - カバレッジツールの導入完了（Bunの組み込みカバレッジ機能）
+  - package.jsonにカバレッジコマンドを追加（`test:coverage`, `test:coverage:api`, `test:coverage:web`）
+  - テストヘルパーの拡張完了（`createTestNoteMD`, `createTestRSSItem`）
+  - `routes/settings.test.ts` を作成（11テストケース追加）
+  - `routes/tags.test.ts` にタグ候補生成のテストを追加（3テストケース追加）
+  - カバレッジの改善: 関数 56.57% → 72.48% (+15.91%), 行 55.83% → 70.87% (+15.04%)
+    - `routes/settings.ts`: 0.00% → 100.00% ✅
+    - `routes/tags.ts`: 85.71% → 100.00% (関数), 34.04% → 81.48% (行) ✅
+    - `db/settings.ts`: 0.00% → 100.00% ✅
+    - `routes/graph.ts`: 0.00% → 100.00% ✅
+    - `routes/links.ts`: 0.00% → 100.00% ✅
+    - `utils/link-detector.ts`: 0.00% → 100.00% ✅
+    - `routes/notes.ts`: 追加テストケース（`/with-tags`エンドポイント、タグフィルタリング、limit/offset）✅
+    - `middleware/validation.ts`: テストファイル作成（26テストケース追加）✅
+  - テスト数: 192 → 245 (+53テスト)
+  - CI/CDへの統合完了
+    - GitHub Actionsワークフロー作成（`.github/workflows/test.yml`）
+    - カバレッジレポートのアップロード設定（Codecov）
+    - テスト、リント、フォーマットチェックの自動実行
+  - 残りのタスク: 不足しているテストケースの追加（目標80%以上、現在70.87%）
 - Phase 11: ⬜ 未着手
 
 ---

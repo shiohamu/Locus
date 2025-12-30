@@ -5,6 +5,7 @@ import {
   cleanupTestDbFile,
   createTestDbFile,
   createTestNoteCore,
+  createTestNoteMD,
   createTestTag,
 } from "../test/helpers.js";
 
@@ -154,5 +155,51 @@ describe("tags API", () => {
 
     const body = await res.json();
     expect(body.message).toBe("Tag deleted");
+  });
+
+  test("POST /notes/:id/tags/suggestions - タグ候補を生成できる（MDノート）", async () => {
+    const note = createTestNoteCore({ title: "Test Note", type: "md" });
+    const { createNote } = await import("../db/notes.js");
+    await createNote(note);
+
+    const { createNoteMD } = await import("../db/notes_md.js");
+    const noteMD = createTestNoteMD({ note_id: note.id, content: "This is a test note about JavaScript and TypeScript" });
+    await createNoteMD(noteMD);
+
+    const res = await app.request(`/notes/${note.id}/tags/suggestions`, {
+      method: "POST",
+    });
+
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.suggestions).toBeDefined();
+    expect(Array.isArray(body.suggestions)).toBe(true);
+  });
+
+  test("POST /notes/:id/tags/suggestions - 存在しないノートは404を返す", async () => {
+    const res = await app.request("/notes/non-existent-id/tags/suggestions", {
+      method: "POST",
+    });
+
+    expect(res.status).toBe(404);
+
+    const body = await res.json();
+    expect(body.error).toBe("Note not found");
+  });
+
+  test("POST /notes/:id/tags/suggestions - コンテンツがないノートは404を返す", async () => {
+    const note = createTestNoteCore({ title: "Test Note", type: "md" });
+    const { createNote } = await import("../db/notes.js");
+    await createNote(note);
+
+    const res = await app.request(`/notes/${note.id}/tags/suggestions`, {
+      method: "POST",
+    });
+
+    expect(res.status).toBe(404);
+
+    const body = await res.json();
+    expect(body.error).toBe("Note content not found");
   });
 });

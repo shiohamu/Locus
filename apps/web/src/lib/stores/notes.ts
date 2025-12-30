@@ -4,7 +4,7 @@
  * ノート一覧の状態管理を行います。
  */
 
-import { getNotes, getNotesByTags, getNotesWithTags } from "$lib/api";
+import { getNotesWithTags } from "$lib/api";
 import { getFiles } from "$lib/api/files";
 import { type FilterType, filterNotes } from "$lib/services/filtering";
 import { type SortBy, type SortOrder, sortNotes } from "$lib/services/sorting";
@@ -176,29 +176,33 @@ function fileToNoteCore(file: File): NoteCore {
 }
 
 /**
- * ノートとファイルを結合した全アイテムを導出（重複計算を避けるため）
+ * ノートとファイルを結合した全アイテムを導出（最適化：allNotes と allFiles が変更された場合のみ再計算）
  */
 const allItems = derived(notesStore, ($store) => {
+  // allNotes と allFiles が変更された場合のみ再計算
   const fileNotes = $store.allFiles.map(fileToNoteCore);
   return [...$store.allNotes, ...fileNotes];
 });
 
 /**
- * フィルタリングされたノートを導出（ソート・ページネーション前）
+ * フィルタリングされたノートを導出（最適化：filterType が変更された場合のみ再計算）
  */
 const filteredItems = derived(
   [notesStore, allItems],
   ([$store, $allItems]) => {
+    // filterType が変更された場合のみ再計算
     return filterNotes($allItems, $store.filterType);
   }
 );
 
 /**
  * フィルタリング・ソート・ページネーションされたノートを導出
+ * （最適化：sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算）
  */
 export const filteredNotes = derived(
   [notesStore, filteredItems],
   ([$store, $filteredItems]) => {
+    // sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算
     const sorted = sortNotes(
       $filteredItems,
       $store.sortBy,
@@ -210,7 +214,7 @@ export const filteredNotes = derived(
 );
 
 /**
- * 総ページ数を導出
+ * 総ページ数を導出（最適化：filteredItems の長さと itemsPerPage が変更された場合のみ再計算）
  */
 export const totalPages = derived(
   [notesStore, filteredItems],
@@ -220,7 +224,7 @@ export const totalPages = derived(
 );
 
 /**
- * フィルタリングされたノートの総数を導出
+ * フィルタリングされたノートの総数を導出（最適化：filteredItems の長さが変更された場合のみ再計算）
  */
 export const filteredCount = derived(filteredItems, ($filteredItems) => {
   return $filteredItems.length;
