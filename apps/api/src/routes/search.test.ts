@@ -54,7 +54,7 @@ describe("search API", () => {
     expect(res.status).toBe(400);
 
     const body = await res.json();
-    expect(body.error).toBe("Query parameter 'q' is required");
+    expect(body.error).toBe("Missing required query parameter: q");
   });
 
   test("GET /search?q=query&limit=1 - limitパラメータが機能する", async () => {

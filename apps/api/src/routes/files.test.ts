@@ -121,7 +121,8 @@ describe("files API", () => {
     expect(res.status).toBe(404);
 
     const body = await res.json();
-    expect(body.error).toBe("File not found");
+    expect(body.error).toContain("File with id");
+    expect(body.error).toContain("not found");
   });
 
   test("GET /files/:id/download - ファイルをダウンロードできる", async () => {
@@ -199,7 +200,7 @@ describe("files API", () => {
     expect(res.status).toBe(400);
 
     const body = await res.json();
-    expect(body.error).toBe("note_id is required");
+    expect(body.error).toBe("Missing required field: note_id");
   });
 
   test("DELETE /files/:id/notes/:noteId - ノートとファイルの関連を解除できる", async () => {

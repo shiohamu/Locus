@@ -82,7 +82,7 @@ describe("web-clips API", () => {
     expect(res.status).toBe(400);
 
     const body = await res.json();
-    expect(body.error).toBe("URL is required");
+    expect(body.error).toBe("Missing required field: url");
   });
 
   test("GET /web-clips - Webクリップ一覧を取得できる", async () => {
@@ -124,7 +124,8 @@ describe("web-clips API", () => {
     expect(res.status).toBe(404);
 
     const body = await res.json();
-    expect(body.error).toBe("Web clip not found");
+    expect(body.error).toContain("Web clip with id");
+    expect(body.error).toContain("not found");
   });
 
   test("PUT /web-clips/:id - Webクリップを更新（再取得）できる", async () => {
