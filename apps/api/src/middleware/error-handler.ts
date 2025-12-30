@@ -5,7 +5,7 @@ import {
   getErrorCode,
   toErrorResponse,
   toAppError,
-  type AppError,
+  AppError,
 } from "../utils/errors.js";
 
 /**

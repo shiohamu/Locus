@@ -95,7 +95,8 @@ describe("notes API", () => {
     expect(res.status).toBe(404);
 
     const body = await res.json();
-    expect(body.error).toBe("Note not found");
+    expect(body.error).toContain("not found");
+    expect(body.code).toBe("NOT_FOUND");
   });
 
   test("PUT /notes/:id - ノートを更新できる", async () => {

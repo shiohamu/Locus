@@ -1,5 +1,5 @@
 import type { SyncPullResponse, SyncPushRequest } from "@locus/shared";
-import { syncPull, syncPush } from "./api.js";
+import { syncPull, syncPush } from "./api/index.js";
 import * as storage from "./storage.js";
 
 /**

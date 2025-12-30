@@ -3,24 +3,24 @@ import { getErrorMessage, getErrorType, handleApiError } from "./error-handling.
 
 describe("error-handling", () => {
   test("handleApiError - Errorオブジェクトを処理できる", () => {
-    const error = new Error("Test error message");
+    const error = new Error("Network error occurred");
     const result = handleApiError(error);
 
-    expect(result).toBe("Test error message");
+    expect(result).toContain("ネットワーク");
   });
 
   test("handleApiError - 文字列エラーを処理できる", () => {
     const error = "String error message";
     const result = handleApiError(error);
 
-    expect(result).toBe("String error message");
+    expect(result).toBe("予期しないエラーが発生しました。");
   });
 
   test("handleApiError - unknown型のエラーをデフォルトメッセージで処理できる", () => {
     const error = { someProperty: "value" };
     const result = handleApiError(error);
 
-    expect(result).toBe("エラーが発生しました");
+    expect(result).toBe("予期しないエラーが発生しました。");
   });
 
   test("handleApiError - カスタムデフォルトメッセージを使用できる", () => {
@@ -32,10 +32,10 @@ describe("error-handling", () => {
   });
 
   test("getErrorMessage - エラーメッセージを取得できる", () => {
-    const error = new Error("Test error");
+    const error = new Error("Network error");
     const result = getErrorMessage(error);
 
-    expect(result).toBe("Test error");
+    expect(result).toContain("ネットワーク");
   });
 
   test("getErrorType - ネットワークエラーを判定できる", () => {

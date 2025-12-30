@@ -4,16 +4,19 @@ import type { File } from "@locus/shared";
 import * as filesDb from "../db/files.js";
 
 /**
- * ファイル保存先のベースディレクトリ
+ * ファイル保存先のベースディレクトリを取得
  */
-const FILES_BASE_DIR = process.env.FILES_DIR || join(process.cwd(), "apps/api/data/files");
+function getFilesBaseDir(): string {
+  return process.env.FILES_DIR || join(process.cwd(), "apps/api/data/files");
+}
 
 /**
  * ファイル保存ディレクトリを初期化
  */
 function ensureFilesDirectory() {
-  if (!existsSync(FILES_BASE_DIR)) {
-    mkdirSync(FILES_BASE_DIR, { recursive: true });
+  const baseDir = getFilesBaseDir();
+  if (!existsSync(baseDir)) {
+    mkdirSync(baseDir, { recursive: true });
   }
 }
 
@@ -21,7 +24,8 @@ function ensureFilesDirectory() {
  * ファイル保存パスを取得
  */
 function getFilePath(fileId: string, filename: string): string {
-  const fileDir = join(FILES_BASE_DIR, fileId);
+  const baseDir = getFilesBaseDir();
+  const fileDir = join(baseDir, fileId);
   if (!existsSync(fileDir)) {
     mkdirSync(fileDir, { recursive: true });
   }
@@ -50,16 +54,21 @@ function isValidMimeType(mimeType: string): boolean {
 }
 
 /**
- * ファイルサイズ制限（デフォルト50MB）
+ * ファイルサイズ制限を取得（デフォルト50MB）
  */
-const MAX_FILE_SIZE = Number.parseInt(process.env.MAX_FILE_SIZE || "52428800", 10); // 50MB
+function getMaxFileSize(): number {
+  return Number.parseInt(process.env.MAX_FILE_SIZE || "52428800", 10); // 50MB
+}
 
 /**
  * ファイルをアップロードして保存する
  */
 export async function uploadFile(file: File, fileData: ArrayBuffer): Promise<File> {
-  // ファイルサイズチェック
-  if (file.size > MAX_FILE_SIZE) {
+  const MAX_FILE_SIZE = getMaxFileSize();
+
+  // ファイルサイズチェック（file.sizeとfileData.byteLengthの両方をチェック）
+  const actualSize = fileData.byteLength;
+  if (file.size > MAX_FILE_SIZE || actualSize > MAX_FILE_SIZE) {
     throw new Error(`File size exceeds maximum allowed size of ${MAX_FILE_SIZE} bytes`);
   }
 
@@ -108,7 +117,8 @@ export async function deleteFileFromDisk(fileId: string, filename: string): Prom
   try {
     await unlink(filePath);
     // ディレクトリが空なら削除
-    const fileDir = join(FILES_BASE_DIR, fileId);
+    const baseDir = getFilesBaseDir();
+    const fileDir = join(baseDir, fileId);
     try {
       await rmdir(fileDir);
     } catch {

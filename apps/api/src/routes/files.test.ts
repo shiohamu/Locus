@@ -126,9 +126,8 @@ describe("files API", () => {
 
   test("GET /files/:id/download - ファイルをダウンロードできる", async () => {
     const file = createTestFile();
-    await filesDb.createFile(file);
 
-    // ファイルをディスクに保存
+    // ファイルをディスクに保存（uploadFile内でcreateFileが呼ばれる）
     const fileData = new ArrayBuffer(1024);
     const view = new Uint8Array(fileData);
     view.fill(65);
@@ -147,9 +146,8 @@ describe("files API", () => {
 
   test("DELETE /files/:id - ファイルを削除できる", async () => {
     const file = createTestFile();
-    await filesDb.createFile(file);
 
-    // ファイルをディスクに保存
+    // ファイルをディスクに保存（uploadFile内でcreateFileが呼ばれる）
     const fileData = new ArrayBuffer(1024);
     const { uploadFile } = await import("../services/file-uploader.js");
     await uploadFile(file, fileData);
