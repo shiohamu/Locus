@@ -225,4 +225,67 @@ describe("files API", () => {
     const files = await filesDb.getFilesByNote(note.id);
     expect(files.length).toBe(0);
   });
+
+  test("PUT /files/:id - ファイル名を更新できる", async () => {
+    const file = createTestFile({ filename: "old-name.pdf" });
+    await filesDb.createFile(file);
+
+    const res = await app.request(`/files/${file.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: "new-name.pdf" }),
+    });
+
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.filename).toBe("new-name.pdf");
+  });
+
+  test("PUT /files/:id - show_in_notesを更新できる", async () => {
+    const file = createTestFile({ show_in_notes: 0 });
+    await filesDb.createFile(file);
+
+    const res = await app.request(`/files/${file.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ show_in_notes: true }),
+    });
+
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.show_in_notes).toBe(1);
+  });
+
+  test("PUT /files/:id - ファイル名とshow_in_notesを同時に更新できる", async () => {
+    const file = createTestFile({ filename: "old-name.pdf", show_in_notes: 0 });
+    await filesDb.createFile(file);
+
+    const res = await app.request(`/files/${file.id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: "new-name.pdf", show_in_notes: true }),
+    });
+
+    expect(res.status).toBe(200);
+
+    const body = await res.json();
+    expect(body.filename).toBe("new-name.pdf");
+    expect(body.show_in_notes).toBe(1);
+  });
+
+  test("PUT /files/:id - 存在しないファイルは404を返す", async () => {
+    const res = await app.request("/files/non-existent-id", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ filename: "new-name.pdf" }),
+    });
+
+    expect(res.status).toBe(404);
+
+    const body = await res.json();
+    expect(body.error).toContain("File with id");
+    expect(body.error).toContain("not found");
+  });
 });

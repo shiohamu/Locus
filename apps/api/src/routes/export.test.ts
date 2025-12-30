@@ -115,4 +115,75 @@ describe("export API", () => {
     expect(data.web_clips).toEqual([]);
     expect(data.files).toEqual([]);
   });
+
+  test("GET /export/markdown - クエリパラメータでフィルタリングできる", async () => {
+    const note1 = createTestNoteCore({ title: "Note 1", type: "md" });
+    const note2 = createTestNoteCore({ title: "Note 2", type: "rss" });
+    await notesDb.createNote(note1);
+    await notesDb.createNote(note2);
+
+    await notesMDDb.createNoteMD({ note_id: note1.id, content: "Content 1" });
+
+    const res = await app.request("/export/markdown?type=md&includeFiles=true");
+    expect(res.status).toBe(200);
+
+    const zipBuffer = await res.arrayBuffer();
+    const zip = await JSZip.loadAsync(zipBuffer);
+
+    expect(Object.keys(zip.files).length).toBe(1);
+    expect(zip.files[`${note1.id}.md`]).toBeDefined();
+  });
+
+  test("GET /export/json - includeFiles=falseでファイルを除外できる", async () => {
+    const note = createTestNoteCore({ title: "Test Note", type: "md" });
+    await notesDb.createNote(note);
+    await notesMDDb.createNoteMD({ note_id: note.id, content: "Test content" });
+
+    const res = await app.request("/export/json?includeFiles=false");
+    expect(res.status).toBe(200);
+
+    const jsonString = await res.text();
+    const data = JSON.parse(jsonString);
+
+    // includeFiles=falseの場合、filesフィールドは存在しないか空配列
+    expect(data.files === undefined || data.files === []).toBe(true);
+  });
+
+  test("GET /export/static-html - 静的HTMLエクスポートが機能する", async () => {
+    const note = createTestNoteCore({ title: "Public Note", type: "md", public: 1 });
+    await notesDb.createNote(note);
+    await notesMDDb.createNoteMD({ note_id: note.id, content: "# Public Content" });
+
+    const res = await app.request("/export/static-html");
+    expect(res.status).toBe(200);
+    expect(res.headers.get("Content-Type")).toBe("application/zip");
+    expect(res.headers.get("Content-Disposition")).toContain("locus-public-site.zip");
+
+    const zipBuffer = await res.arrayBuffer();
+    const zip = await JSZip.loadAsync(zipBuffer);
+
+    // index.htmlが存在することを確認
+    expect(zip.files["index.html"]).toBeDefined();
+    // ノートのHTMLファイルが存在することを確認
+    expect(zip.files[`${note.id}.html`]).toBeDefined();
+  });
+
+  test("GET /export/static-html - 公開ノートのみがエクスポートされる", async () => {
+    const publicNote = createTestNoteCore({ title: "Public Note", type: "md", public: 1 });
+    const privateNote = createTestNoteCore({ title: "Private Note", type: "md", public: 0 });
+    await notesDb.createNote(publicNote);
+    await notesDb.createNote(privateNote);
+    await notesMDDb.createNoteMD({ note_id: publicNote.id, content: "Public" });
+    await notesMDDb.createNoteMD({ note_id: privateNote.id, content: "Private" });
+
+    const res = await app.request("/export/static-html");
+    expect(res.status).toBe(200);
+
+    const zipBuffer = await res.arrayBuffer();
+    const zip = await JSZip.loadAsync(zipBuffer);
+
+    // 公開ノートのみが含まれることを確認
+    expect(zip.files[`${publicNote.id}.html`]).toBeDefined();
+    expect(zip.files[`${privateNote.id}.html`]).toBeUndefined();
+  });
 });

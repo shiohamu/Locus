@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { type Client, createClient } from "@libsql/client";
+import { closeDb } from "../db/db.js";
 
 /**
  * テスト用のインメモリデータベースを作成し、マイグレーションを実行する
@@ -105,6 +106,8 @@ export async function createTestDbFile(): Promise<{ db: Client; path: string }> 
  */
 export async function cleanupTestDbFile(db: Client, path: string): Promise<void> {
   await db.close();
+  // getDb()で作成された接続も閉じる
+  await closeDb();
   // ファイルを削除
   try {
     const { unlinkSync } = await import("node:fs");
@@ -112,6 +115,14 @@ export async function cleanupTestDbFile(db: Client, path: string): Promise<void>
   } catch (error) {
     // ファイルが存在しない場合は無視
   }
+}
+
+/**
+ * テスト終了時にgetDb()で作成された接続をクリーンアップする
+ * 各テストのafterEachで呼び出す
+ */
+export async function cleanupGlobalDb(): Promise<void> {
+  await closeDb();
 }
 
 /**

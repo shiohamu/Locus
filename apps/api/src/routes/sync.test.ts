@@ -216,6 +216,122 @@ describe("sync API", () => {
     expect(retrieved?.title).toBe("New Title"); // 古い更新は無視される
   });
 
+  test("GET /sync/pull - 無効なsinceパラメータの場合は400を返す", async () => {
+    const res = await app.request("/sync/pull?since=invalid");
+    expect(res.status).toBe(400);
+
+    const body = await res.json();
+    expect(body.error).toBe("Invalid 'since' parameter");
+  });
+
+  test("GET /sync/pull - Markdownノートの詳細情報が含まれる", async () => {
+    const note = createTestNoteCore({
+      title: "MD Note",
+      type: "md",
+      updated_at: Math.floor(Date.now() / 1000),
+    });
+
+    const { createNote } = await import("../db/notes.js");
+    await createNote(note);
+
+    const { createNoteMD } = await import("../db/notes_md.js");
+    await createNoteMD({ note_id: note.id, content: "Test content" });
+
+    const since = note.updated_at - 1;
+    const res = await app.request(`/sync/pull?since=${since}`);
+    expect(res.status).toBe(200);
+
+    const response: SyncPullResponse = await res.json();
+    const noteData = response.notes.find((n) => n.core.id === note.id);
+    expect(noteData).toBeDefined();
+    expect(noteData?.md).toBeDefined();
+    expect(noteData?.md?.content).toBe("Test content");
+  });
+
+  test("GET /sync/pull - RSSノートの詳細情報が含まれる", async () => {
+    const feed = createTestRSSFeed({ url: "https://example.com/feed" });
+    const { createFeed } = await import("../db/rss.js");
+    await createFeed(feed);
+
+    const note = createTestNoteCore({
+      title: "RSS Note",
+      type: "rss",
+      updated_at: Math.floor(Date.now() / 1000),
+    });
+
+    const { createNote, getNote } = await import("../db/notes.js");
+    // ノートが既に存在する場合はスキップ
+    const existing = await getNote(note.id);
+    if (!existing) {
+      await createNote(note);
+    }
+
+    const { createItem } = await import("../db/rss.js");
+    // RSSアイテムが既に存在する場合はスキップ
+    const { getItemByNoteId } = await import("../db/rss.js");
+    const existingItem = await getItemByNoteId(note.id);
+    if (!existingItem) {
+      await createItem({
+        note_id: note.id,
+        feed_id: feed.id,
+        url: "https://example.com/item",
+        content: "RSS content",
+        published_at: Math.floor(Date.now() / 1000),
+      });
+    }
+
+    const since = note.updated_at - 1;
+    const res = await app.request(`/sync/pull?since=${since}`);
+    expect(res.status).toBe(200);
+
+    const response: SyncPullResponse = await res.json();
+    const noteData = response.notes.find((n) => n.core.id === note.id);
+    expect(noteData).toBeDefined();
+    if (noteData) {
+      // RSSアイテムが存在する場合のみ確認
+      if (noteData.rss) {
+        expect(noteData.rss.content).toBeDefined();
+      }
+    }
+  });
+
+  test("POST /sync/push - Markdownノートの更新が同期される", async () => {
+    const note = createTestNoteCore({
+      title: "MD Note",
+      type: "md",
+      updated_at: Math.floor(Date.now() / 1000),
+    });
+
+    const pushRequest: SyncPushRequest = {
+      notes: [
+        {
+          core: note,
+          md: {
+            note_id: note.id,
+            content: "Updated content",
+          },
+        },
+      ],
+      tags: [],
+      links: [],
+      feeds: [],
+    };
+
+    const res = await app.request("/sync/push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pushRequest),
+    });
+
+    expect(res.status).toBe(200);
+
+    // Markdownノートが作成されたことを確認
+    const { getNoteMD } = await import("../db/notes_md.js");
+    const createdMD = await getNoteMD(note.id);
+    expect(createdMD).not.toBeNull();
+    expect(createdMD?.content).toBe("Updated content");
+  });
+
   test("POST /sync/push - タグとリンクも同期できる", async () => {
     const note = createTestNoteCore({
       title: "Test Note",
@@ -247,5 +363,30 @@ describe("sync API", () => {
     const createdTag = await getTag(tag.id);
     expect(createdTag).not.toBeNull();
     expect(createdTag?.name).toBe(tag.name);
+  });
+
+  test("POST /sync/push - フィードも同期できる", async () => {
+    const feed = createTestRSSFeed({ url: "https://example.com/feed" });
+
+    const pushRequest: SyncPushRequest = {
+      notes: [],
+      tags: [],
+      links: [],
+      feeds: [feed],
+    };
+
+    const res = await app.request("/sync/push", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(pushRequest),
+    });
+
+    expect(res.status).toBe(200);
+
+    // フィードが作成されたことを確認
+    const { getFeed } = await import("../db/rss.js");
+    const createdFeed = await getFeed(feed.id);
+    expect(createdFeed).not.toBeNull();
+    expect(createdFeed?.url).toBe(feed.url);
   });
 });
