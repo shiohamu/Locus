@@ -9,15 +9,25 @@
 Locus は「ローカルファースト」をモットーに設計された個人知識管理システムです。
 ノートは Markdown で書き、すべてのデータ（Markdown ファイル、メタ情報、リンク構造）はユーザー自身が所有するローカルストレージに保存されます。そのためインターネット接続不要・外部サービスへの依存なしに知識を蓄積できるほか、プライバシーやデータセキュリティも担保します。
 <!-- MANUAL_END:description -->
-Locus は、Markdown ノートと RSS フィードを統合し、双方向リンクで知識のネットワーク化を実現する「ローカルファースト」型パーソナルナレッジシステムです。
-- **ノート**：全て Markdown 形式で保存されるため、テキストエディタや VS Code 等から直接編集可能。
-- **RSS フィードの取り込み**：Web サイトやブログの更新を自動取得し、指定したフォルダへマージすることで「知識ベース」を常に最新状態で維持します（`cheerio@^1.1.2` を利用して HTML パーシング）。
-- **双方向リンク**：ノート内で `[[別のノート]]` のような参照を書くだけで、リンク先と逆方向も自動的に登録されるため、知識間の関係性を可視化できます。
-- **ローカルファースト設計**：全データはユーザー側のディレクトリ（例: `~/.locus`）に保存し、ネットワーク接続がなくても完全動作します。必要であれば手動または自動でクラウドストレージへバックアップ／同期できます。
-- **CLI とスクリプト**：Node.js ベースのコマンドラインツール（`npm run start` など）とシェルスクリプトを組み合わせ、ノート生成・検索・エクスポート (`jszip@^3.10.1`) を簡易に実行できます。
-- **拡張性**：TypeScript/JavaScript のコードベースはモジュール化されており、新しいフィードソースやカスタムプラグインを追加しやすい構成です。
+Locus は、ノートや RSS フィードを同一の知識空間に統合しつつ、**ローカルファースト**で動作する個人向け情報管理システムです。  
+- **Markdown ノート**：マークダウン形式で書かれたメモはそのままテキストとして保存されますが、内部リンク（bidirectional links）を自動解析し、相互参照や関連性の可視化を行います。Obsidian や Logseq に似た編集体験を提供します。  
+- **RSS フィード統合**：指定したフィード URL を定期的に取得し、HTML の内容は cheerio でパースしてマークダウンへ変換。結果として「記事ノート」が自動生成されるため、情報収集と知識構築を同時進行できます。  
+- **統一された検索・ナビゲーション**：ファイルシステム上に散在する Markdown と RSS ノードは全て単一のインデックスで管理し、キーワードやタグによる高速検索が可能です。また、jszip を使ったアーカイブ機能により、一括エクスポート・バックアップも簡易的に実行できます。  
+- **ローカルファースト**：すべてのデータはユーザー側のディレクトリ（例: `~/Locus/`）に保存され、ネットワーク接続がなくても完全動作します。必要に応じて Git などで同期させるだけです。  
+- **CLI ベース**：シェルスクリプトと Node.js の組み合わせによって、ノートの生成・更新・検索をコマンドラインから行えるよう設計されています。`locus new "タイトル"` や `locus search keyword` など直感的な操作が可能です。  
+- **拡張性**：TypeScript と JavaScript のコードベースにより、プラグインやカスタムスクリプトを簡単に追加できます。既存の RSS プロバイダだけでなく、自前のデータソース（API, JSON など）も取り込めます。  
 
-これらの機能が組み合わさることで、個人情報保護に配慮した上で「ノート → フィード → 連結」という一貫したワークフローを実現します。<!-- MANUAL_START:architecture -->
+**技術構成**
+
+| 層 | 主な役割 |
+|---|-----------|
+| **UI/CLI** | シェルスクリプトと Node.js の `readline` インターフェイスを使用し、ユーザー操作を受け付ける。 |
+| **コアエンジン** | Markdown パーサ（markdown-it など）＋ bidirectional link 検出ロジックでノート間の関係性を構築。 |
+| **データ取得層** | `cheerio` を用いた RSS フィードパース、`jszip` によるアーカイブ処理。 |
+| **ストレージ層** | ファイルベース（JSON/MD）＋ SQLite 等の軽量 DB でメタ情報を管理し、高速検索に対応。 |
+
+Locus はオープンソース（MIT ライセンス）として GitHub 上で公開されており、誰でも自由にカスタマイズ・拡張できます。  
+本プロジェクトは「**知識の一元化とローカルコントロールを両立したい人」向け」に設計されていますので、自分だけの情報エコシステムを構築したい開発者やリサーチャーに最適です。<!-- MANUAL_START:architecture -->
 
 <!-- MANUAL_END:architecture -->
 ```mermaid
@@ -131,39 +141,7 @@ npm run check
 
 ```bash
 npm test
-npm run test:coverage  # カバレッジレポート付きでテスト実行
 ```
-
-## 開発ガイドライン
-
-### コードスタイル
-
-- Biomeを使用してコードフォーマットとリントを実行
-- コミット前に `npm run check` を実行してコード品質を確認
-
-### テスト
-
-- すべての新機能にはテストを追加
-- テストカバレッジは80%以上を維持
-- `npm run test:coverage` でカバレッジを確認
-
-### JSDocコメント
-
-- すべての公開関数・クラスにJSDocコメントを追加
-- パラメータと戻り値の説明を含める
-- エラーが発生する可能性がある場合は `@throws` を追加
-
-### エラーハンドリング
-
-- データベース層: `apps/api/src/db/utils/error-handler.ts` の `handleDbOperation` を使用
-- サービス層: `apps/api/src/services/utils/error-handler.ts` の `handleServiceOperation` を使用
-- カスタムエラー型（`DatabaseError`, `NotFoundError`, `ValidationError`）を適切に使用
-
-### バリデーション
-
-- ルート層では `apps/api/src/middleware/validation.ts` のバリデーション関数を使用
-- 必須パラメータは `validateRequired` で検証
-- 型チェックは `validateString`, `validateUUID` などを使用
 ## コマンド
 
 プロジェクトで利用可能なスクリプト:
@@ -181,12 +159,15 @@ npm run test:coverage  # カバレッジレポート付きでテスト実行
 | `dev:api` | bun run apps/api/src/server.ts |
 | `dev:web` | bun --cwd=apps/web run dev |
 | `dev` | bunx concurrently --names 'API,WEB' --prefix-colors 'blue,green' 'bun run dev:api' 'bun run dev:web' |
-| `test` | bun test |
+| `test` | bun test apps packages |
 | `test:api` | bun --cwd=apps/api test |
 | `test:web` | bun --cwd=apps/web test |
+| `test:coverage` | bun test --coverage apps/api/src apps/web/src |
+| `test:coverage:api` | bun test --coverage apps/api/src |
+| `test:coverage:web` | bun test --coverage apps/web/src |
 | `test:e2e` | playwright test |
 | `test:e2e:ui` | bash scripts/test-e2e-ui.sh |
 
 ---
 
-*このREADME.mdは自動生成されています。最終更新: 2025-12-29 18:54:31*
+*このREADME.mdは自動生成されています。最終更新: 2025-12-31 14:47:29*

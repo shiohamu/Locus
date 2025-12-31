@@ -38,7 +38,7 @@ function handleItemClick(noteId: string, event: Event) {
 
 <div class="note-list">
 	{#each notes as note (note.id)}
-		{@const isSelected = $selectedNoteIdsSet.has(note.id)}
+		{@const isSelected = selectedNoteIdsSet.has(note.id)}
 		{@const isFile = $fileIdsSet.has(note.id)}
 		<div
 			class="note-item-wrapper"

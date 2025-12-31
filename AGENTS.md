@@ -1,6 +1,6 @@
 # AGENTS ドキュメント
 
-自動生成日時: 2025-12-29 18:55:05
+自動生成日時: 2025-12-31 14:48:08
 
 このドキュメントは、AIコーディングエージェントがプロジェクト内で効果的に作業するための指示とコンテキストを提供します。
 
@@ -12,17 +12,14 @@ Locus は、Markdown ノートと RSS フィードを一つのローカルに保
 ユーザーは自分専用のノートを書き込みながら、インターネット上の情報をリアルタイムに取り込むことができます。また、全てのデータはローカルファイル（Markdown とメタデータ）として保存されるため、クラウドへの依存やプライバシーリスクを排除しつつ高速な検索とオフライン利用を実現します。
 <!-- MANUAL_END:description -->
 
-Locus は、Markdown ノートと RSS フィードを統合し、双方向リンクで相互に結び付けるローカルファーストのパーソナル知識管理システムです。  
-- **データモデル**: 各ノートは Markdown ファイルとして保存され、YAML front‑matter で `id`, `title`, `tags` 等を保持します。リンクは `[[note-id]]` の形式で記述し、自動的に逆参照が生成されます。RSS フィードのエントリも同様にノート化され、元記事への URL と取得日時をメタ情報として格納します。  
-- **ストレージ**: すべてのファイルはローカルディスク上（`./data/notes`, `./data/feed.zip` 等）に保存し、Git リポジトリや外部クラウドと簡単に同期できます。データベースを使用せずとも全文検索が可能なように、Node.js のファイルシステム API と `cheerio` でパーサー処理を行います。  
-- **主要機能**:  
-  - RSS フィードの定期取得（cron スクリプトまたは手動コマンド）と HTML を Markdown に変換 (`jszip`, `cheerio`)  
-  - ノート間リンク解析、逆参照リスト生成、GraphQL/REST API 経由で検索・閲覧可能  
-  - マークダウンエディタ統合（VS Code 拡張等）による編集体験向上  
-- **開発スタック**: TypeScript + JavaScript (Node.js) が主軸。npm を使用し、`cheerio@^1.1.2`, `jszip@^3.10.1` などのライブラリで RSS のパースとアーカイブ処理を行います。  
-- **拡張性**: プラグインシステムにより、新しいデータソース（例：Twitter, Notion API）や検索エンジン（ElasticSearch 等）の追加が容易です。  
+Locus は「ローカルファースト」設計の個人知識管理システムで、Markdown ノートと RSS フィードを同一ディレクトリ構造に統合し、双方向リンク機能によってノート間の関係性を可視化します。  
+- **ローカル保存**：すべてのデータ（テキスト・メタ情報・バックアップ）はユーザー側ファイルシステム上に格納されるため、クラウド同期や API キーは不要です。  
+- **Markdown 解析**：TypeScript と Node.js をベースとし、`cheerio@^1.1.2` により Markdown 内の HTML 埋め込みをパースしてリンク先・メタデータ抽出が可能。Frontmatter はオプションで利用でき、ノート作成時に自動的にタグ付けや日付管理も行えます。  
+- **RSS フィード統合**：`jszip@^3.10.1` を活用し、指定した RSS URL から最新記事を取得・パースして「Feed」フォルダ内の Markdown ファイルとして保存します。ユーザーは単一ビューでノートとフィード項目を横断検索できます。  
+- **双方向リンク**：Markdown 内に `[[note-title]]` の形式で書かれた参照が自動的に逆向きにも登録され、知識グラフとして可視化（CLI もしくは Web UI）可能です。これによりノート間の関連性を直感的に把握できます。  
+- **バックアップと復元**：`jszip` を利用した ZIP 圧縮/解凍スクリプトで、ディレクトリ全体を簡単にアーカイブ・移行できる CLI コマンドが用意されています。  
 
-AI エージェントは、上記のファイル構成とリンク規則を理解し、ノート作成・更新時に自動で逆参照を補完したり、RSS 取得スクリプトを呼び出して最新情報を取り込むことで Locus の知識ベースを継続的に拡張できます。
+開発言語は TypeScript / JavaScript（Node.js）とシェルスクリプトの組み合わせで構成されており、`npm` を通じたパッケージ管理により依存関係を一元化しています。Locus はオフライン環境下でも高速かつ安全な知識蓄積・検索体験を提供し、個人の情報整理ワークフローを大幅に効率化します。
 **使用技術**: typescript, javascript, shell
 ## プロジェクト構造
 ```
@@ -155,9 +152,12 @@ npm test
 | `dev:api` | bun run apps/api/src/server.ts |
 | `dev:web` | bun --cwd=apps/web run dev |
 | `dev` | bunx concurrently --names 'API,WEB' --prefix-colors 'blue,green' 'bun run dev:api' 'bun run dev:web' |
-| `test` | bun test |
+| `test` | bun test apps packages |
 | `test:api` | bun --cwd=apps/api test |
 | `test:web` | bun --cwd=apps/web test |
+| `test:coverage` | bun test --coverage apps/api/src apps/web/src |
+| `test:coverage:api` | bun test --coverage apps/api/src |
+| `test:coverage:web` | bun test --coverage apps/web/src |
 | `test:e2e` | playwright test |
 | `test:e2e:ui` | bash scripts/test-e2e-ui.sh |
 ---
@@ -195,4 +195,4 @@ npm test
 
 ---
 
-*このAGENTS.mdは自動生成されています。最終更新: 2025-12-29 18:55:05*
+*このAGENTS.mdは自動生成されています。最終更新: 2025-12-31 14:48:08*
