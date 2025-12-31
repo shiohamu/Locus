@@ -187,41 +187,27 @@ const allItems = derived(notesStore, ($store) => {
 /**
  * フィルタリングされたノートを導出（最適化：filterType が変更された場合のみ再計算）
  */
-const filteredItems = derived(
-  [notesStore, allItems],
-  ([$store, $allItems]) => {
-    // filterType が変更された場合のみ再計算
-    return filterNotes($allItems, $store.filterType);
-  }
-);
+const filteredItems = derived([notesStore, allItems], ([$store, $allItems]) => {
+  // filterType が変更された場合のみ再計算
+  return filterNotes($allItems, $store.filterType);
+});
 
 /**
  * フィルタリング・ソート・ページネーションされたノートを導出
  * （最適化：sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算）
  */
-export const filteredNotes = derived(
-  [notesStore, filteredItems],
-  ([$store, $filteredItems]) => {
-    // sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算
-    const sorted = sortNotes(
-      $filteredItems,
-      $store.sortBy,
-      $store.sortOrder,
-      $store.noteTagsMap
-    );
-    return paginate(sorted, $store.currentPage, $store.itemsPerPage);
-  }
-);
+export const filteredNotes = derived([notesStore, filteredItems], ([$store, $filteredItems]) => {
+  // sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算
+  const sorted = sortNotes($filteredItems, $store.sortBy, $store.sortOrder, $store.noteTagsMap);
+  return paginate(sorted, $store.currentPage, $store.itemsPerPage);
+});
 
 /**
  * 総ページ数を導出（最適化：filteredItems の長さと itemsPerPage が変更された場合のみ再計算）
  */
-export const totalPages = derived(
-  [notesStore, filteredItems],
-  ([$store, $filteredItems]) => {
-    return calculateTotalPages($filteredItems.length, $store.itemsPerPage);
-  }
-);
+export const totalPages = derived([notesStore, filteredItems], ([$store, $filteredItems]) => {
+  return calculateTotalPages($filteredItems.length, $store.itemsPerPage);
+});
 
 /**
  * フィルタリングされたノートの総数を導出（最適化：filteredItems の長さが変更された場合のみ再計算）

@@ -88,4 +88,3 @@ describe("link-detector", () => {
     expect(links.length).toBe(1);
   });
 });
-

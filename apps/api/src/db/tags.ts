@@ -54,10 +54,7 @@ export async function getTagByName(name: string): Promise<Tag | null> {
  */
 export async function listTags(): Promise<Tag[]> {
   const db = getDb();
-  const query = createQueryBuilder()
-    .select(["id", "name"])
-    .from("tags")
-    .orderBy("name", "ASC");
+  const query = createQueryBuilder().select(["id", "name"]).from("tags").orderBy("name", "ASC");
 
   const result = await db.execute({
     sql: query.toSQL(),

@@ -1,8 +1,8 @@
 <script lang="ts">
 import { getFileDownloadUrl } from "$lib/api/files";
+import { notesStore } from "$lib/stores/notes";
 import type { File, NoteCore } from "$lib/types";
 import { formatDate } from "$lib/utils";
-import { notesStore } from "$lib/stores/notes";
 import { derived } from "svelte/store";
 
 export let notes: NoteCore[];
@@ -12,27 +12,27 @@ export let onSelectionChange: (noteIds: string[]) => void = () => {};
 
 // ファイルIDのSetを導出（O(1)検索のため）
 const fileIdsSet = derived(notesStore, ($store) => {
-	return new Set($store.allFiles.map((f) => f.id));
+  return new Set($store.allFiles.map((f) => f.id));
 });
 
 // 選択されたノートIDのSetを導出（O(1)検索のため）
 $: selectedNoteIdsSet = new Set(selectedNoteIds);
 
 function toggleSelection(noteId: string, event: Event) {
-	event.preventDefault();
-	event.stopPropagation();
-	if (selectedNoteIds.includes(noteId)) {
-		selectedNoteIds = selectedNoteIds.filter((id) => id !== noteId);
-	} else {
-		selectedNoteIds = [...selectedNoteIds, noteId];
-	}
-	onSelectionChange(selectedNoteIds);
+  event.preventDefault();
+  event.stopPropagation();
+  if (selectedNoteIds.includes(noteId)) {
+    selectedNoteIds = selectedNoteIds.filter((id) => id !== noteId);
+  } else {
+    selectedNoteIds = [...selectedNoteIds, noteId];
+  }
+  onSelectionChange(selectedNoteIds);
 }
 
 function handleItemClick(noteId: string, event: Event) {
-	if (selectable) {
-		toggleSelection(noteId, event);
-	}
+  if (selectable) {
+    toggleSelection(noteId, event);
+  }
 }
 </script>
 

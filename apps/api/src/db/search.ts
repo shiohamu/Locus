@@ -23,7 +23,7 @@ export async function searchNotes(
     args: [query, limit, offset],
   });
 
-	return mapRowsToNoteCore(result.rows);
+  return mapRowsToNoteCore(result.rows);
 }
 
 /**

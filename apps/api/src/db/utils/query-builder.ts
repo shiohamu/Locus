@@ -197,4 +197,3 @@ export class QueryBuilder {
 export function createQueryBuilder(): QueryBuilder {
   return new QueryBuilder();
 }
-

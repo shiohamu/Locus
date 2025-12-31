@@ -24,11 +24,11 @@ export async function getNoteMD(noteId: string): Promise<NoteMD | null> {
     args: [noteId],
   });
 
-	if (result.rows.length === 0) {
-		return null;
-	}
+  if (result.rows.length === 0) {
+    return null;
+  }
 
-	return mapRowToNoteMD(result.rows[0]);
+  return mapRowToNoteMD(result.rows[0]);
 }
 
 /**

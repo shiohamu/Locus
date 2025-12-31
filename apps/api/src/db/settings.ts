@@ -12,11 +12,11 @@ export async function getSetting(key: string): Promise<string | null> {
     args: [key],
   });
 
-	if (result.rows.length === 0) {
-		return null;
-	}
+  if (result.rows.length === 0) {
+    return null;
+  }
 
-	return assertString(result.rows[0].value, "value");
+  return assertString(result.rows[0].value, "value");
 }
 
 /**
@@ -41,16 +41,16 @@ export async function getLLMConfig(): Promise<LLMConfig | null> {
   if (!configJson) {
     return null;
   }
-	try {
-		const parsed = JSON.parse(configJson);
-		return assertLLMConfig(parsed);
-	} catch (error) {
-		if (error instanceof SyntaxError) {
-			return null;
-		}
-		// ValidationErrorの場合は再スロー
-		throw error;
-	}
+  try {
+    const parsed = JSON.parse(configJson);
+    return assertLLMConfig(parsed);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return null;
+    }
+    // ValidationErrorの場合は再スロー
+    throw error;
+  }
 }
 
 /**

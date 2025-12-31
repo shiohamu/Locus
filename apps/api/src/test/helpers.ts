@@ -7,22 +7,22 @@ import { closeDb } from "../db/db.js";
  * テスト用のインメモリデータベースを作成し、マイグレーションを実行する
  */
 export async function createTestDb(): Promise<Client> {
-	const db = createClient({
-		url: "file::memory:",
-	});
+  const db = createClient({
+    url: "file::memory:",
+  });
 
-	// 外部キー制約を有効にする
-	await db.execute("PRAGMA foreign_keys = ON;");
+  // 外部キー制約を有効にする
+  await db.execute("PRAGMA foreign_keys = ON;");
 
-	// すべてのマイグレーションファイルを順次実行
-	await executeMigration(db, "001_initial_schema.sql");
-	await executeMigration(db, "002_add_web_clips.sql");
-	await executeMigration(db, "003_add_files.sql");
-	await executeMigration(db, "004_add_settings.sql");
-	await executeMigration(db, "005_add_public_flag.sql");
-	await executeMigration(db, "006_add_file_show_in_notes.sql");
+  // すべてのマイグレーションファイルを順次実行
+  await executeMigration(db, "001_initial_schema.sql");
+  await executeMigration(db, "002_add_web_clips.sql");
+  await executeMigration(db, "003_add_files.sql");
+  await executeMigration(db, "004_add_settings.sql");
+  await executeMigration(db, "005_add_public_flag.sql");
+  await executeMigration(db, "006_add_file_show_in_notes.sql");
 
-	return db;
+  return db;
 }
 
 /**
@@ -90,15 +90,15 @@ export async function createTestDbFile(): Promise<{ db: Client; path: string }> 
   // 外部キー制約を有効にする
   await db.execute("PRAGMA foreign_keys = ON;");
 
-	// マイグレーションファイルを順次実行
-	await executeMigration(db, "001_initial_schema.sql");
-	await executeMigration(db, "002_add_web_clips.sql");
-	await executeMigration(db, "003_add_files.sql");
-	await executeMigration(db, "004_add_settings.sql");
-	await executeMigration(db, "005_add_public_flag.sql");
-	await executeMigration(db, "006_add_file_show_in_notes.sql");
+  // マイグレーションファイルを順次実行
+  await executeMigration(db, "001_initial_schema.sql");
+  await executeMigration(db, "002_add_web_clips.sql");
+  await executeMigration(db, "003_add_files.sql");
+  await executeMigration(db, "004_add_settings.sql");
+  await executeMigration(db, "005_add_public_flag.sql");
+  await executeMigration(db, "006_add_file_show_in_notes.sql");
 
-	return { db, path: tmpPath };
+  return { db, path: tmpPath };
 }
 
 /**

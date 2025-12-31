@@ -1,11 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { Client } from "@libsql/client";
 import { app } from "../index.js";
-import {
-  cleanupTestDbFile,
-  createTestDbFile,
-  createTestNoteCore,
-} from "../test/helpers.js";
+import { cleanupTestDbFile, createTestDbFile, createTestNoteCore } from "../test/helpers.js";
 
 describe("links API", () => {
   let testDb: Client;
@@ -64,12 +60,8 @@ describe("links API", () => {
     expect(Array.isArray(links.incoming)).toBe(true);
     expect(Array.isArray(links.outgoing)).toBe(true);
     expect(links.incoming.length).toBe(2);
-    expect(links.incoming.map((l: { from_note_id: string }) => l.from_note_id)).toContain(
-      note1.id
-    );
-    expect(links.incoming.map((l: { from_note_id: string }) => l.from_note_id)).toContain(
-      note3.id
-    );
+    expect(links.incoming.map((l: { from_note_id: string }) => l.from_note_id)).toContain(note1.id);
+    expect(links.incoming.map((l: { from_note_id: string }) => l.from_note_id)).toContain(note3.id);
   });
 
   test("GET /notes/:id/links - 存在しないノートの場合は空のリンクを返す", async () => {
@@ -85,4 +77,3 @@ describe("links API", () => {
     expect(links.outgoing.length).toBe(0);
   });
 });
-

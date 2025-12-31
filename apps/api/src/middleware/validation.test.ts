@@ -1,5 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { Hono } from "hono";
+import { ValidationError } from "../utils/errors.js";
 import {
   getJsonBody,
   getQueryInt,
@@ -13,7 +14,6 @@ import {
   validateURL,
   validateUUID,
 } from "./validation.js";
-import { ValidationError } from "../utils/errors.js";
 
 describe("validation middleware", () => {
   describe("getQueryInt", () => {
@@ -197,4 +197,3 @@ describe("validation middleware", () => {
     });
   });
 });
-

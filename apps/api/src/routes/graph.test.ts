@@ -213,4 +213,3 @@ describe("graph API", () => {
     process.env.DATABASE_URL = originalDb;
   });
 });
-

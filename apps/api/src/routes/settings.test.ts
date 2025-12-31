@@ -1,10 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "bun:test";
 import type { Client } from "@libsql/client";
 import { app } from "../index.js";
-import {
-  cleanupTestDbFile,
-  createTestDbFile,
-} from "../test/helpers.js";
+import { cleanupTestDbFile, createTestDbFile } from "../test/helpers.js";
 
 describe("settings API", () => {
   let testDb: Client;
@@ -235,4 +232,3 @@ describe("settings API", () => {
     expect(getRes.status).toBe(404);
   });
 });
-

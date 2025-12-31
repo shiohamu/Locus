@@ -51,7 +51,7 @@ export class ValidationError extends AppError {
  * 認証エラー
  */
 export class AuthenticationError extends AppError {
-  constructor(message: string = "Authentication required") {
+  constructor(message = "Authentication required") {
     super(message, 401, "AUTHENTICATION_ERROR");
   }
 }
@@ -60,7 +60,7 @@ export class AuthenticationError extends AppError {
  * 権限エラー
  */
 export class AuthorizationError extends AppError {
-  constructor(message: string = "Insufficient permissions") {
+  constructor(message = "Insufficient permissions") {
     super(message, 403, "AUTHORIZATION_ERROR");
   }
 }
@@ -69,7 +69,7 @@ export class AuthorizationError extends AppError {
  * タイムアウトエラー
  */
 export class TimeoutError extends AppError {
-  constructor(message: string = "Request timeout", timeoutMs?: number) {
+  constructor(message = "Request timeout", timeoutMs?: number) {
     super(message, 504, "TIMEOUT_ERROR", { timeoutMs });
   }
 }
@@ -183,4 +183,3 @@ export function toErrorResponse(error: unknown, includeStack = false): ErrorResp
 
   return response;
 }
-

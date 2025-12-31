@@ -55,42 +55,42 @@ function clearTagFilters() {
 }
 
 function handleSelectionChange(noteIds: string[]) {
-	selectedNoteIds = noteIds;
+  selectedNoteIds = noteIds;
 }
 
 function toggleSelectMode() {
-	selectMode = !selectMode;
-	if (!selectMode) {
-		selectedNoteIds = [];
-	}
+  selectMode = !selectMode;
+  if (!selectMode) {
+    selectedNoteIds = [];
+  }
 }
 
 async function handleBatchDelete() {
-	if (selectedNoteIds.length === 0) {
-		return;
-	}
+  if (selectedNoteIds.length === 0) {
+    return;
+  }
 
-	if (!confirm(`${selectedNoteIds.length}件のノートを削除しますか？この操作は取り消せません。`)) {
-		return;
-	}
+  if (!confirm(`${selectedNoteIds.length}件のノートを削除しますか？この操作は取り消せません。`)) {
+    return;
+  }
 
-	deleting = true;
-	try {
-		await deleteNotesBatch(selectedNoteIds);
-		// ストアからも削除
-		selectedNoteIds.forEach((id) => {
-			notesStore.removeNote(id);
-		});
-		selectedNoteIds = [];
-		selectMode = false;
-		// 一覧を再読み込み
-		await notesStore.loadNotes();
-	} catch (error) {
-		console.error("一括削除に失敗しました:", error);
-		alert("一括削除に失敗しました");
-	} finally {
-		deleting = false;
-	}
+  deleting = true;
+  try {
+    await deleteNotesBatch(selectedNoteIds);
+    // ストアからも削除
+    selectedNoteIds.forEach((id) => {
+      notesStore.removeNote(id);
+    });
+    selectedNoteIds = [];
+    selectMode = false;
+    // 一覧を再読み込み
+    await notesStore.loadNotes();
+  } catch (error) {
+    console.error("一括削除に失敗しました:", error);
+    alert("一括削除に失敗しました");
+  } finally {
+    deleting = false;
+  }
 }
 
 function handleSortChange() {

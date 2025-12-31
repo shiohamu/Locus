@@ -151,7 +151,7 @@ describe("web-clip-fetcher", () => {
 
   test("refetchWebClip - 存在しないWebクリップでエラーが発生する", async () => {
     await expect(webClipFetcher.refetchWebClip("non-existent-id")).rejects.toThrow(
-      "Web clip with id \"non-existent-id\" not found"
+      'Web clip with id "non-existent-id" not found'
     );
   });
 });

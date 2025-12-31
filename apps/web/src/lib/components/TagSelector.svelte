@@ -14,50 +14,50 @@ let newTagName = "";
 let creatingTag = false;
 
 onMount(async () => {
-	await loadTags();
+  await loadTags();
 });
 
 async function loadTags() {
-	loading = true;
-	error = null;
-	try {
-		allTags = await getTags();
-	} catch (e) {
-		error = e instanceof Error ? e.message : "タグの読み込みに失敗しました";
-	} finally {
-		loading = false;
-	}
+  loading = true;
+  error = null;
+  try {
+    allTags = await getTags();
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの読み込みに失敗しました";
+  } finally {
+    loading = false;
+  }
 }
 
 function toggleTag(tagId: string) {
-	if (selectedTagIds.includes(tagId)) {
-		selectedTagIds = selectedTagIds.filter((id) => id !== tagId);
-	} else {
-		selectedTagIds = [...selectedTagIds, tagId];
-	}
-	onTagsChange(selectedTagIds);
+  if (selectedTagIds.includes(tagId)) {
+    selectedTagIds = selectedTagIds.filter((id) => id !== tagId);
+  } else {
+    selectedTagIds = [...selectedTagIds, tagId];
+  }
+  onTagsChange(selectedTagIds);
 }
 
 async function handleCreateTag() {
-	if (!newTagName.trim()) {
-		error = "タグ名を入力してください";
-		return;
-	}
+  if (!newTagName.trim()) {
+    error = "タグ名を入力してください";
+    return;
+  }
 
-	creatingTag = true;
-	error = null;
-	try {
-		const newTag = await createTag({ name: newTagName.trim() });
-		allTags = [...allTags, newTag];
-		selectedTagIds = [...selectedTagIds, newTag.id];
-		onTagsChange(selectedTagIds);
-		newTagName = "";
-		showAddTag = false;
-	} catch (e) {
-		error = e instanceof Error ? e.message : "タグの作成に失敗しました";
-	} finally {
-		creatingTag = false;
-	}
+  creatingTag = true;
+  error = null;
+  try {
+    const newTag = await createTag({ name: newTagName.trim() });
+    allTags = [...allTags, newTag];
+    selectedTagIds = [...selectedTagIds, newTag.id];
+    onTagsChange(selectedTagIds);
+    newTagName = "";
+    showAddTag = false;
+  } catch (e) {
+    error = e instanceof Error ? e.message : "タグの作成に失敗しました";
+  } finally {
+    creatingTag = false;
+  }
 }
 
 $: selectedTags = allTags.filter((tag) => selectedTagIds.includes(tag.id));

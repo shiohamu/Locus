@@ -39,10 +39,10 @@ export async function getLinksByNote(noteId: string): Promise<{
     args: [noteId],
   });
 
-	return {
-		outgoing: mapRowsToLink(outgoingResult.rows),
-		incoming: mapRowsToLink(incomingResult.rows),
-	};
+  return {
+    outgoing: mapRowsToLink(outgoingResult.rows),
+    incoming: mapRowsToLink(incomingResult.rows),
+  };
 }
 
 /**

@@ -12,9 +12,7 @@ try {
   console.log(`Server running on http://localhost:${server.port}`);
 } catch (error) {
   if (error instanceof Error && error.message.includes("EADDRINUSE")) {
-    console.error(
-      `\n❌ Error: Port ${port} is already in use.\n`
-    );
+    console.error(`\n❌ Error: Port ${port} is already in use.\n`);
     console.error(`To fix this issue, you can:`);
     console.error(`  1. Stop the process using port ${port}:`);
     console.error(`     lsof -ti:${port} | xargs kill -9`);

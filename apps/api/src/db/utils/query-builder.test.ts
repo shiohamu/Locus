@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { createQueryBuilder, QueryBuilder } from "./query-builder.js";
+import { QueryBuilder, createQueryBuilder } from "./query-builder.js";
 
 describe("QueryBuilder", () => {
   describe("basic query building", () => {
@@ -80,10 +80,7 @@ describe("QueryBuilder", () => {
     });
 
     test("should handle empty WHERE IN array", () => {
-      const query = createQueryBuilder()
-        .select(["id", "name"])
-        .from("tags")
-        .whereIn("id", []);
+      const query = createQueryBuilder().select(["id", "name"]).from("tags").whereIn("id", []);
 
       const sql = query.toSQL();
       expect(sql).not.toContain("WHERE");
@@ -115,10 +112,7 @@ describe("QueryBuilder", () => {
 
   describe("LIMIT and OFFSET", () => {
     test("should build query with LIMIT", () => {
-      const query = createQueryBuilder()
-        .select(["id", "name"])
-        .from("users")
-        .limit(10);
+      const query = createQueryBuilder().select(["id", "name"]).from("users").limit(10);
 
       const sql = query.toSQL();
       expect(sql).toBe("SELECT id, name FROM users LIMIT ?");
@@ -126,10 +120,7 @@ describe("QueryBuilder", () => {
     });
 
     test("should build query with LIMIT and OFFSET", () => {
-      const query = createQueryBuilder()
-        .select(["id", "name"])
-        .from("users")
-        .limit(10, 20);
+      const query = createQueryBuilder().select(["id", "name"]).from("users").limit(10, 20);
 
       const sql = query.toSQL();
       expect(sql).toBe("SELECT id, name FROM users LIMIT ? OFFSET ?");
@@ -139,10 +130,7 @@ describe("QueryBuilder", () => {
 
   describe("DISTINCT", () => {
     test("should build query with DISTINCT", () => {
-      const query = createQueryBuilder()
-        .select(["id", "name"])
-        .distinct()
-        .from("users");
+      const query = createQueryBuilder().select(["id", "name"]).distinct().from("users");
 
       const sql = query.toSQL();
       expect(sql).toBe("SELECT DISTINCT id, name FROM users");
@@ -182,10 +170,7 @@ describe("QueryBuilder", () => {
 
   describe("reset", () => {
     test("should reset query builder", () => {
-      const query = createQueryBuilder()
-        .select(["id"])
-        .from("users")
-        .where("id = ?", "123");
+      const query = createQueryBuilder().select(["id"]).from("users").where("id = ?", "123");
 
       query.reset();
 
@@ -195,4 +180,3 @@ describe("QueryBuilder", () => {
     });
   });
 });
-

@@ -13,57 +13,52 @@ let error: unknown | null = null;
 let showFileSelector = false;
 
 onMount(async () => {
-	await loadFiles();
+  await loadFiles();
 });
 
 async function loadFiles() {
-	loading = true;
-	error = null;
-	try {
-		[allFiles, linkedFiles] = await Promise.all([
-			getFiles(),
-			getFilesByNote(noteId),
-		]);
-	} catch (e) {
-		error = e;
-	} finally {
-		loading = false;
-	}
+  loading = true;
+  error = null;
+  try {
+    [allFiles, linkedFiles] = await Promise.all([getFiles(), getFilesByNote(noteId)]);
+  } catch (e) {
+    error = e;
+  } finally {
+    loading = false;
+  }
 }
 
 async function handleLinkFile(fileId: string) {
-	error = null;
-	try {
-		await linkFileToNote(fileId, noteId);
-		await loadFiles();
-	} catch (e) {
-		error = e;
-	}
+  error = null;
+  try {
+    await linkFileToNote(fileId, noteId);
+    await loadFiles();
+  } catch (e) {
+    error = e;
+  }
 }
 
 async function handleUnlinkFile(fileId: string) {
-	if (!confirm("このファイルとの関連を解除しますか？")) {
-		return;
-	}
+  if (!confirm("このファイルとの関連を解除しますか？")) {
+    return;
+  }
 
-	error = null;
-	try {
-		await unlinkFileFromNote(fileId, noteId);
-		await loadFiles();
-	} catch (e) {
-		error = e;
-	}
+  error = null;
+  try {
+    await unlinkFileFromNote(fileId, noteId);
+    await loadFiles();
+  } catch (e) {
+    error = e;
+  }
 }
 
 function formatFileSize(bytes: number): string {
-	if (bytes < 1024) return `${bytes} B`;
-	if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
-	return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(2)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
 }
 
-$: availableFiles = allFiles.filter(
-	(file) => !linkedFiles.some((linked) => linked.id === file.id)
-);
+$: availableFiles = allFiles.filter((file) => !linkedFiles.some((linked) => linked.id === file.id));
 </script>
 
 <div class="file-embedder">

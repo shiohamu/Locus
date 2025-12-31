@@ -1,12 +1,12 @@
 import { describe, expect, test } from "bun:test";
 import { ValidationError } from "../../utils/errors.js";
 import {
+  mapRowToFile,
   mapRowToNoteCore,
   mapRowToTag,
-  mapRowToFile,
+  mapRowsToFile,
   mapRowsToNoteCore,
   mapRowsToTag,
-  mapRowsToFile,
 } from "./mappers.js";
 
 describe("mappers", () => {
@@ -234,4 +234,3 @@ describe("mappers", () => {
     });
   });
 });
-

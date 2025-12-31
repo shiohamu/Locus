@@ -4,13 +4,13 @@
  */
 
 import {
-	AppError,
-	DatabaseError,
-	ExternalServiceError,
-	NotFoundError,
-	TimeoutError,
-	ValidationError,
-	toAppError,
+  AppError,
+  DatabaseError,
+  ExternalServiceError,
+  NotFoundError,
+  TimeoutError,
+  ValidationError,
+  toAppError,
 } from "../../utils/errors.js";
 
 /**
@@ -21,95 +21,93 @@ import {
  * @throws AppError エラーが発生した場合（元のエラー型を保持）
  */
 export async function handleServiceOperation<T>(
-	operation: string,
-	fn: () => Promise<T>,
+  operation: string,
+  fn: () => Promise<T>
 ): Promise<T> {
-	try {
-		return await fn();
-	} catch (error) {
-		// 既にAppErrorの場合はそのまま再スロー（エラー型を保持）
-		if (
-			error instanceof AppError ||
-			error instanceof DatabaseError ||
-			error instanceof NotFoundError ||
-			error instanceof ValidationError ||
-			error instanceof ExternalServiceError ||
-			error instanceof TimeoutError
-		) {
-			console.error(`Service operation failed: ${operation}`, {
-				operation,
-				error: error.message,
-				code: error.code,
-				details: error.details,
-				stack: process.env.NODE_ENV !== "production" ? error.stack : undefined,
-			});
-			throw error;
-		}
+  try {
+    return await fn();
+  } catch (error) {
+    // 既にAppErrorの場合はそのまま再スロー（エラー型を保持）
+    if (
+      error instanceof AppError ||
+      error instanceof DatabaseError ||
+      error instanceof NotFoundError ||
+      error instanceof ValidationError ||
+      error instanceof ExternalServiceError ||
+      error instanceof TimeoutError
+    ) {
+      console.error(`Service operation failed: ${operation}`, {
+        operation,
+        error: error.message,
+        code: error.code,
+        details: error.details,
+        stack: process.env.NODE_ENV !== "production" ? error.stack : undefined,
+      });
+      throw error;
+    }
 
-		const appError = toAppError(error);
+    const appError = toAppError(error);
 
-		// エラーの種類に応じて適切なエラー型に変換
-		if (appError instanceof DatabaseError || appError.code === "DATABASE_ERROR") {
-			console.error(`Service operation failed (database error): ${operation}`, {
-				operation,
-				error: appError.message,
-				code: appError.code,
-				details: appError.details,
-				stack: process.env.NODE_ENV !== "production" ? appError.stack : undefined,
-			});
-			throw appError;
-		}
+    // エラーの種類に応じて適切なエラー型に変換
+    if (appError instanceof DatabaseError || appError.code === "DATABASE_ERROR") {
+      console.error(`Service operation failed (database error): ${operation}`, {
+        operation,
+        error: appError.message,
+        code: appError.code,
+        details: appError.details,
+        stack: process.env.NODE_ENV !== "production" ? appError.stack : undefined,
+      });
+      throw appError;
+    }
 
-		// タイムアウトエラーの検出
-		if (
-			appError.message.includes("timeout") ||
-			appError.message.includes("タイムアウト") ||
-			appError.message.includes("ETIMEDOUT") ||
-			appError.message.includes("AbortError")
-		) {
-			const timeoutError = new TimeoutError(
-				`Service operation timeout: ${operation}`,
-			);
-			console.error(`Service operation timeout: ${operation}`, {
-				operation,
-				error: timeoutError.message,
-				code: timeoutError.code,
-				stack: process.env.NODE_ENV !== "production" ? timeoutError.stack : undefined,
-			});
-			throw timeoutError;
-		}
+    // タイムアウトエラーの検出
+    if (
+      appError.message.includes("timeout") ||
+      appError.message.includes("タイムアウト") ||
+      appError.message.includes("ETIMEDOUT") ||
+      appError.message.includes("AbortError")
+    ) {
+      const timeoutError = new TimeoutError(`Service operation timeout: ${operation}`);
+      console.error(`Service operation timeout: ${operation}`, {
+        operation,
+        error: timeoutError.message,
+        code: timeoutError.code,
+        stack: process.env.NODE_ENV !== "production" ? timeoutError.stack : undefined,
+      });
+      throw timeoutError;
+    }
 
-		// 外部サービスエラーの検出（HTTPエラーなど）
-		if (
-			appError.message.includes("HTTP error") ||
-			appError.message.includes("fetch failed") ||
-			appError.message.includes("network")
-		) {
-			const externalError = new ExternalServiceError(
-				"external",
-				appError.message,
-				appError.details,
-			);
-			console.error(`Service operation failed (external service error): ${operation}`, {
-				operation,
-				error: externalError.message,
-				code: externalError.code,
-				details: externalError.details,
-				stack: process.env.NODE_ENV !== "production" ? externalError.stack : undefined,
-			});
-			throw externalError;
-		}
+    // 外部サービスエラーの検出（HTTPエラーなど）
+    if (
+      appError.message.includes("HTTP error") ||
+      appError.message.includes("fetch failed") ||
+      appError.message.includes("network")
+    ) {
+      const externalError = new ExternalServiceError(
+        "external",
+        appError.message,
+        appError.details
+      );
+      console.error(`Service operation failed (external service error): ${operation}`, {
+        operation,
+        error: externalError.message,
+        code: externalError.code,
+        details: externalError.details,
+        stack: process.env.NODE_ENV !== "production" ? externalError.stack : undefined,
+      });
+      throw externalError;
+    }
 
-		// その他のエラーもAppErrorとしてラップ
-		console.error(`Unexpected error in service operation: ${operation}`, {
-			operation,
-			error: appError.message,
-			code: appError.code,
-			details: appError.details,
-			stack: process.env.NODE_ENV !== "production" ? appError.stack : undefined,
-		});
-		throw appError;
-	}
+    // その他のエラーもAppErrorとしてラップ
+    console.error(`Unexpected error in service operation: ${operation}`, {
+      operation,
+      error: appError.message,
+      code: appError.code,
+      details: appError.details,
+      stack: process.env.NODE_ENV !== "production" ? appError.stack : undefined,
+    });
+    throw appError;
+  }
 }
 
 /**
@@ -120,9 +118,8 @@ export async function handleServiceOperation<T>(
  * @throws AppError エラーが発生した場合
  */
 export async function handleServiceOperationNullable<T>(
-	operation: string,
-	fn: () => Promise<T | null>,
+  operation: string,
+  fn: () => Promise<T | null>
 ): Promise<T | null> {
-	return handleServiceOperation(operation, fn);
+  return handleServiceOperation(operation, fn);
 }
-

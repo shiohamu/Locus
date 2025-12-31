@@ -14,51 +14,49 @@ let saving = false;
 let error: unknown | null = null;
 
 function handleTagsChange(tagIds: string[]) {
-	selectedTagIds = tagIds;
+  selectedTagIds = tagIds;
 }
 
 async function handleSave() {
-	if (!title.trim()) {
-		error = "タイトルを入力してください";
-		return;
-	}
+  if (!title.trim()) {
+    error = "タイトルを入力してください";
+    return;
+  }
 
-	saving = true;
-	error = null;
+  saving = true;
+  error = null;
 
-	try {
-		const now = nowTimestamp();
-		const id = generateId();
+  try {
+    const now = nowTimestamp();
+    const id = generateId();
 
-		const core: NoteCore = {
-			id,
-			type: "md",
-			title: title.trim(),
-			created_at: now,
-			updated_at: now,
-			deleted_at: null,
-		};
+    const core: NoteCore = {
+      id,
+      type: "md",
+      title: title.trim(),
+      created_at: now,
+      updated_at: now,
+      deleted_at: null,
+    };
 
-		const md: NoteMD = {
-			note_id: id,
-			content: content,
-		};
+    const md: NoteMD = {
+      note_id: id,
+      content: content,
+    };
 
-		await createNoteMD({ core, md });
+    await createNoteMD({ core, md });
 
-		// タグを関連付け
-		if (selectedTagIds.length > 0) {
-			await Promise.all(
-				selectedTagIds.map((tagId) => addTagToNote(id, tagId))
-			);
-		}
+    // タグを関連付け
+    if (selectedTagIds.length > 0) {
+      await Promise.all(selectedTagIds.map((tagId) => addTagToNote(id, tagId)));
+    }
 
-		goto(`/notes/${id}`);
-	} catch (e) {
-		error = e;
-	} finally {
-		saving = false;
-	}
+    goto(`/notes/${id}`);
+  } catch (e) {
+    error = e;
+  } finally {
+    saving = false;
+  }
 }
 </script>
 

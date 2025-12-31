@@ -49,11 +49,7 @@ async function recordMigration(client: any, version: string): Promise<void> {
 /**
  * テーブルにカラムが存在するかチェック
  */
-async function columnExists(
-  client: any,
-  tableName: string,
-  columnName: string
-): Promise<boolean> {
+async function columnExists(client: any, tableName: string, columnName: string): Promise<boolean> {
   try {
     const result = await client.execute({
       sql: `PRAGMA table_info(${tableName})`,

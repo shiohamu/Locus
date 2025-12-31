@@ -1,7 +1,7 @@
 import type { LLMProviderInterface, LLMResponse, Tag } from "@locus/shared";
 import type * as tagsDb from "../db/tags.js";
-import { handleServiceOperation } from "./utils/error-handler.js";
 import { ExternalServiceError } from "../utils/errors.js";
+import { handleServiceOperation } from "./utils/error-handler.js";
 
 /**
  * タグ候補生成の結果
@@ -46,54 +46,54 @@ const TAG_GENERATION_PROMPT = `以下のテキストから、適切なタグを3
  * タグ候補生成サービスの依存関係
  */
 export interface TagSuggestionDependencies {
-	tagsDb: typeof tagsDb;
+  tagsDb: typeof tagsDb;
 }
 
 /**
  * タグ候補生成サービス
  */
 export class TagSuggestionService {
-	constructor(
-		private llm: LLMProviderInterface | null,
-		private deps?: TagSuggestionDependencies,
-	) {}
+  constructor(
+    private llm: LLMProviderInterface | null,
+    private deps?: TagSuggestionDependencies
+  ) {}
 
-	/**
-	 * ノートのタグ候補を生成
-	 */
-	async generateSuggestions(
-		title: string,
-		content: string,
-		existingTags: Tag[] = [],
-		allTags: Tag[] = [],
-	): Promise<TagSuggestion[]> {
-		return handleServiceOperation("generateTagSuggestions", async () => {
-			const suggestions: TagSuggestion[] = [];
+  /**
+   * ノートのタグ候補を生成
+   */
+  async generateSuggestions(
+    title: string,
+    content: string,
+    existingTags: Tag[] = [],
+    allTags: Tag[] = []
+  ): Promise<TagSuggestion[]> {
+    return handleServiceOperation("generateTagSuggestions", async () => {
+      const suggestions: TagSuggestion[] = [];
 
-			// ルールベースのタグ生成（既存タグを優先的にマッチング）
-			const ruleBasedTags = this.generateRuleBasedTags(title, content, existingTags, allTags);
-			suggestions.push(...ruleBasedTags);
+      // ルールベースのタグ生成（既存タグを優先的にマッチング）
+      const ruleBasedTags = this.generateRuleBasedTags(title, content, existingTags, allTags);
+      suggestions.push(...ruleBasedTags);
 
-			// LLMベースのタグ生成（既存タグを優先的に使用）
-			if (this.llm) {
-				try {
-					const llmTags = await this.generateLLMTags(title, content, allTags);
-					suggestions.push(...llmTags);
-				} catch (error) {
-					// LLMエラーは警告として記録し、ルールベースで続行
-					if (error instanceof ExternalServiceError) {
-						console.warn("LLM tag generation failed (external service error):", error.message);
-					} else {
-						console.error("LLM tag generation failed:", error);
-					}
-					// LLMが失敗してもルールベースで続行
-				}
-			}
+      // LLMベースのタグ生成（既存タグを優先的に使用）
+      if (this.llm) {
+        try {
+          const llmTags = await this.generateLLMTags(title, content, allTags);
+          suggestions.push(...llmTags);
+        } catch (error) {
+          // LLMエラーは警告として記録し、ルールベースで続行
+          if (error instanceof ExternalServiceError) {
+            console.warn("LLM tag generation failed (external service error):", error.message);
+          } else {
+            console.error("LLM tag generation failed:", error);
+          }
+          // LLMが失敗してもルールベースで続行
+        }
+      }
 
-			// 重複を除去し、信頼度でソート（既存タグを優先）
-			return this.deduplicateAndSort(suggestions, allTags);
-		});
-	}
+      // 重複を除去し、信頼度でソート（既存タグを優先）
+      return this.deduplicateAndSort(suggestions, allTags);
+    });
+  }
 
   /**
    * タグとコンテンツの関連性スコアを計算
@@ -182,40 +182,40 @@ export class TagSuggestionService {
       .replace("{content}", truncatedContent)
       .replace("{existingTags}", existingTagsList);
 
-		let response: LLMResponse;
-		try {
-			response = await this.llm.generate({
-				prompt,
-				systemPrompt:
-					"あなたは優秀なタグ生成アシスタントです。テキストの内容を適切に表す単語または短いフレーズのタグを生成します。タグは必ず単語形式で、長い文章は避けてください。既存タグリストがある場合は、それらを優先的に使用してください。",
-				maxTokens: 200,
-				temperature: 0.7,
-			});
-		} catch (error) {
-			// LLMエラーが発生した場合は空の配列を返す（ルールベースのタグ生成にフォールバック）
-			// 空のレスポンスの場合は警告のみで、エラーとして扱わない
-			if (error instanceof Error) {
-				const errorMessage = error.message.toLowerCase();
-				// より広範囲にエラーメッセージをチェック（handleErrorが付加するプレフィックスも考慮）
-				if (
-					errorMessage.includes("empty response") ||
-					errorMessage.includes("invalid response") ||
-					errorMessage.includes("returned empty") ||
-					errorMessage.includes("openai compatible api returned empty") ||
-					(errorMessage.includes("llm request failed") && errorMessage.includes("empty"))
-				) {
-					console.warn("LLM returned empty response, falling back to rule-based tag generation");
-					return [];
-				}
-			}
-			// 外部サービスエラーとしてラップ（ただし、空の配列を返して続行）
-			if (error instanceof ExternalServiceError) {
-				console.warn("LLM tag generation failed (external service error):", error.message);
-			} else {
-				console.error("LLM tag generation error:", error);
-			}
-			return [];
-		}
+    let response: LLMResponse;
+    try {
+      response = await this.llm.generate({
+        prompt,
+        systemPrompt:
+          "あなたは優秀なタグ生成アシスタントです。テキストの内容を適切に表す単語または短いフレーズのタグを生成します。タグは必ず単語形式で、長い文章は避けてください。既存タグリストがある場合は、それらを優先的に使用してください。",
+        maxTokens: 200,
+        temperature: 0.7,
+      });
+    } catch (error) {
+      // LLMエラーが発生した場合は空の配列を返す（ルールベースのタグ生成にフォールバック）
+      // 空のレスポンスの場合は警告のみで、エラーとして扱わない
+      if (error instanceof Error) {
+        const errorMessage = error.message.toLowerCase();
+        // より広範囲にエラーメッセージをチェック（handleErrorが付加するプレフィックスも考慮）
+        if (
+          errorMessage.includes("empty response") ||
+          errorMessage.includes("invalid response") ||
+          errorMessage.includes("returned empty") ||
+          errorMessage.includes("openai compatible api returned empty") ||
+          (errorMessage.includes("llm request failed") && errorMessage.includes("empty"))
+        ) {
+          console.warn("LLM returned empty response, falling back to rule-based tag generation");
+          return [];
+        }
+      }
+      // 外部サービスエラーとしてラップ（ただし、空の配列を返して続行）
+      if (error instanceof ExternalServiceError) {
+        console.warn("LLM tag generation failed (external service error):", error.message);
+      } else {
+        console.error("LLM tag generation error:", error);
+      }
+      return [];
+    }
 
     // レスポンスが空の場合は空の配列を返す
     if (!response || !response.text || response.text.trim().length === 0) {

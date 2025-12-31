@@ -5,7 +5,15 @@
  * Svelte 4では、関数ベースのアプローチを使用します。
  */
 
-import { getNote, getNoteMD, getRSSItem, getWebClip, updateNote, updateNoteMD, updateRSSItem } from "$lib/api";
+import {
+  getNote,
+  getNoteMD,
+  getRSSItem,
+  getWebClip,
+  updateNote,
+  updateNoteMD,
+  updateRSSItem,
+} from "$lib/api";
 import type { NoteCore, NoteMD, RSSItem, WebClip } from "$lib/types";
 import { nowTimestamp } from "$lib/utils";
 

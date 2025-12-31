@@ -1,9 +1,16 @@
 import type { File } from "@locus/shared";
 import { Hono } from "hono";
-import { NotFoundError, ValidationError } from "../utils/errors.js";
 import * as filesDb from "../db/files.js";
+import {
+  getJsonBody,
+  getQueryInt,
+  getQueryString,
+  validateRequired,
+  validateString,
+  validateUUID,
+} from "../middleware/validation.js";
 import { deleteFileFromDisk, readFile, uploadFile } from "../services/file-uploader.js";
-import { getQueryInt, getQueryString, getJsonBody, validateRequired, validateString, validateUUID } from "../middleware/validation.js";
+import { NotFoundError, ValidationError } from "../utils/errors.js";
 
 const app = new Hono();
 
@@ -13,37 +20,37 @@ const app = new Hono();
  * multipart/form-data: { file: File }
  */
 app.post("/", async (c) => {
-	const formData = await c.req.formData();
-	const file = formData.get("file") as File | null;
+  const formData = await c.req.formData();
+  const file = formData.get("file") as File | null;
 
-	if (!file) {
-		throw new ValidationError("File is required");
-	}
+  if (!file) {
+    throw new ValidationError("File is required");
+  }
 
-	// ファイル情報を取得
-	const fileId = crypto.randomUUID();
-	const filename = file.name || "untitled";
-	const mimeType = file.type || "application/octet-stream";
-	const size = file.size;
-	const now = Math.floor(Date.now() / 1000);
+  // ファイル情報を取得
+  const fileId = crypto.randomUUID();
+  const filename = file.name || "untitled";
+  const mimeType = file.type || "application/octet-stream";
+  const size = file.size;
+  const now = Math.floor(Date.now() / 1000);
 
-	// ファイルデータを読み込む
-	const fileData = await file.arrayBuffer();
+  // ファイルデータを読み込む
+  const fileData = await file.arrayBuffer();
 
-	// ファイル情報を作成
-	const fileInfo: File = {
-		id: fileId,
-		filename,
-		mime_type: mimeType,
-		size,
-		created_at: now,
-		show_in_notes: false,
-	};
+  // ファイル情報を作成
+  const fileInfo: File = {
+    id: fileId,
+    filename,
+    mime_type: mimeType,
+    size,
+    created_at: now,
+    show_in_notes: false,
+  };
 
-	// ファイルをアップロード
-	const savedFile = await uploadFile(fileInfo, fileData);
+  // ファイルをアップロード
+  const savedFile = await uploadFile(fileInfo, fileData);
 
-	return c.json(savedFile, 201);
+  return c.json(savedFile, 201);
 });
 
 /**
@@ -51,19 +58,19 @@ app.post("/", async (c) => {
  * GET /files?note_id=xxx
  */
 app.get("/", async (c) => {
-	const noteId = getQueryString(c, "note_id");
-	const limit = getQueryInt(c, "limit");
-	const offset = getQueryInt(c, "offset");
+  const noteId = getQueryString(c, "note_id");
+  const limit = getQueryInt(c, "limit");
+  const offset = getQueryInt(c, "offset");
 
-	// ノートIDが指定されている場合は、そのノートに紐づくファイルを取得
-	if (noteId) {
-		const files = await filesDb.getFilesByNote(noteId);
-		return c.json(files);
-	}
+  // ノートIDが指定されている場合は、そのノートに紐づくファイルを取得
+  if (noteId) {
+    const files = await filesDb.getFilesByNote(noteId);
+    return c.json(files);
+  }
 
-	// 通常のファイル一覧取得
-	const files = await filesDb.listFiles({ limit, offset });
-	return c.json(files);
+  // 通常のファイル一覧取得
+  const files = await filesDb.listFiles({ limit, offset });
+  return c.json(files);
 });
 
 /**
@@ -71,14 +78,14 @@ app.get("/", async (c) => {
  * GET /files/:id
  */
 app.get("/:id", async (c) => {
-	const id = c.req.param("id");
-	const file = await filesDb.getFile(id);
+  const id = c.req.param("id");
+  const file = await filesDb.getFile(id);
 
-	if (!file) {
-		throw new NotFoundError("File", id);
-	}
+  if (!file) {
+    throw new NotFoundError("File", id);
+  }
 
-	return c.json(file);
+  return c.json(file);
 });
 
 /**
@@ -86,20 +93,20 @@ app.get("/:id", async (c) => {
  * GET /files/:id/download
  */
 app.get("/:id/download", async (c) => {
-	const id = c.req.param("id");
-	const file = await filesDb.getFile(id);
+  const id = c.req.param("id");
+  const file = await filesDb.getFile(id);
 
-	if (!file) {
-		throw new NotFoundError("File", id);
-	}
+  if (!file) {
+    throw new NotFoundError("File", id);
+  }
 
-	const fileData = await readFile(file.id, file.filename);
-	return new Response(fileData, {
-		headers: {
-			"Content-Type": file.mime_type,
-			"Content-Disposition": `attachment; filename="${file.filename}"`,
-		},
-	});
+  const fileData = await readFile(file.id, file.filename);
+  return new Response(fileData, {
+    headers: {
+      "Content-Type": file.mime_type,
+      "Content-Disposition": `attachment; filename="${file.filename}"`,
+    },
+  });
 });
 
 /**
@@ -107,20 +114,20 @@ app.get("/:id/download", async (c) => {
  * DELETE /files/:id
  */
 app.delete("/:id", async (c) => {
-	const id = c.req.param("id");
-	const file = await filesDb.getFile(id);
+  const id = c.req.param("id");
+  const file = await filesDb.getFile(id);
 
-	if (!file) {
-		throw new NotFoundError("File", id);
-	}
+  if (!file) {
+    throw new NotFoundError("File", id);
+  }
 
-	// ファイルシステムから削除
-	await deleteFileFromDisk(file.id, file.filename);
+  // ファイルシステムから削除
+  await deleteFileFromDisk(file.id, file.filename);
 
-	// データベースから削除
-	await filesDb.deleteFile(id);
+  // データベースから削除
+  await filesDb.deleteFile(id);
 
-	return c.json({ message: "File deleted" });
+  return c.json({ message: "File deleted" });
 });
 
 /**
@@ -129,18 +136,18 @@ app.delete("/:id", async (c) => {
  * リクエストボディ: { note_id: string }
  */
 app.post("/:id/notes", async (c) => {
-	const fileId = c.req.param("id");
-	const body = await getJsonBody<{ note_id: string }>(c);
-	validateRequired(body, ["note_id"]);
-	validateString(body.note_id, "note_id");
+  const fileId = c.req.param("id");
+  const body = await getJsonBody<{ note_id: string }>(c);
+  validateRequired(body, ["note_id"]);
+  validateString(body.note_id, "note_id");
 
-	const file = await filesDb.getFile(fileId);
-	if (!file) {
-		throw new NotFoundError("File", fileId);
-	}
+  const file = await filesDb.getFile(fileId);
+  if (!file) {
+    throw new NotFoundError("File", fileId);
+  }
 
-	const fileNote = await filesDb.linkFileToNote(fileId, body.note_id);
-	return c.json(fileNote, 201);
+  const fileNote = await filesDb.linkFileToNote(fileId, body.note_id);
+  return c.json(fileNote, 201);
 });
 
 /**
@@ -148,16 +155,16 @@ app.post("/:id/notes", async (c) => {
  * DELETE /files/:id/notes/:noteId
  */
 app.delete("/:id/notes/:noteId", async (c) => {
-	const fileId = c.req.param("id");
-	const noteId = c.req.param("noteId");
+  const fileId = c.req.param("id");
+  const noteId = c.req.param("noteId");
 
-	const file = await filesDb.getFile(fileId);
-	if (!file) {
-		throw new NotFoundError("File", fileId);
-	}
+  const file = await filesDb.getFile(fileId);
+  if (!file) {
+    throw new NotFoundError("File", fileId);
+  }
 
-	await filesDb.unlinkFileFromNote(fileId, noteId);
-	return c.json({ message: "File unlinked from note" });
+  await filesDb.unlinkFileFromNote(fileId, noteId);
+  return c.json({ message: "File unlinked from note" });
 });
 
 /**
@@ -166,24 +173,24 @@ app.delete("/:id/notes/:noteId", async (c) => {
  * リクエストボディ: { filename?: string, show_in_notes?: boolean }
  */
 app.put("/:id", async (c) => {
-	const id = c.req.param("id");
-	const body = await getJsonBody<{ filename?: string; show_in_notes?: boolean }>(c);
+  const id = c.req.param("id");
+  const body = await getJsonBody<{ filename?: string; show_in_notes?: boolean }>(c);
 
-	const file = await filesDb.getFile(id);
-	if (!file) {
-		throw new NotFoundError("File", id);
-	}
+  const file = await filesDb.getFile(id);
+  if (!file) {
+    throw new NotFoundError("File", id);
+  }
 
-	const updates: Partial<File> = {};
-	if (body.filename !== undefined) {
-		updates.filename = body.filename;
-	}
-	if (body.show_in_notes !== undefined) {
-		updates.show_in_notes = body.show_in_notes;
-	}
+  const updates: Partial<File> = {};
+  if (body.filename !== undefined) {
+    updates.filename = body.filename;
+  }
+  if (body.show_in_notes !== undefined) {
+    updates.show_in_notes = body.show_in_notes;
+  }
 
-	const updated = await filesDb.updateFile(id, updates);
-	return c.json(updated);
+  const updated = await filesDb.updateFile(id, updates);
+  return c.json(updated);
 });
 
 export default app;

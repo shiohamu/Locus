@@ -163,7 +163,10 @@ describe("tags API", () => {
     await createNote(note);
 
     const { createNoteMD } = await import("../db/notes_md.js");
-    const noteMD = createTestNoteMD({ note_id: note.id, content: "This is a test note about JavaScript and TypeScript" });
+    const noteMD = createTestNoteMD({
+      note_id: note.id,
+      content: "This is a test note about JavaScript and TypeScript",
+    });
     await createNoteMD(noteMD);
 
     const res = await app.request(`/notes/${note.id}/tags/suggestions`, {

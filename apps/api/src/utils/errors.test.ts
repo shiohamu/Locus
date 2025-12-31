@@ -8,10 +8,10 @@ import {
   NotFoundError,
   TimeoutError,
   ValidationError,
+  getErrorCode,
+  getStatusCode,
   toAppError,
   toErrorResponse,
-  getStatusCode,
-  getErrorCode,
 } from "./errors.js";
 
 describe("errors", () => {
@@ -224,4 +224,3 @@ describe("errors", () => {
     });
   });
 });
-

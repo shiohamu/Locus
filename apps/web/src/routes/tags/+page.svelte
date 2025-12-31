@@ -2,8 +2,8 @@
 import { goto } from "$app/navigation";
 import { createTag, deleteTag, getTags } from "$lib/api";
 import { apiCache } from "$lib/api/cache";
-import { notesStore } from "$lib/stores/notes";
 import TagManager from "$lib/components/TagManager.svelte";
+import { notesStore } from "$lib/stores/notes";
 import type { Tag } from "$lib/types";
 import { generateId } from "$lib/utils";
 import { onMount } from "svelte";
