@@ -16,50 +16,157 @@ services:
   - cheerio
   - jszip
   modules:
-  - name: apps
+  - name: '@locus/api'
     path: !!python/object/apply:pathlib._local.PosixPath
-    - apps
+    - apps/api
+    is_package: false
+    dependencies:
+    - '@locus/shared'
+    submodules:
+    - name: src
+      path: !!python/object/apply:pathlib._local.PosixPath
+      - apps/api/src
+      is_package: false
+      dependencies: []
+      submodules:
+      - name: db
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src/db
+        is_package: false
+        dependencies: []
+        submodules:
+        - name: utils
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/api/src/db/utils
+          is_package: false
+          dependencies: []
+          submodules: []
+      - name: utils
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src/utils
+        is_package: false
+        dependencies: []
+        submodules: []
+      - name: middleware
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src/middleware
+        is_package: false
+        dependencies: []
+        submodules: []
+      - name: routes
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src/routes
+        is_package: false
+        dependencies: []
+        submodules: []
+      - name: services
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/api/src/services
+        is_package: false
+        dependencies: []
+        submodules:
+        - name: utils
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/api/src/services/utils
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: export
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/api/src/services/export
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: llm
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/api/src/services/llm
+          is_package: false
+          dependencies: []
+          submodules: []
+  - name: '@locus/web'
+    path: !!python/object/apply:pathlib._local.PosixPath
+    - apps/web
+    is_package: false
+    dependencies:
+    - '@locus/api'
+    - '@locus/shared'
+    submodules:
+    - name: src
+      path: !!python/object/apply:pathlib._local.PosixPath
+      - apps/web/src
+      is_package: false
+      dependencies: []
+      submodules:
+      - name: lib
+        path: !!python/object/apply:pathlib._local.PosixPath
+        - apps/web/src/lib
+        is_package: false
+        dependencies: []
+        submodules:
+        - name: utils
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/utils
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: services
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/services
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: stores
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/stores
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: hooks
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/hooks
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: types
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/types
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: api
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/api
+          is_package: false
+          dependencies: []
+          submodules: []
+        - name: components
+          path: !!python/object/apply:pathlib._local.PosixPath
+          - apps/web/src/lib/components
+          is_package: false
+          dependencies: []
+          submodules: []
+  - name: '@locus/shared'
+    path: !!python/object/apply:pathlib._local.PosixPath
+    - packages/shared
     is_package: false
     dependencies: []
     submodules:
-    - name: api
+    - name: src
       path: !!python/object/apply:pathlib._local.PosixPath
-      - apps/api
+      - packages/shared/src
       is_package: false
       dependencies: []
       submodules:
-      - name: src
+      - name: types
         path: !!python/object/apply:pathlib._local.PosixPath
-        - apps/api/src
+        - packages/shared/src/types
         is_package: false
         dependencies: []
         submodules: []
-    - name: web
-      path: !!python/object/apply:pathlib._local.PosixPath
-      - apps/web
-      is_package: false
-      dependencies: []
-      submodules:
-      - name: src
-        path: !!python/object/apply:pathlib._local.PosixPath
-        - apps/web/src
-        is_package: false
-        dependencies: []
-        submodules: []
-  - name: e2e
-    path: !!python/object/apply:pathlib._local.PosixPath
-    - e2e
-    is_package: false
-    dependencies: []
-    submodules: []
-  - name: scripts
-    path: !!python/object/apply:pathlib._local.PosixPath
-    - scripts
-    is_package: false
-    dependencies: []
-    submodules: []
   metadata:
     version: 0.0.0
     main: null
     entry_file: package.json
+    build_config:
+      typescript: tsconfig.json
 metadata: {}

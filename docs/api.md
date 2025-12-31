@@ -1,10 +1,13 @@
 # API ドキュメント
 
-自動生成日時: 2025-12-31 14:47:18
+自動生成日時: 2026-01-01 05:54:34
 
 ---
 
+
+
 ## apps/api/src/db/db.ts
+
 
 ### getDb
 
@@ -15,30 +18,17 @@
 function getDb()
 ```
 
-**説明**:
 
+**説明**:
 データベースクライアントを取得する
 環境変数に基づいてTursoまたはローカルSQLiteに接続する
 シングルトンパターンで同じインスタンスを再利用する
+
 
 *定義場所: apps/api/src/db/db.ts:8*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/db.ts:33*
-
----
 
 ### closeDb
 
@@ -49,49 +39,19 @@ function if(...)
 function closeDb()
 ```
 
-**説明**:
 
+**説明**:
 データベース接続を閉じる（主にテスト用）
+
 
 *定義場所: apps/api/src/db/db.ts:57*
 
 ---
 
 
-## apps/api/src/db/files.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/files.test.ts:27*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/files.test.ts:71*
-
----
-
 
 ## apps/api/src/db/files.ts
+
 
 ### createFile
 
@@ -102,16 +62,18 @@ function for(...)
 function createFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを作成する
 @param file - 作成するファイルの情報（id, filename, mime_type, size, created_at, show_in_notesを含む）
 @returns 作成されたファイル（入力と同じ）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/files.ts:9*
 
 ---
+
 
 ### getFile
 
@@ -122,31 +84,18 @@ function createFile(...)
 function getFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを取得する
 @param id - 取得するファイルのID
 @returns ファイルが見つかった場合はFile、見つからない場合はnull
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/files.ts:34*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/files.ts:48*
-
----
 
 ### listFiles
 
@@ -157,17 +106,19 @@ function if(...)
 function listFiles(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル一覧を取得する
 @param options - 取得オプション
 @param options.limit - 取得件数の上限（デフォルト: 100）
 @param options.offset - 取得開始位置（デフォルト: 0）
 @returns ファイル一覧（created_atの降順でソート）
 
+
 *定義場所: apps/api/src/db/files.ts:56*
 
 ---
+
 
 ### deleteFile
 
@@ -178,14 +129,16 @@ function listFiles(...)
 function deleteFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを削除する（物理削除）
 @param id - 削除するファイルのID
+
 
 *定義場所: apps/api/src/db/files.ts:84*
 
 ---
+
 
 ### linkFileToNote
 
@@ -196,16 +149,18 @@ function deleteFile(...)
 function linkFileToNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートとファイルを関連付ける
 @param fileId - 関連付けるファイルのID
 @param noteId - 関連付けるノートのID
 @returns 作成された関連付け情報
 
+
 *定義場所: apps/api/src/db/files.ts:96*
 
 ---
+
 
 ### unlinkFileFromNote
 
@@ -216,15 +171,17 @@ function linkFileToNote(...)
 function unlinkFileFromNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートとファイルの関連を解除する
 @param fileId - 関連を解除するファイルのID
 @param noteId - 関連を解除するノートのID
 
+
 *定義場所: apps/api/src/db/files.ts:118*
 
 ---
+
 
 ### getFilesByNote
 
@@ -235,15 +192,17 @@ function unlinkFileFromNote(...)
 function getFilesByNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートに紐づくファイル一覧を取得する
 @param noteId - ノートのID
 @returns ノートに紐づくファイル一覧（created_atの降順でソート）
 
+
 *定義場所: apps/api/src/db/files.ts:131*
 
 ---
+
 
 ### updateFile
 
@@ -254,8 +213,8 @@ function getFilesByNote(...)
 function updateFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを更新する
 @param id - 更新するファイルのID
 @param updates - 更新するフィールド（filename, mime_type, size, created_at, show_in_notes）
@@ -263,9 +222,11 @@ function updateFile(...)
 @throws NotFoundError ファイルが見つからない場合
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/files.ts:153*
 
 ---
+
 
 ### getNoteIdsByFile
 
@@ -276,15 +237,17 @@ function updateFile(...)
 function getNoteIdsByFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルに紐づくノートID一覧を取得する
 @param fileId - ファイルのID
 @returns ファイルに紐づくノートIDの配列
 
+
 *定義場所: apps/api/src/db/files.ts:192*
 
 ---
+
 
 ### listFilesForNotes
 
@@ -295,35 +258,20 @@ function getNoteIdsByFile(...)
 function listFilesForNotes()
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧に表示するファイル一覧を取得する（show_in_notes = 1のファイルのみ）
 @returns ノート一覧に表示するファイル一覧（created_atの降順でソート）
+
 
 *定義場所: apps/api/src/db/files.ts:207*
 
 ---
 
 
-## apps/api/src/db/links.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/links.test.ts:22*
-
----
-
 
 ## apps/api/src/db/links.ts
+
 
 ### createLink
 
@@ -334,13 +282,15 @@ function if(...)
 function createLink(...)
 ```
 
-**説明**:
 
+**説明**:
 リンクを作成する
+
 
 *定義場所: apps/api/src/db/links.ts:5*
 
 ---
+
 
 ### getLinksByNote
 
@@ -351,13 +301,15 @@ function createLink(...)
 function getLinksByNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートのリンクを取得する（双方向）
+
 
 *定義場所: apps/api/src/db/links.ts:17*
 
 ---
+
 
 ### deleteLink
 
@@ -368,49 +320,19 @@ function getLinksByNote(...)
 function deleteLink(...)
 ```
 
-**説明**:
 
+**説明**:
 リンクを削除する
+
 
 *定義場所: apps/api/src/db/links.ts:48*
 
 ---
 
 
-## apps/api/src/db/notes.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/notes.test.ts:27*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/notes.test.ts:143*
-
----
-
 
 ## apps/api/src/db/notes.ts
+
 
 ### createNote
 
@@ -421,16 +343,18 @@ function for(...)
 function createNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを作成する
 @param note - 作成するノートの情報（id, type, title, created_at, updated_at, deleted_at, publicを含む）
 @returns 作成されたノート（入力と同じ）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:8*
 
 ---
+
 
 ### getNote
 
@@ -441,31 +365,18 @@ function createNote(...)
 function getNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを取得する
 @param id - 取得するノートのID
 @returns ノートが見つかった場合はNoteCore、見つからない場合はnull
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:34*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/notes.ts:50*
-
----
 
 ### updateNote
 
@@ -476,16 +387,18 @@ function if(...)
 function updateNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを更新する
 @param note - 更新するノートの情報（id, type, title, updated_at, deleted_at, publicを含む）
 @returns 更新されたノート
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:58*
 
 ---
+
 
 ### deleteNote
 
@@ -496,16 +409,18 @@ function updateNote(...)
 function deleteNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを削除する（論理削除）
 @param id - 削除するノートのID
 @param deletedAt - 削除日時（Unixタイムスタンプ）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:84*
 
 ---
+
 
 ### deleteNotesBatch
 
@@ -516,16 +431,18 @@ function deleteNote(...)
 function deleteNotesBatch(...)
 ```
 
-**説明**:
 
+**説明**:
 複数のノートを一括削除する（論理削除）
 @param ids - 削除するノートのID配列
 @param deletedAt - 削除日時（Unixタイムスタンプ）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:100*
 
 ---
+
 
 ### listNotes
 
@@ -536,8 +453,8 @@ function deleteNotesBatch(...)
 function listNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧を取得する
 @param options - 取得オプション
 @param options.type - フィルタリングするノートタイプ（md, rss, web_clip）
@@ -546,9 +463,11 @@ function listNotes(...)
 @returns ノート一覧（updated_atの降順でソート）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/notes.ts:122*
 
 ---
+
 
 ### listNotesByTags
 
@@ -559,8 +478,8 @@ function listNotes(...)
 function listNotesByTags(...)
 ```
 
-**説明**:
 
+**説明**:
 タグでフィルタリングされたノート一覧を取得する
 複数のタグが指定された場合はOR条件（いずれかのタグが含まれている）
 @param options - 取得オプション
@@ -570,9 +489,11 @@ function listNotesByTags(...)
 @param options.offset - 取得開始位置（デフォルト: 0）
 @returns タグでフィルタリングされたノート一覧（updated_atの降順でソート）
 
+
 *定義場所: apps/api/src/db/notes.ts:160*
 
 ---
+
 
 ### listPublicNotes
 
@@ -583,8 +504,8 @@ function listNotesByTags(...)
 function listPublicNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 公開ノート一覧を取得する
 @param options - 取得オプション
 @param options.type - フィルタリングするノートタイプ（md, rss, web_clip）
@@ -592,9 +513,11 @@ function listPublicNotes(...)
 @param options.offset - 取得開始位置（デフォルト: 0）
 @returns 公開設定が有効なノート一覧（updated_atの降順でソート）
 
+
 *定義場所: apps/api/src/db/notes.ts:216*
 
 ---
+
 
 ### getNotesWithTags
 
@@ -605,8 +528,8 @@ function listPublicNotes(...)
 function getNotesWithTags(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧とタグ情報を一度に取得する（最適化版）
 ノートID -> タグ名の配列のマップを返す
 @param options - 取得オプション
@@ -616,27 +539,15 @@ function getNotesWithTags(...)
 @param options.offset - 取得開始位置（デフォルト: 0）
 @returns ノート一覧とタグマップ（ノートID -> タグ名の配列）
 
+
 *定義場所: apps/api/src/db/notes.ts:252*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/notes.ts:302*
-
----
 
 
 ## apps/api/src/db/notes_md.ts
+
 
 ### createNoteMD
 
@@ -647,13 +558,15 @@ function for(...)
 function createNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノートを作成する
+
 
 *定義場所: apps/api/src/db/notes_md.ts:5*
 
 ---
+
 
 ### getNoteMD
 
@@ -664,28 +577,15 @@ Markdownノートを作成する
 function getNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノートを取得する
+
 
 *定義場所: apps/api/src/db/notes_md.ts:17*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/notes_md.ts:27*
-
----
 
 ### updateNoteMD
 
@@ -696,34 +596,19 @@ function if(...)
 function updateNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノートを更新する
+
 
 *定義場所: apps/api/src/db/notes_md.ts:34*
 
 ---
 
 
-## apps/api/src/db/rss.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/rss.test.ts:28*
-
----
-
 
 ## apps/api/src/db/rss.ts
+
 
 ### createFeed
 
@@ -734,16 +619,18 @@ function if(...)
 function createFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを作成する
 @param feed - 作成するRSSフィードの情報（id, url, title, last_fetched_atを含む）
 @returns 作成されたRSSフィード（入力と同じ）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/rss.ts:12*
 
 ---
+
 
 ### getFeed
 
@@ -754,31 +641,18 @@ RSSフィードを作成する
 function getFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを取得する
 @param id - 取得するRSSフィードのID
 @returns RSSフィードが見つかった場合はRSSFeed、見つからない場合はnull
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/rss.ts:30*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/rss.ts:44*
-
----
 
 ### updateFeed
 
@@ -789,15 +663,17 @@ function if(...)
 function updateFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを更新する
 @param feed - 更新するRSSフィードの情報（id, url, title, last_fetched_atを含む）
 @returns 更新されたRSSフィード
 
+
 *定義場所: apps/api/src/db/rss.ts:52*
 
 ---
+
 
 ### listFeeds
 
@@ -808,14 +684,16 @@ RSSフィードを更新する
 function listFeeds()
 ```
 
-**説明**:
 
+**説明**:
 RSSフィード一覧を取得する
 @returns RSSフィード一覧（titleの昇順でソート）
+
 
 *定義場所: apps/api/src/db/rss.ts:66*
 
 ---
+
 
 ### createItem
 
@@ -826,15 +704,17 @@ RSSフィード一覧を取得する
 function createItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテムを作成する
 @param item - 作成するRSSアイテムの情報（note_id, feed_id, url, content, published_atを含む）
 @returns 作成されたRSSアイテム（入力と同じ）
 
+
 *定義場所: apps/api/src/db/rss.ts:79*
 
 ---
+
 
 ### deleteFeed
 
@@ -845,14 +725,16 @@ RSSアイテムを作成する
 function deleteFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを削除する（物理削除）
 @param id - 削除するRSSフィードのID
+
 
 *定義場所: apps/api/src/db/rss.ts:94*
 
 ---
+
 
 ### getItemByNoteId
 
@@ -863,15 +745,17 @@ RSSフィードを削除する（物理削除）
 function getItemByNoteId(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートIDに基づいてRSSアイテムを取得する
 @param noteId - ノートのID
 @returns RSSアイテムが見つかった場合はRSSItem、見つからない場合はnull
 
+
 *定義場所: apps/api/src/db/rss.ts:106*
 
 ---
+
 
 ### getItemsByFeed
 
@@ -882,15 +766,17 @@ function getItemByNoteId(...)
 function getItemsByFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 フィードIDに基づいてRSSアイテム一覧を取得する
 @param feedId - RSSフィードのID
 @returns RSSアイテム一覧（published_atの降順でソート）
 
+
 *定義場所: apps/api/src/db/rss.ts:127*
 
 ---
+
 
 ### updateItem
 
@@ -901,53 +787,23 @@ function getItemsByFeed(...)
 function updateItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテムのコンテンツを更新する
 @param noteId - 更新するRSSアイテムのノートID
 @param content - 新しいコンテンツ
 @returns 更新されたRSSアイテム
 @throws DatabaseError データベースエラーが発生した場合、または更新後のアイテムが見つからない場合
 
+
 *定義場所: apps/api/src/db/rss.ts:145*
 
 ---
 
 
-## apps/api/src/db/search.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/search.test.ts:22*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/search.test.ts:90*
-
----
-
 
 ## apps/api/src/db/search.ts
+
 
 ### searchNotes
 
@@ -958,14 +814,16 @@ function for(...)
 function searchNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 全文検索を実行する
 FTS5テーブルではnote_idはUNINDEXEDカラムとして保持されている
+
 
 *定義場所: apps/api/src/db/search.ts:5*
 
 ---
+
 
 ### updateFTS
 
@@ -976,18 +834,21 @@ FTS5テーブルではnote_idはUNINDEXEDカラムとして保持されている
 function updateFTS(...)
 ```
 
-**説明**:
 
+**説明**:
 FTSインデックスを更新する
 FTS5テーブルではUPSERTが使えないため、DELETEしてからINSERTする
 note_idはUNINDEXEDカラムなので、WHERE句で使用可能
+
 
 *定義場所: apps/api/src/db/search.ts:29*
 
 ---
 
 
+
 ## apps/api/src/db/settings.ts
+
 
 ### getSetting
 
@@ -998,28 +859,15 @@ note_idはUNINDEXEDカラムなので、WHERE句で使用可能
 function getSetting(...)
 ```
 
-**説明**:
 
+**説明**:
 設定を取得する
+
 
 *定義場所: apps/api/src/db/settings.ts:5*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/settings.ts:15*
-
----
 
 ### setSetting
 
@@ -1030,13 +878,15 @@ function if(...)
 function setSetting(...)
 ```
 
-**説明**:
 
+**説明**:
 設定を保存する
+
 
 *定義場所: apps/api/src/db/settings.ts:22*
 
 ---
+
 
 ### getLLMConfig
 
@@ -1047,28 +897,15 @@ function setSetting(...)
 function getLLMConfig()
 ```
 
-**説明**:
 
+**説明**:
 LLM設定を取得する
+
 
 *定義場所: apps/api/src/db/settings.ts:36*
 
 ---
 
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/settings.ts:47*
-
----
 
 ### setLLMConfig
 
@@ -1079,13 +916,15 @@ function catch(...)
 function setLLMConfig(...)
 ```
 
-**説明**:
 
+**説明**:
 LLM設定を保存する
+
 
 *定義場所: apps/api/src/db/settings.ts:56*
 
 ---
+
 
 ### deleteSetting
 
@@ -1096,34 +935,19 @@ LLM設定を保存する
 function deleteSetting(...)
 ```
 
-**説明**:
 
+**説明**:
 設定を削除する
+
 
 *定義場所: apps/api/src/db/settings.ts:63*
 
 ---
 
 
-## apps/api/src/db/tags.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/tags.test.ts:27*
-
----
-
 
 ## apps/api/src/db/tags.ts
+
 
 ### createTag
 
@@ -1134,13 +958,15 @@ function if(...)
 function createTag(tag: Tag)
 ```
 
-**説明**:
 
+**説明**:
 タグを作成する
+
 
 *定義場所: apps/api/src/db/tags.ts:6*
 
 ---
+
 
 ### getTag
 
@@ -1151,28 +977,15 @@ function createTag(tag: Tag)
 function getTag(...)
 ```
 
-**説明**:
 
+**説明**:
 タグを取得する
+
 
 *定義場所: apps/api/src/db/tags.ts:18*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/tags.ts:28*
-
----
 
 ### getTagByName
 
@@ -1183,13 +996,15 @@ function if(...)
 function getTagByName(...)
 ```
 
-**説明**:
 
+**説明**:
 タグ名でタグを取得する
+
 
 *定義場所: apps/api/src/db/tags.ts:35*
 
 ---
+
 
 ### listTags
 
@@ -1200,13 +1015,15 @@ function getTagByName(...)
 function listTags()
 ```
 
-**説明**:
 
+**説明**:
 タグ一覧を取得する
+
 
 *定義場所: apps/api/src/db/tags.ts:52*
 
 ---
+
 
 ### addTagToNote
 
@@ -1217,13 +1034,15 @@ function listTags()
 function addTagToNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートにタグを追加する
+
 
 *定義場所: apps/api/src/db/tags.ts:67*
 
 ---
+
 
 ### removeTagFromNote
 
@@ -1234,13 +1053,15 @@ function addTagToNote(...)
 function removeTagFromNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートからタグを削除する
+
 
 *定義場所: apps/api/src/db/tags.ts:78*
 
 ---
+
 
 ### getTagsByNote
 
@@ -1251,13 +1072,15 @@ function removeTagFromNote(...)
 function getTagsByNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートに紐づくタグ一覧を取得する
+
 
 *定義場所: apps/api/src/db/tags.ts:89*
 
 ---
+
 
 ### deleteTag
 
@@ -1268,17 +1091,20 @@ function getTagsByNote(...)
 function deleteTag(...)
 ```
 
-**説明**:
 
+**説明**:
 タグを削除する
 関連するnote_tagsも削除される（外部キー制約による）
+
 
 *定義場所: apps/api/src/db/tags.ts:109*
 
 ---
 
 
+
 ## apps/api/src/db/utils/error-handler.ts
+
 
 ### handleDbOperation
 
@@ -1289,8 +1115,8 @@ function deleteTag(...)
 function handleDbOperation(...)
 ```
 
-**説明**:
 
+**説明**:
 データベース層でのエラーハンドリングユーティリティ
 統一されたエラーハンドリングとログ記録を提供
 /
@@ -1304,54 +1130,11 @@ import { DatabaseError, NotFoundError, ValidationError, toAppError } from "../..
 @returns 操作の結果
 @throws AppError エラーが発生した場合（元のエラー型を保持）
 
+
 *定義場所: apps/api/src/db/utils/error-handler.ts:1*
 
 ---
 
-### fn
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function fn(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/utils/error-handler.ts:15*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/utils/error-handler.ts:18*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/utils/error-handler.ts:20*
-
----
 
 ### handleDbOperationNullable
 
@@ -1362,20 +1145,23 @@ function if(...)
 function handleDbOperationNullable(...)
 ```
 
-**説明**:
 
+**説明**:
 データベース操作を実行し、エラーを適切に処理する（結果がnullの可能性がある場合）
 @param operation 操作の説明（ログ用）
 @param fn 実行するデータベース操作
 @returns 操作の結果（nullの可能性あり）
 @throws DatabaseError データベースエラーが発生した場合
 
+
 *定義場所: apps/api/src/db/utils/error-handler.ts:64*
 
 ---
 
 
+
 ## apps/api/src/db/utils/mappers.ts
+
 
 ### mapRowToNoteCore
 
@@ -1386,8 +1172,8 @@ function handleDbOperationNullable(...)
 function mapRowToNoteCore(...)
 ```
 
-**説明**:
 
+**説明**:
 データベース行からオブジェクトへのマッピング関数
 型安全性を確保し、重複コードを削減する
 /
@@ -1401,9 +1187,11 @@ NoteCoreにマッピングする
 @param row データベース行
 @returns NoteCoreオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:1*
 
 ---
+
 
 ### mapRowToTag
 
@@ -1414,15 +1202,17 @@ NoteCoreにマッピングする
 function mapRowToTag(...)
 ```
 
-**説明**:
 
+**説明**:
 Tagにマッピングする
 @param row データベース行
 @returns Tagオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:27*
 
 ---
+
 
 ### mapRowToFile
 
@@ -1433,15 +1223,17 @@ Tagにマッピングする
 function mapRowToFile(...)
 ```
 
-**説明**:
 
+**説明**:
 Fileにマッピングする
 @param row データベース行
 @returns Fileオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:39*
 
 ---
+
 
 ### mapRowsToNoteCore
 
@@ -1452,15 +1244,17 @@ Fileにマッピングする
 function mapRowsToNoteCore(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をNoteCoreの配列にマッピングする
 @param rows データベース行の配列
 @returns NoteCoreの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:59*
 
 ---
+
 
 ### mapRowsToTag
 
@@ -1471,15 +1265,17 @@ function mapRowsToNoteCore(...)
 function mapRowsToTag(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をTagの配列にマッピングする
 @param rows データベース行の配列
 @returns Tagの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:68*
 
 ---
+
 
 ### mapRowsToFile
 
@@ -1490,15 +1286,17 @@ function mapRowsToTag(...)
 function mapRowsToFile(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をFileの配列にマッピングする
 @param rows データベース行の配列
 @returns Fileの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:77*
 
 ---
+
 
 ### mapRowToRSSFeed
 
@@ -1509,15 +1307,17 @@ function mapRowsToFile(...)
 function mapRowToRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSFeedにマッピングする
 @param row データベース行
 @returns RSSFeedオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:86*
 
 ---
+
 
 ### mapRowsToRSSFeed
 
@@ -1528,15 +1328,17 @@ RSSFeedにマッピングする
 function mapRowsToRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をRSSFeedの配列にマッピングする
 @param rows データベース行の配列
 @returns RSSFeedの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:100*
 
 ---
+
 
 ### mapRowToRSSItem
 
@@ -1547,15 +1349,17 @@ function mapRowsToRSSFeed(...)
 function mapRowToRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSItemにマッピングする
 @param row データベース行
 @returns RSSItemオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:109*
 
 ---
+
 
 ### mapRowsToRSSItem
 
@@ -1566,15 +1370,17 @@ RSSItemにマッピングする
 function mapRowsToRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をRSSItemの配列にマッピングする
 @param rows データベース行の配列
 @returns RSSItemの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:124*
 
 ---
+
 
 ### mapRowToWebClip
 
@@ -1585,15 +1391,17 @@ function mapRowsToRSSItem(...)
 function mapRowToWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 WebClipにマッピングする
 @param row データベース行
 @returns WebClipオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:133*
 
 ---
+
 
 ### mapRowsToWebClip
 
@@ -1604,15 +1412,17 @@ WebClipにマッピングする
 function mapRowsToWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をWebClipの配列にマッピングする
 @param rows データベース行の配列
 @returns WebClipの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:147*
 
 ---
+
 
 ### mapRowToLink
 
@@ -1623,15 +1433,17 @@ function mapRowsToWebClip(...)
 function mapRowToLink(...)
 ```
 
-**説明**:
 
+**説明**:
 Linkにマッピングする
 @param row データベース行
 @returns Linkオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:156*
 
 ---
+
 
 ### mapRowsToLink
 
@@ -1642,15 +1454,17 @@ Linkにマッピングする
 function mapRowsToLink(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をLinkの配列にマッピングする
 @param rows データベース行の配列
 @returns Linkの配列
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:168*
 
 ---
+
 
 ### mapRowToNoteMD
 
@@ -1661,15 +1475,17 @@ function mapRowsToLink(...)
 function mapRowToNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteMDにマッピングする
 @param row データベース行
 @returns NoteMDオブジェクト
 
+
 *定義場所: apps/api/src/db/utils/mappers.ts:177*
 
 ---
+
 
 ### mapRowsToNoteMD
 
@@ -1680,18 +1496,21 @@ NoteMDにマッピングする
 function mapRowsToNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 複数の行をNoteMDの配列にマッピングする
 @param rows データベース行の配列
 @returns NoteMDの配列
+
 
 *定義場所: apps/api/src/db/utils/mappers.ts:189*
 
 ---
 
 
+
 ## apps/api/src/db/utils/query-builder.ts
+
 
 ### QueryBuilder
 
@@ -1702,8 +1521,8 @@ function mapRowsToNoteMD(...)
 class QueryBuilder
 ```
 
-**説明**:
 
+**説明**:
 シンプルなSQLクエリビルダー
 型安全性を確保し、SQLインジェクションを防ぐ
 /
@@ -1711,9 +1530,11 @@ class QueryBuilder
 /**
 クエリビルダークラス
 
+
 *定義場所: apps/api/src/db/utils/query-builder.ts:1*
 
 ---
+
 
 ### createQueryBuilder
 
@@ -1724,8 +1545,8 @@ class QueryBuilder
 function createQueryBuilder()
 ```
 
-**説明**:
 
+**説明**:
 SELECT句を設定
 @param columns カラム名（配列または文字列）
 @returns QueryBuilderインスタンス
@@ -1905,27 +1726,231 @@ return this;
 新しいQueryBuilderインスタンスを作成
 @returns QueryBuilderインスタンス
 
+
 *定義場所: apps/api/src/db/utils/query-builder.ts:17*
 
 ---
 
-### if
+
+### select
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function select(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/db/utils/query-builder.ts:38*
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:22*
 
 ---
 
 
+### from
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function from(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:37*
+
+---
+
+
+### where
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function where(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:52*
+
+---
+
+
+### andWhere
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function andWhere(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:66*
+
+---
+
+
+### whereIn
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function whereIn(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:76*
+
+---
+
+
+### join
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function join(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:94*
+
+---
+
+
+### orderBy
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function orderBy(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:110*
+
+---
+
+
+### limit
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function limit(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:121*
+
+---
+
+
+### distinct
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function distinct(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:135*
+
+---
+
+
+### toSQL
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function toSQL(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:144*
+
+---
+
+
+### getArgs
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function getArgs(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:174*
+
+---
+
+
+### reset
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function reset(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/db/utils/query-builder.ts:182*
+
+---
+
+
+
 ## apps/api/src/db/utils/type-guards.ts
+
 
 ### isString
 
@@ -1936,8 +1961,8 @@ function if(...)
 function isString(...)
 ```
 
-**説明**:
 
+**説明**:
 型ガード関数
 実行時に型を安全に検証する
 /
@@ -1965,9 +1990,11 @@ export interface DbRow {
 /**
 文字列型ガード
 
+
 *定義場所: apps/api/src/db/utils/type-guards.ts:1*
 
 ---
+
 
 ### isNumber
 
@@ -1978,13 +2005,15 @@ export interface DbRow {
 function isNumber(...)
 ```
 
-**説明**:
 
+**説明**:
 数値型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:33*
 
 ---
+
 
 ### isNull
 
@@ -1995,13 +2024,15 @@ function isNumber(...)
 function isNull(...)
 ```
 
-**説明**:
 
+**説明**:
 null型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:40*
 
 ---
+
 
 ### isObject
 
@@ -2012,13 +2043,15 @@ null型ガード
 function isObject(...)
 ```
 
-**説明**:
 
+**説明**:
 オブジェクト型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:47*
 
 ---
+
 
 ### isNoteType
 
@@ -2029,13 +2062,15 @@ function isObject(...)
 function isNoteType(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteType型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:54*
 
 ---
+
 
 ### isNoteCoreRow
 
@@ -2046,13 +2081,15 @@ NoteType型ガード
 function isNoteCoreRow(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteCore行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:61*
 
 ---
+
 
 ### isTagRow
 
@@ -2063,13 +2100,15 @@ NoteCore行の型ガード
 function isTagRow(...)
 ```
 
-**説明**:
 
+**説明**:
 Tag行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:84*
 
 ---
+
 
 ### isFileRow
 
@@ -2080,13 +2119,15 @@ Tag行の型ガード
 function isFileRow(...)
 ```
 
-**説明**:
 
+**説明**:
 File行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:94*
 
 ---
+
 
 ### isRSSFeedRow
 
@@ -2097,13 +2138,15 @@ File行の型ガード
 function isRSSFeedRow(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSFeed行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:115*
 
 ---
+
 
 ### isRSSItemRow
 
@@ -2114,13 +2157,15 @@ RSSFeed行の型ガード
 function isRSSItemRow(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSItem行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:132*
 
 ---
+
 
 ### isWebClipRow
 
@@ -2131,13 +2176,15 @@ RSSItem行の型ガード
 function isWebClipRow(...)
 ```
 
-**説明**:
 
+**説明**:
 WebClip行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:151*
 
 ---
+
 
 ### isLinkRow
 
@@ -2148,13 +2195,15 @@ WebClip行の型ガード
 function isLinkRow(...)
 ```
 
-**説明**:
 
+**説明**:
 Link行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:168*
 
 ---
+
 
 ### isNoteMDRow
 
@@ -2165,16 +2214,19 @@ Link行の型ガード
 function isNoteMDRow(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteMD行の型ガード
+
 
 *定義場所: apps/api/src/db/utils/type-guards.ts:178*
 
 ---
 
 
+
 ## apps/api/src/db/utils/validators.ts
+
 
 ### assertString
 
@@ -2185,8 +2237,8 @@ NoteMD行の型ガード
 function assertString(...)
 ```
 
-**説明**:
 
+**説明**:
 バリデーション関数
 データベース行からオブジェクトへの変換時にバリデーションを実行
 /
@@ -2214,9 +2266,11 @@ isWebClipRow,
 @returns 文字列
 @throws ValidationError 値が文字列でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:1*
 
 ---
+
 
 ### assertNumber
 
@@ -2227,17 +2281,19 @@ isWebClipRow,
 function assertNumber(...)
 ```
 
-**説明**:
 
+**説明**:
 型安全な数値バリデーション
 @param value 値
 @param fieldName フィールド名（エラーメッセージ用）
 @returns 数値
 @throws ValidationError 値が数値でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:36*
 
 ---
+
 
 ### assertNumberOrNull
 
@@ -2248,17 +2304,19 @@ function assertNumber(...)
 function assertNumberOrNull(...)
 ```
 
-**説明**:
 
+**説明**:
 型安全なnull許容数値バリデーション
 @param value 値
 @param fieldName フィールド名（エラーメッセージ用）
 @returns 数値またはnull
 @throws ValidationError 値が数値またはnullでない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:50*
 
 ---
+
 
 ### assertNoteType
 
@@ -2269,17 +2327,19 @@ function assertNumberOrNull(...)
 function assertNoteType(...)
 ```
 
-**説明**:
 
+**説明**:
 型安全なNoteTypeバリデーション
 @param value 値
 @param fieldName フィールド名（エラーメッセージ用）
 @returns NoteType
 @throws ValidationError 値がNoteTypeでない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:69*
 
 ---
+
 
 ### assertNoteCoreRow
 
@@ -2290,16 +2350,18 @@ function assertNoteType(...)
 function assertNoteCoreRow(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteCore行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がNoteCoreの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:85*
 
 ---
+
 
 ### assertLinkRow
 
@@ -2310,16 +2372,18 @@ NoteCore行のバリデーション
 function assertLinkRow(...)
 ```
 
-**説明**:
 
+**説明**:
 Link行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がLinkの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:100*
 
 ---
+
 
 ### assertNoteMDRow
 
@@ -2330,16 +2394,18 @@ Link行のバリデーション
 function assertNoteMDRow(...)
 ```
 
-**説明**:
 
+**説明**:
 NoteMD行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がNoteMDの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:115*
 
 ---
+
 
 ### assertRSSFeedRow
 
@@ -2350,16 +2416,18 @@ NoteMD行のバリデーション
 function assertRSSFeedRow(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSFeed行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がRSSFeedの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:130*
 
 ---
+
 
 ### assertRSSItemRow
 
@@ -2370,16 +2438,18 @@ RSSFeed行のバリデーション
 function assertRSSItemRow(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSItem行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がRSSItemの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:145*
 
 ---
+
 
 ### assertWebClipRow
 
@@ -2390,16 +2460,18 @@ RSSItem行のバリデーション
 function assertWebClipRow(...)
 ```
 
-**説明**:
 
+**説明**:
 WebClip行のバリデーション
 @param row データベース行
 @returns バリデーション済みの行
 @throws ValidationError 行がWebClipの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:160*
 
 ---
+
 
 ### assertLLMProvider
 
@@ -2410,17 +2482,19 @@ WebClip行のバリデーション
 function assertLLMProvider(...)
 ```
 
-**説明**:
 
+**説明**:
 LLMProviderのバリデーション
 @param value 値
 @param fieldName フィールド名（エラーメッセージ用）
 @returns LLMProvider
 @throws ValidationError 値がLLMProviderでない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:175*
 
 ---
+
 
 ### assertLLMConfig
 
@@ -2431,67 +2505,22 @@ LLMProviderのバリデーション
 function assertLLMConfig(...)
 ```
 
-**説明**:
 
+**説明**:
 LLMConfigのバリデーション
 @param value 値
 @returns LLMConfig
 @throws ValidationError 値がLLMConfigの形式でない場合
 
+
 *定義場所: apps/api/src/db/utils/validators.ts:194*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/utils/validators.ts:213*
-
----
-
-
-## apps/api/src/db/web-clips.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/web-clips.test.ts:27*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/web-clips.test.ts:103*
-
----
 
 
 ## apps/api/src/db/web-clips.ts
+
 
 ### createWebClip
 
@@ -2502,13 +2531,15 @@ function for(...)
 function createWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを作成する
+
 
 *定義場所: apps/api/src/db/web-clips.ts:5*
 
 ---
+
 
 ### getWebClip
 
@@ -2519,28 +2550,15 @@ Webクリップを作成する
 function getWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを取得する
+
 
 *定義場所: apps/api/src/db/web-clips.ts:18*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/db/web-clips.ts:28*
-
----
 
 ### updateWebClip
 
@@ -2551,13 +2569,15 @@ function if(...)
 function updateWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを更新する
+
 
 *定義場所: apps/api/src/db/web-clips.ts:35*
 
 ---
+
 
 ### listWebClips
 
@@ -2568,13 +2588,15 @@ Webクリップを更新する
 function listWebClips(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ一覧を取得する
+
 
 *定義場所: apps/api/src/db/web-clips.ts:47*
 
 ---
+
 
 ### deleteWebClip
 
@@ -2585,87 +2607,19 @@ Webクリップ一覧を取得する
 function deleteWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを削除する
+
 
 *定義場所: apps/api/src/db/web-clips.ts:68*
 
 ---
 
 
-## apps/api/src/index.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/index.ts:44*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/index.ts:65*
-
----
-
-
-## apps/api/src/middleware/cors.ts
-
-### corsMiddleware
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function corsMiddleware(...)
-```
-
-**説明**:
-
-CORSミドルウェア
-
-*定義場所: apps/api/src/middleware/cors.ts:4*
-
----
-
-
-## apps/api/src/middleware/error-handler.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/middleware/error-handler.ts:16*
-
----
-
 
 ## apps/api/src/middleware/keep-alive.ts
+
 
 ### keepAliveMiddleware
 
@@ -2676,17 +2630,20 @@ function if(...)
 function keepAliveMiddleware(...)
 ```
 
-**説明**:
 
+**説明**:
 Keep-Aliveヘッダーを追加するミドルウェア
 長時間実行されるリクエスト（LLM処理など）で接続を維持するため
+
 
 *定義場所: apps/api/src/middleware/keep-alive.ts:3*
 
 ---
 
 
+
 ## apps/api/src/middleware/logger.ts
+
 
 ### logger
 
@@ -2697,34 +2654,19 @@ Keep-Aliveヘッダーを追加するミドルウェア
 function logger(...)
 ```
 
-**説明**:
 
+**説明**:
 リクエストログミドルウェア
+
 
 *定義場所: apps/api/src/middleware/logger.ts:3*
 
 ---
 
 
-## apps/api/src/middleware/validation.test.ts
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/middleware/validation.test.ts:38*
-
----
-
 
 ## apps/api/src/middleware/validation.ts
+
 
 ### getQueryInt
 
@@ -2735,8 +2677,8 @@ function catch(...)
 function getQueryInt(...)
 ```
 
-**説明**:
 
+**説明**:
 バリデーションミドルウェア
 共通のバリデーションロジックを提供
 /
@@ -2747,9 +2689,11 @@ import { ValidationError } from "../utils/errors.js";
 /**
 クエリパラメータから数値を取得（オプショナル）
 
+
 *定義場所: apps/api/src/middleware/validation.ts:1*
 
 ---
+
 
 ### getQueryIntRequired
 
@@ -2760,28 +2704,15 @@ import { ValidationError } from "../utils/errors.js";
 function getQueryIntRequired(...)
 ```
 
-**説明**:
 
+**説明**:
 クエリパラメータから必須の数値を取得
+
 
 *定義場所: apps/api/src/middleware/validation.ts:22*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/middleware/validation.ts:27*
-
----
 
 ### getQueryString
 
@@ -2792,13 +2723,15 @@ function if(...)
 function getQueryString(...)
 ```
 
-**説明**:
 
+**説明**:
 クエリパラメータから文字列を取得（オプショナル）
+
 
 *定義場所: apps/api/src/middleware/validation.ts:33*
 
 ---
+
 
 ### getQueryStringRequired
 
@@ -2809,13 +2742,15 @@ function getQueryString(...)
 function getQueryStringRequired(...)
 ```
 
-**説明**:
 
+**説明**:
 クエリパラメータから必須の文字列を取得
+
 
 *定義場所: apps/api/src/middleware/validation.ts:40*
 
 ---
+
 
 ### getQueryStringArray
 
@@ -2826,13 +2761,15 @@ function getQueryStringRequired(...)
 function getQueryStringArray(...)
 ```
 
-**説明**:
 
+**説明**:
 クエリパラメータから文字列配列を取得（カンマ区切り）
+
 
 *定義場所: apps/api/src/middleware/validation.ts:51*
 
 ---
+
 
 ### getJsonBody
 
@@ -2843,28 +2780,15 @@ function getQueryStringArray(...)
 function getJsonBody(...)
 ```
 
-**説明**:
 
+**説明**:
 リクエストボディからJSONを取得し、バリデーションを実行
+
 
 *定義場所: apps/api/src/middleware/validation.ts:63*
 
 ---
 
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/middleware/validation.ts:69*
-
----
 
 ### validateRequired
 
@@ -2875,28 +2799,15 @@ function catch(...)
 function validateRequired(...)
 ```
 
-**説明**:
 
+**説明**:
 リクエストボディから必須のフィールドを検証
+
 
 *定義場所: apps/api/src/middleware/validation.ts:77*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/middleware/validation.ts:84*
-
----
 
 ### validateString
 
@@ -2907,13 +2818,15 @@ function for(...)
 function validateString(...)
 ```
 
-**説明**:
 
+**説明**:
 文字列フィールドのバリデーション
+
 
 *定義場所: apps/api/src/middleware/validation.ts:91*
 
 ---
+
 
 ### validateArray
 
@@ -2924,13 +2837,15 @@ function validateString(...)
 function validateArray(...)
 ```
 
-**説明**:
 
+**説明**:
 配列フィールドのバリデーション
+
 
 *定義場所: apps/api/src/middleware/validation.ts:111*
 
 ---
+
 
 ### validateUUID
 
@@ -2941,13 +2856,15 @@ function validateArray(...)
 function validateUUID(...)
 ```
 
-**説明**:
 
+**説明**:
 UUID形式のバリデーション
+
 
 *定義場所: apps/api/src/middleware/validation.ts:131*
 
 ---
+
 
 ### validateURL
 
@@ -2958,187 +2875,19 @@ UUID形式のバリデーション
 function validateURL(...)
 ```
 
-**説明**:
 
+**説明**:
 URL形式のバリデーション
+
 
 *定義場所: apps/api/src/middleware/validation.ts:143*
 
 ---
 
 
-## apps/api/src/routes/export.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/export.test.ts:24*
-
----
-
-
-## apps/api/src/routes/export.ts
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/export.ts:47*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/export.ts:118*
-
----
-
-
-## apps/api/src/routes/files.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/files.test.ts:37*
-
----
-
-
-## apps/api/src/routes/files.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/files.ts:28*
-
----
-
-
-## apps/api/src/routes/graph.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/graph.test.ts:26*
-
----
-
-
-## apps/api/src/routes/graph.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/graph.ts:42*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/graph.ts:84*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/graph.ts:107*
-
----
-
-
-## apps/api/src/routes/links.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/links.test.ts:21*
-
----
-
 
 ## apps/api/src/routes/llm.ts
+
 
 ### getLLMProvider
 
@@ -3149,463 +2898,19 @@ function if(...)
 function getLLMProvider()
 ```
 
-**説明**:
 
+**説明**:
 LLM設定を取得
+
 
 *定義場所: apps/api/src/routes/llm.ts:16*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/llm.ts:21*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/llm.ts:79*
-
----
-
-
-## apps/api/src/routes/notes.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/notes.test.ts:21*
-
----
-
-
-## apps/api/src/routes/notes.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/notes.ts:32*
-
----
-
-
-## apps/api/src/routes/notes_md.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/notes_md.test.ts:24*
-
----
-
-
-## apps/api/src/routes/notes_md.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/notes_md.ts:22*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/notes_md.ts:53*
-
----
-
-
-## apps/api/src/routes/public.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/public.test.ts:35*
-
----
-
-
-## apps/api/src/routes/public.ts
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/public.ts:33*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/public.ts:51*
-
----
-
-
-## apps/api/src/routes/rss.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/rss.test.ts:22*
-
----
-
-
-## apps/api/src/routes/rss.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/rss.ts:64*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/rss.ts:90*
-
----
-
-
-## apps/api/src/routes/search.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/search.test.ts:21*
-
----
-
-
-## apps/api/src/routes/settings.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/settings.test.ts:21*
-
----
-
-
-## apps/api/src/routes/settings.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/settings.ts:17*
-
----
-
-
-## apps/api/src/routes/sync.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/sync.test.ts:28*
-
----
-
-
-## apps/api/src/routes/sync.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/sync.ts:22*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/sync.ts:85*
-
----
-
-
-## apps/api/src/routes/tags.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/tags.test.ts:27*
-
----
-
-
-## apps/api/src/routes/tags.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/tags.ts:71*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/tags.ts:125*
-
----
-
-
-## apps/api/src/routes/web-clips.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/web-clips.test.ts:49*
-
----
-
-
-## apps/api/src/routes/web-clips.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/routes/web-clips.ts:70*
-
----
-
-
-## apps/api/src/server.ts
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/server.ts:13*
-
----
-
-
-## apps/api/src/services/export/json.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/json.test.ts:33*
-
----
 
 
 ## apps/api/src/services/export/json.ts
+
 
 ### JSONExportService
 
@@ -3616,8 +2921,8 @@ function if(...)
 class JSONExportService
 ```
 
-**説明**:
 
+**説明**:
 JSONエクスポートサービスの依存関係
 /
 export interface JSONExportDependencies {
@@ -3633,9 +2938,11 @@ webClipsDb: typeof webClipsDb;
 /**
 JSONエクスポートサービス
 
+
 *定義場所: apps/api/src/services/export/json.ts:20*
 
 ---
+
 
 ### constructor
 
@@ -3646,11 +2953,14 @@ JSONエクスポートサービス
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/export/json.ts:37*
 
 ---
+
 
 ### getDefaultJSONExportService
 
@@ -3661,8 +2971,8 @@ function constructor(...)
 function getDefaultJSONExportService()
 ```
 
-**説明**:
 
+**説明**:
 JSONエクスポートを生成
 @param {Object} [options] - エクスポートオプション
 @param {boolean} [options.includeFiles] - ファイルを含めるかどうか（デフォルト: true）
@@ -3817,54 +3127,29 @@ let defaultJSONExportService: JSONExportService | null = null;
 /**
 デフォルトのJSONエクスポートサービスを取得
 
+
 *定義場所: apps/api/src/services/export/json.ts:39*
 
 ---
 
-### if
+
+### exportJSON
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function exportJSON(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/export/json.ts:86*
+
+*定義場所: apps/api/src/services/export/json.ts:49*
 
 ---
 
-### catch
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/json.ts:119*
-
----
-
-### for
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/json.ts:130*
-
----
 
 ### exportJSON
 
@@ -3875,35 +3160,20 @@ function for(...)
 function exportJSON(...)
 ```
 
-**説明**:
 
+**説明**:
 JSONエクスポートを生成（後方互換性のための関数）
 @deprecated 新しいコードでは JSONExportService を直接使用してください
+
 
 *定義場所: apps/api/src/services/export/json.ts:217*
 
 ---
 
 
-## apps/api/src/services/export/markdown.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/markdown.test.ts:26*
-
----
-
 
 ## apps/api/src/services/export/markdown.ts
+
 
 ### generateFrontmatter
 
@@ -3914,28 +3184,15 @@ function if(...)
 function generateFrontmatter(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートのメタデータをYAML frontmatter形式で生成
+
 
 *定義場所: apps/api/src/services/export/markdown.ts:8*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/markdown.ts:24*
-
----
 
 ### exportMarkdown
 
@@ -3946,46 +3203,19 @@ function if(...)
 function exportMarkdown(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownエクスポートを生成
+
 
 *定義場所: apps/api/src/services/export/markdown.ts:57*
 
 ---
 
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/markdown.ts:116*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/markdown.ts:129*
-
----
 
 
 ## apps/api/src/services/export/static-html.ts
+
 
 ### generateHTMLTemplate
 
@@ -3996,13 +3226,15 @@ function for(...)
 function generateHTMLTemplate(...)
 ```
 
-**説明**:
 
+**説明**:
 HTMLテンプレート（シンプルなWikiスタイル）
+
 
 *定義場所: apps/api/src/services/export/static-html.ts:10*
 
 ---
+
 
 ### generateIndexHTML
 
@@ -4013,13 +3245,15 @@ HTMLテンプレート（シンプルなWikiスタイル）
 function generateIndexHTML(...)
 ```
 
-**説明**:
 
+**説明**:
 インデックスページのHTMLを生成
+
 
 *定義場所: apps/api/src/services/export/static-html.ts:205*
 
 ---
+
 
 ### escapeHtml
 
@@ -4030,13 +3264,15 @@ function generateIndexHTML(...)
 function escapeHtml(...)
 ```
 
-**説明**:
 
+**説明**:
 HTMLエスケープ
+
 
 *定義場所: apps/api/src/services/export/static-html.ts:290*
 
 ---
+
 
 ### generateStaticHTML
 
@@ -4047,64 +3283,19 @@ HTMLエスケープ
 function generateStaticHTML()
 ```
 
-**説明**:
 
+**説明**:
 静的HTMLを生成
+
 
 *定義場所: apps/api/src/services/export/static-html.ts:304*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/static-html.ts:317*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/export/static-html.ts:322*
-
----
-
-
-## apps/api/src/services/file-uploader.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/file-uploader.test.ts:33*
-
----
 
 
 ## apps/api/src/services/file-uploader.ts
+
 
 ### getFilesBaseDir
 
@@ -4115,13 +3306,15 @@ function if(...)
 function getFilesBaseDir()
 ```
 
-**説明**:
 
+**説明**:
 ファイル保存先のベースディレクトリを取得
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:8*
 
 ---
+
 
 ### ensureFilesDirectory
 
@@ -4132,13 +3325,15 @@ function getFilesBaseDir()
 function ensureFilesDirectory()
 ```
 
-**説明**:
 
+**説明**:
 ファイル保存ディレクトリを初期化
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:15*
 
 ---
+
 
 ### getFilePath
 
@@ -4149,13 +3344,15 @@ function ensureFilesDirectory()
 function getFilePath(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル保存パスを取得
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:25*
 
 ---
+
 
 ### sanitizeFilename
 
@@ -4166,13 +3363,15 @@ function getFilePath(...)
 function sanitizeFilename(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル名をサニタイズ
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:37*
 
 ---
+
 
 ### isValidMimeType
 
@@ -4183,13 +3382,15 @@ function sanitizeFilename(...)
 function isValidMimeType(...)
 ```
 
-**説明**:
 
+**説明**:
 MIMEタイプを検証
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:48*
 
 ---
+
 
 ### getMaxFileSize
 
@@ -4200,13 +3401,15 @@ MIMEタイプを検証
 function getMaxFileSize()
 ```
 
-**説明**:
 
+**説明**:
 ファイルサイズ制限を取得（デフォルト50MB）
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:58*
 
 ---
+
 
 ### FileUploaderService
 
@@ -4217,8 +3420,8 @@ function getMaxFileSize()
 class FileUploaderService
 ```
 
-**説明**:
 
+**説明**:
 ファイルアップロードサービスの依存関係
 /
 export interface FileUploaderDependencies {
@@ -4228,9 +3431,11 @@ filesDb: typeof filesDb;
 /**
 ファイルアップロードサービス
 
+
 *定義場所: apps/api/src/services/file-uploader.ts:65*
 
 ---
+
 
 ### constructor
 
@@ -4241,11 +3446,14 @@ filesDb: typeof filesDb;
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:76*
 
 ---
+
 
 ### getDefaultFileUploaderService
 
@@ -4256,8 +3464,8 @@ function constructor(...)
 function getDefaultFileUploaderService()
 ```
 
-**説明**:
 
+**説明**:
 ファイルをアップロードして保存する
 @param {File} file - ファイルメタデータ
 @param {ArrayBuffer} fileData - ファイルデータ
@@ -4365,39 +3573,65 @@ let defaultFileUploaderService: FileUploaderService | null = null;
 /**
 デフォルトのファイルアップロードサービスを取得
 
+
 *定義場所: apps/api/src/services/file-uploader.ts:78*
 
 ---
 
-### if
+
+### uploadFile
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function uploadFile(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/file-uploader.ts:91*
+
+*定義場所: apps/api/src/services/file-uploader.ts:85*
 
 ---
 
-### catch
+
+### readFile
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function readFile(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/file-uploader.ts:168*
+
+*定義場所: apps/api/src/services/file-uploader.ts:135*
 
 ---
+
+
+### deleteFileFromDisk
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function deleteFileFromDisk(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/file-uploader.ts:154*
+
+---
+
 
 ### uploadFile
 
@@ -4408,14 +3642,16 @@ function catch(...)
 function uploadFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルをアップロードして保存する（後方互換性のための関数）
 @deprecated 新しいコードでは FileUploaderService を直接使用してください
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:197*
 
 ---
+
 
 ### readFile
 
@@ -4426,14 +3662,16 @@ function uploadFile(...)
 function readFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを読み込む（後方互換性のための関数）
 @deprecated 新しいコードでは FileUploaderService を直接使用してください
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:206*
 
 ---
+
 
 ### deleteFileFromDisk
 
@@ -4444,17 +3682,20 @@ function readFile(...)
 function deleteFileFromDisk(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルを削除する（後方互換性のための関数）
 @deprecated 新しいコードでは FileUploaderService を直接使用してください
+
 
 *定義場所: apps/api/src/services/file-uploader.ts:215*
 
 ---
 
 
+
 ## apps/api/src/services/llm/base.ts
+
 
 ### BaseLLMProvider
 
@@ -4465,11 +3706,14 @@ function deleteFileFromDisk(...)
 class BaseLLMProvider
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/llm/base.ts:6*
 
 ---
+
 
 ### constructor
 
@@ -4480,44 +3724,72 @@ class BaseLLMProvider
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/llm/base.ts:10*
 
 ---
 
-### if
+
+### generate
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function generate(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/base.ts:21*
+
+*定義場所: apps/api/src/services/llm/base.ts:14*
 
 ---
 
-### catch
+
+### handleError
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function handleError(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/base.ts:66*
+
+*定義場所: apps/api/src/services/llm/base.ts:30*
 
 ---
+
+
+### fetchWithTimeout
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function fetchWithTimeout(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/llm/base.ts:51*
+
+---
+
 
 
 ## apps/api/src/services/llm/factory.ts
+
 
 ### createLLMProvider
 
@@ -4528,28 +3800,15 @@ function catch(...)
 function createLLMProvider(...)
 ```
 
-**説明**:
 
+**説明**:
 LLMプロバイダーファクトリー
+
 
 *定義場所: apps/api/src/services/llm/factory.ts:7*
 
 ---
 
-### switch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function switch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/llm/factory.ts:11*
-
----
 
 ### getLLMConfigFromEnv
 
@@ -4560,28 +3819,15 @@ function switch(...)
 function getLLMConfigFromEnv()
 ```
 
-**説明**:
 
+**説明**:
 環境変数からLLM設定を取得
+
 
 *定義場所: apps/api/src/services/llm/factory.ts:23*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/llm/factory.ts:32*
-
----
 
 ### getLLMConfig
 
@@ -4592,16 +3838,19 @@ function if(...)
 function getLLMConfig()
 ```
 
-**説明**:
 
+**説明**:
 データベースまたは環境変数からLLM設定を取得
+
 
 *定義場所: apps/api/src/services/llm/factory.ts:46*
 
 ---
 
 
+
 ## apps/api/src/services/llm/ollama.ts
+
 
 ### OllamaProvider
 
@@ -4612,46 +3861,73 @@ function getLLMConfig()
 class OllamaProvider
 ```
 
-**説明**:
 
+**説明**:
 Ollama APIプロバイダー（ローカルLLM）
+
 
 *定義場所: apps/api/src/services/llm/ollama.ts:4*
 
 ---
 
-### if
+
+### baseUrl
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function baseUrl(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/ollama.ts:40*
+
+*定義場所: apps/api/src/services/llm/ollama.ts:10*
 
 ---
 
-### catch
+
+### generate
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function generate(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/ollama.ts:55*
+
+*定義場所: apps/api/src/services/llm/ollama.ts:14*
 
 ---
+
+
+### isAvailable
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function isAvailable(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/llm/ollama.ts:60*
+
+---
+
 
 
 ## apps/api/src/services/llm/openai-compatible.ts
+
 
 ### OpenAICompatibleProvider
 
@@ -4662,29 +3938,34 @@ function catch(...)
 class OpenAICompatibleProvider
 ```
 
-**説明**:
 
+**説明**:
 OpenAI互換APIプロバイダー（LM Studio、LocalAIなど）
 baseUrlが必須で、APIキーは通常不要
+
 
 *定義場所: apps/api/src/services/llm/openai-compatible.ts:4*
 
 ---
 
-### if
+
+### baseUrl
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function baseUrl(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/openai-compatible.ts:12*
+
+*定義場所: apps/api/src/services/llm/openai-compatible.ts:11*
 
 ---
+
 
 ### constructor
 
@@ -4695,29 +3976,54 @@ function if(...)
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/llm/openai-compatible.ts:18*
 
 ---
 
-### catch
+
+### generate
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function generate(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/openai-compatible.ts:69*
+
+*定義場所: apps/api/src/services/llm/openai-compatible.ts:25*
 
 ---
 
 
+### isAvailable
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function isAvailable(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/llm/openai-compatible.ts:127*
+
+---
+
+
+
 ## apps/api/src/services/llm/openai.ts
+
 
 ### OpenAIProvider
 
@@ -4728,13 +4034,15 @@ function catch(...)
 class OpenAIProvider
 ```
 
-**説明**:
 
+**説明**:
 OpenAI APIプロバイダー（公式OpenAI API専用）
+
 
 *定義場所: apps/api/src/services/llm/openai.ts:4*
 
 ---
+
 
 ### constructor
 
@@ -4745,95 +4053,54 @@ OpenAI APIプロバイダー（公式OpenAI API専用）
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/llm/openai.ts:12*
 
 ---
 
-### if
+
+### generate
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function generate(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/openai.ts:14*
+
+*定義場所: apps/api/src/services/llm/openai.ts:19*
 
 ---
 
-### catch
+
+### isAvailable
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function isAvailable(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/llm/openai.ts:72*
+
+*定義場所: apps/api/src/services/llm/openai.ts:77*
 
 ---
+
 
 
 ## apps/api/src/services/llm/summarizer.ts
 
-### NOTE_SUMMARY_PROMPT
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function NOTE_SUMMARY_PROMPT(...)
-```
-
-**説明**:
-
-ノート要約のプロンプトテンプレート
-
-*定義場所: apps/api/src/services/llm/summarizer.ts:3*
-
----
-
-### RSS_SUMMARY_PROMPT
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function RSS_SUMMARY_PROMPT(...)
-```
-
-**説明**:
-
-RSS記事要約のプロンプトテンプレート
-
-*定義場所: apps/api/src/services/llm/summarizer.ts:11*
-
----
-
-### KEY_POINTS_PROMPT
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function KEY_POINTS_PROMPT(...)
-```
-
-**説明**:
-
-要点抽出のプロンプトテンプレート
-
-*定義場所: apps/api/src/services/llm/summarizer.ts:20*
-
----
 
 ### SummarizerService
 
@@ -4844,13 +4111,40 @@ function KEY_POINTS_PROMPT(...)
 class SummarizerService
 ```
 
-**説明**:
 
+**説明**:
+ノート要約のプロンプトテンプレート
+/
+const NOTE_SUMMARY_PROMPT = `以下のノートの内容を要約してください。重要なポイントを簡潔にまとめてください。
+
+ノート:
+{content}`;
+
+/**
+RSS記事要約のプロンプトテンプレート
+/
+const RSS_SUMMARY_PROMPT = `以下のRSS記事の内容を要約してください。重要なポイントを簡潔にまとめてください。
+
+タイトル: {title}
+記事:
+{content}`;
+
+/**
+要点抽出のプロンプトテンプレート
+/
+const KEY_POINTS_PROMPT = `以下のテキストから重要な要点を3-5個抽出してください。箇条書きで簡潔にまとめてください。
+
+テキスト:
+{content}`;
+
+/**
 ノート要約サービス
 
-*定義場所: apps/api/src/services/llm/summarizer.ts:28*
+
+*定義場所: apps/api/src/services/llm/summarizer.ts:3*
 
 ---
+
 
 ### constructor
 
@@ -4861,32 +4155,72 @@ class SummarizerService
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/llm/summarizer.ts:32*
 
 ---
 
 
-## apps/api/src/services/rss-fetcher.test.ts
+### summarizeNote
 
-### if
-
-**型**: `function`
+**型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function summarizeNote(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/rss-fetcher.test.ts:47*
+
+*定義場所: apps/api/src/services/llm/summarizer.ts:40*
 
 ---
 
 
+### summarizeRSSArticle
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function summarizeRSSArticle(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/llm/summarizer.ts:63*
+
+---
+
+
+### extractKeyPoints
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function extractKeyPoints(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/llm/summarizer.ts:87*
+
+---
+
+
+
 ## apps/api/src/services/rss-fetcher.ts
+
 
 ### RSSFetcherService
 
@@ -4897,8 +4231,8 @@ function if(...)
 class RSSFetcherService
 ```
 
-**説明**:
 
+**説明**:
 RSSフィード取得サービスの依存関係
 /
 export interface RSSFetcherDependencies {
@@ -4910,9 +4244,11 @@ searchDb: typeof searchDb;
 /**
 RSSフィード取得サービス
 
+
 *定義場所: apps/api/src/services/rss-fetcher.ts:13*
 
 ---
+
 
 ### constructor
 
@@ -4923,11 +4259,14 @@ RSSフィード取得サービス
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/rss-fetcher.ts:26*
 
 ---
+
 
 ### getDefaultRSSFetcherService
 
@@ -4938,8 +4277,8 @@ function constructor(...)
 function getDefaultRSSFetcherService()
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを取得し、ノートとして保存する
 @param {RSSFeed} feed - 取得するRSSフィード
 @returns {Promise<{created: number, updated: number}>} 作成されたアイテム数と更新されたアイテム数
@@ -5043,54 +4382,47 @@ let defaultRSSFetcherService: RSSFetcherService | null = null;
 /**
 デフォルトのRSSフィード取得サービスを取得
 
+
 *定義場所: apps/api/src/services/rss-fetcher.ts:28*
 
 ---
 
-### catch
+
+### fetchRSSFeed
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function fetchRSSFeed(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/rss-fetcher.ts:45*
+
+*定義場所: apps/api/src/services/rss-fetcher.ts:34*
 
 ---
 
-### for
+
+### turndown
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function for(...)
+function turndown(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/rss-fetcher.ts:60*
+
+*定義場所: apps/api/src/services/rss-fetcher.ts:77*
 
 ---
 
-### if
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/rss-fetcher.ts:61*
-
----
 
 ### fetchRSSFeed
 
@@ -5101,29 +4433,32 @@ function if(...)
 function fetchRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを取得し、ノートとして保存する（後方互換性のための関数）
 @deprecated 新しいコードでは RSSFetcherService を直接使用してください
+
 
 *定義場所: apps/api/src/services/rss-fetcher.ts:147*
 
 ---
 
 
+
 ## apps/api/src/services/tag-suggestions.ts
 
-### TAG_GENERATION_PROMPT
 
-**型**: `function`
+### TagSuggestionService
+
+**型**: `class`
 
 **シグネチャ**:
 ```
-function TAG_GENERATION_PROMPT(...)
+class TagSuggestionService
 ```
 
-**説明**:
 
+**説明**:
 タグ候補生成の結果
 /
 export interface TagSuggestion {
@@ -5137,22 +4472,32 @@ method: "llm" | "rule-based";
 
 /**
 LLMベースのタグ生成プロンプト
+/
+const TAG_GENERATION_PROMPT = `以下のテキストから、適切なタグを3-10個生成してください。
 
-*定義場所: apps/api/src/services/tag-suggestions.ts:6*
+【重要な要件】
+- タグは必ず単語または短いフレーズ（2-3語まで）にしてください
+- 複数の単語を含む場合は、アンダースコア（_）やハイフン（-）で区切ってください
+- 例: "machine_learning", "web-development", "データ分析", "プロジェクト管理"
+- 長い文章や説明文は避けてください
+- 名詞または名詞句を優先してください
 
----
+【既存タグの優先使用】
+以下の既存タグリストは、テキストの内容との関連性が高い順に並んでいます。
+テキストの内容に関連するタグを優先的に選択してください。
+既存タグが適切な場合は、新しいタグを作成せずに既存タグを使用してください。
 
-### TagSuggestionService
+既存タグリスト（関連性順）:
+{existingTags}
 
-**型**: `class`
+タグは改行区切りで、1行に1つずつ出力してください。
+各行にはタグ名のみを記述し、説明やコメントは含めないでください。
 
-**シグネチャ**:
-```
-class TagSuggestionService
-```
+タイトル: {title}
+テキスト:
+{content}`;
 
-**説明**:
-
+/**
 タグ候補生成サービスの依存関係
 /
 export interface TagSuggestionDependencies {
@@ -5162,9 +4507,11 @@ tagsDb: typeof tagsDb;
 /**
 タグ候補生成サービス
 
-*定義場所: apps/api/src/services/tag-suggestions.ts:45*
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:6*
 
 ---
+
 
 ### constructor
 
@@ -5175,59 +4522,162 @@ tagsDb: typeof tagsDb;
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/tag-suggestions.ts:56*
 
 ---
 
-### if
+
+### generateSuggestions
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function generateSuggestions(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/tag-suggestions.ts:84*
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:70*
 
 ---
 
-### catch
+
+### warn
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function warn(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/tag-suggestions.ts:88*
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:91*
 
 ---
 
-### for
+
+### calculateTagRelevance
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function for(...)
+function calculateTagRelevance(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/tag-suggestions.ts:283*
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:107*
 
 ---
+
+
+### generateLLMTags
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function generateLLMTags(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:137*
+
+---
+
+
+### warn
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function warn(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:219*
+
+---
+
+
+### generateRuleBasedTags
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function generateRuleBasedTags(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:272*
+
+---
+
+
+### extractKeywords
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function extractKeywords(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:344*
+
+---
+
+
+### deduplicateAndSort
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function deduplicateAndSort(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/tag-suggestions.ts:383*
+
+---
+
 
 
 ## apps/api/src/services/utils/error-handler.ts
+
 
 ### handleServiceOperation
 
@@ -5238,8 +4688,8 @@ function for(...)
 function handleServiceOperation(...)
 ```
 
-**説明**:
 
+**説明**:
 サービス層でのエラーハンドリングユーティリティ
 統一されたエラーハンドリングとログ記録を提供
 /
@@ -5261,54 +4711,11 @@ toAppError,
 @returns 操作の結果
 @throws AppError エラーが発生した場合（元のエラー型を保持）
 
+
 *定義場所: apps/api/src/services/utils/error-handler.ts:1*
 
 ---
 
-### fn
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function fn(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/utils/error-handler.ts:25*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/utils/error-handler.ts:29*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/utils/error-handler.ts:31*
-
----
 
 ### handleServiceOperationNullable
 
@@ -5319,38 +4726,23 @@ function if(...)
 function handleServiceOperationNullable(...)
 ```
 
-**説明**:
 
+**説明**:
 サービス操作を実行し、エラーを適切に処理する（結果がnullの可能性がある場合）
 @param operation 操作の説明（ログ用）
 @param fn 実行するサービス操作
 @returns 操作の結果（nullの可能性あり）
 @throws AppError エラーが発生した場合
 
+
 *定義場所: apps/api/src/services/utils/error-handler.ts:113*
 
 ---
 
 
-## apps/api/src/services/web-clip-fetcher.test.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/services/web-clip-fetcher.test.ts:64*
-
----
-
 
 ## apps/api/src/services/web-clip-fetcher.ts
+
 
 ### WebClipFetcherService
 
@@ -5361,8 +4753,8 @@ function if(...)
 class WebClipFetcherService
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ取得サービスの依存関係
 /
 export interface WebClipFetcherDependencies {
@@ -5374,9 +4766,11 @@ searchDb: typeof searchDb;
 /**
 Webクリップ取得サービス
 
+
 *定義場所: apps/api/src/services/web-clip-fetcher.ts:12*
 
 ---
+
 
 ### constructor
 
@@ -5387,11 +4781,14 @@ Webクリップ取得サービス
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/services/web-clip-fetcher.ts:25*
 
 ---
+
 
 ### getDefaultWebClipFetcherService
 
@@ -5402,8 +4799,8 @@ function constructor(...)
 function getDefaultWebClipFetcherService()
 ```
 
-**説明**:
 
+**説明**:
 URLからHTMLを取得する
 @param {string} url - 取得するURL
 @returns {Promise<string>} HTMLコンテンツ
@@ -5660,54 +5057,101 @@ let defaultWebClipFetcherService: WebClipFetcherService | null = null;
 /**
 デフォルトのWebクリップ取得サービスを取得
 
+
 *定義場所: apps/api/src/services/web-clip-fetcher.ts:27*
 
 ---
 
-### if
+
+### fetchHTML
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function fetchHTML(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/web-clip-fetcher.ts:51*
+
+*定義場所: apps/api/src/services/web-clip-fetcher.ts:34*
 
 ---
 
-### catch
+
+### extractAndConvertToMarkdown
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function catch(...)
+function extractAndConvertToMarkdown(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/web-clip-fetcher.ts:70*
+
+*定義場所: apps/api/src/services/web-clip-fetcher.ts:86*
 
 ---
 
-### for
+
+### turndown
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function for(...)
+function turndown(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/api/src/services/web-clip-fetcher.ts:111*
+
+*定義場所: apps/api/src/services/web-clip-fetcher.ts:149*
 
 ---
+
+
+### fetchWebClip
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function fetchWebClip(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/web-clip-fetcher.ts:166*
+
+---
+
+
+### refetchWebClip
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function refetchWebClip(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/services/web-clip-fetcher.ts:226*
+
+---
+
 
 ### fetchWebClip
 
@@ -5718,14 +5162,16 @@ function for(...)
 function fetchWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを取得し、ノートとして保存する（後方互換性のための関数）
 @deprecated 新しいコードでは WebClipFetcherService を直接使用してください
+
 
 *定義場所: apps/api/src/services/web-clip-fetcher.ts:299*
 
 ---
+
 
 ### refetchWebClip
 
@@ -5736,17 +5182,20 @@ Webクリップを取得し、ノートとして保存する（後方互換性�
 function refetchWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップを再取得して更新する（後方互換性のための関数）
 @deprecated 新しいコードでは WebClipFetcherService を直接使用してください
+
 
 *定義場所: apps/api/src/services/web-clip-fetcher.ts:311*
 
 ---
 
 
+
 ## apps/api/src/utils/errors.ts
+
 
 ### AppError
 
@@ -5757,8 +5206,8 @@ Webクリップを再取得して更新する（後方互換性のための関�
 class AppError
 ```
 
-**説明**:
 
+**説明**:
 カスタムエラー型の定義
 エラーの種類に応じた適切なHTTPステータスコードのマッピング
 /
@@ -5766,9 +5215,11 @@ class AppError
 /**
 ベースエラークラス
 
+
 *定義場所: apps/api/src/utils/errors.ts:1*
 
 ---
+
 
 ### constructor
 
@@ -5779,11 +5230,14 @@ class AppError
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/api/src/utils/errors.ts:10*
 
 ---
+
 
 ### DatabaseError
 
@@ -5794,13 +5248,33 @@ function constructor(...)
 class DatabaseError
 ```
 
-**説明**:
 
+**説明**:
 データベースエラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:22*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:26*
+
+---
+
 
 ### NotFoundError
 
@@ -5811,13 +5285,33 @@ class DatabaseError
 class NotFoundError
 ```
 
-**説明**:
 
+**説明**:
 リソースが見つからないエラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:31*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:35*
+
+---
+
 
 ### ValidationError
 
@@ -5828,13 +5322,33 @@ class NotFoundError
 class ValidationError
 ```
 
-**説明**:
 
+**説明**:
 バリデーションエラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:41*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:45*
+
+---
+
 
 ### AuthenticationError
 
@@ -5845,13 +5359,33 @@ class ValidationError
 class AuthenticationError
 ```
 
-**説明**:
 
+**説明**:
 認証エラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:50*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:54*
+
+---
+
 
 ### AuthorizationError
 
@@ -5862,13 +5396,33 @@ class AuthenticationError
 class AuthorizationError
 ```
 
-**説明**:
 
+**説明**:
 権限エラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:59*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:63*
+
+---
+
 
 ### TimeoutError
 
@@ -5879,13 +5433,33 @@ class AuthorizationError
 class TimeoutError
 ```
 
-**説明**:
 
+**説明**:
 タイムアウトエラー
+
 
 *定義場所: apps/api/src/utils/errors.ts:68*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:72*
+
+---
+
 
 ### ExternalServiceError
 
@@ -5896,13 +5470,51 @@ class TimeoutError
 class ExternalServiceError
 ```
 
-**説明**:
 
+**説明**:
 外部サービスエラー（LLM APIなど）
+
 
 *定義場所: apps/api/src/utils/errors.ts:77*
 
 ---
+
+
+### constructor
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function constructor(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:81*
+
+---
+
+
+### super
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function super(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/api/src/utils/errors.ts:82*
+
+---
+
 
 ### toAppError
 
@@ -5913,30 +5525,17 @@ class ExternalServiceError
 function toAppError(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーをAppErrorに変換
 @param error エラーオブジェクト
 @returns AppError
+
 
 *定義場所: apps/api/src/utils/errors.ts:89*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/api/src/utils/errors.ts:95*
-
----
 
 ### getStatusCode
 
@@ -5947,15 +5546,17 @@ function if(...)
 function getStatusCode(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーからHTTPステータスコードを取得
 @param error エラーオブジェクト
 @returns HTTPステータスコード
 
+
 *定義場所: apps/api/src/utils/errors.ts:129*
 
 ---
+
 
 ### getErrorCode
 
@@ -5966,15 +5567,17 @@ function getStatusCode(...)
 function getErrorCode(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーからエラーコードを取得
 @param error エラーオブジェクト
 @returns エラーコード
 
+
 *定義場所: apps/api/src/utils/errors.ts:141*
 
 ---
+
 
 ### toErrorResponse
 
@@ -5985,8 +5588,8 @@ function getErrorCode(...)
 function toErrorResponse(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーレスポンスの形式
 /
 export interface ErrorResponse {
@@ -6002,12 +5605,15 @@ stack?: string; // 開発環境のみ
 @param includeStack スタックトレースを含めるか（開発環境のみ）
 @returns エラーレスポンス
 
+
 *定義場所: apps/api/src/utils/errors.ts:153*
 
 ---
 
 
+
 ## apps/api/src/utils/link-detector.ts
+
 
 ### detectNoteLinks
 
@@ -6018,8 +5624,8 @@ stack?: string; // 開発環境のみ
 function detectNoteLinks(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdown内のリンクを検出するユーティリティ
 /
 
@@ -6034,30 +5640,15 @@ MarkdownコンテンツからノートIDへのリンクを検出する
 @param content - Markdownコンテンツ
 @returns 検出されたノートIDの配列（重複なし）
 
+
 *定義場所: apps/api/src/utils/link-detector.ts:1*
 
 ---
 
 
-## apps/web/src/lib/api.test.ts
-
-### json
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function json(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/api.test.ts:30*
-
----
-
 
 ## apps/web/src/lib/api/base.ts
+
 
 ### getApiBaseUrl
 
@@ -6068,8 +5659,8 @@ function json(...)
 function getApiBaseUrl()
 ```
 
-**説明**:
 
+**説明**:
 API共通処理
 /
 
@@ -6080,9 +5671,11 @@ import { apiCache } from "./cache.js";
 APIベースURLを取得
 @returns APIベースURL
 
+
 *定義場所: apps/web/src/lib/api/base.ts:1*
 
 ---
+
 
 ### apiRequest
 
@@ -6093,8 +5686,8 @@ APIベースURLを取得
 function apiRequest(...)
 ```
 
-**説明**:
 
+**説明**:
 APIリクエストの共通処理
 @param endpoint APIエンドポイント
 @param options リクエストオプション
@@ -6103,27 +5696,15 @@ APIリクエストの共通処理
 @returns レスポンスデータ
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/base.ts:16*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/api/base.ts:38*
-
----
 
 
 ## apps/web/src/lib/api/cache.ts
+
 
 ### APICache
 
@@ -6134,8 +5715,8 @@ function if(...)
 class APICache
 ```
 
-**説明**:
 
+**説明**:
 APIリクエストキャッシュ
 /
 
@@ -6148,27 +5729,87 @@ expiresAt: number;
 /**
 シンプルなメモリキャッシュ
 
+
 *定義場所: apps/web/src/lib/api/cache.ts:1*
 
 ---
 
-### if
+
+### delete
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function delete(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/api/cache.ts:25*
+
+*定義場所: apps/web/src/lib/api/cache.ts:57*
 
 ---
 
 
+### deletePattern
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function deletePattern(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/api/cache.ts:65*
+
+---
+
+
+### clear
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function clear(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/api/cache.ts:76*
+
+---
+
+
+### cleanup
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function cleanup(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/api/cache.ts:83*
+
+---
+
+
+
 ## apps/web/src/lib/api/export.ts
+
 
 ### getMarkdownExportUrl
 
@@ -6179,8 +5820,8 @@ function if(...)
 function getMarkdownExportUrl(...)
 ```
 
-**説明**:
 
+**説明**:
 エクスポート関連API
 /
 
@@ -6189,9 +5830,11 @@ import { getApiBaseUrl } from "./base.js";
 /**
 Markdownエクスポート
 
+
 *定義場所: apps/web/src/lib/api/export.ts:1*
 
 ---
+
 
 ### getJSONExportUrl
 
@@ -6202,16 +5845,19 @@ Markdownエクスポート
 function getJSONExportUrl()
 ```
 
-**説明**:
 
+**説明**:
 JSONエクスポート
+
 
 *定義場所: apps/web/src/lib/api/export.ts:18*
 
 ---
 
 
+
 ## apps/web/src/lib/api/files.ts
+
 
 ### uploadFile
 
@@ -6222,8 +5868,8 @@ JSONエクスポート
 function uploadFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル関連API
 /
 
@@ -6238,24 +5884,11 @@ import { apiRequest, getApiBaseUrl } from "./base.js";
 @returns アップロードされたファイル情報
 @throws {Error} アップロードに失敗した場合
 
+
 *定義場所: apps/web/src/lib/api/files.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/api/files.ts:27*
-
----
 
 ### getFiles
 
@@ -6266,13 +5899,15 @@ function if(...)
 function getFiles(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル一覧取得
+
 
 *定義場所: apps/web/src/lib/api/files.ts:42*
 
 ---
+
 
 ### getFile
 
@@ -6283,13 +5918,15 @@ function getFiles(...)
 function getFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル取得
+
 
 *定義場所: apps/web/src/lib/api/files.ts:57*
 
 ---
+
 
 ### getFileDownloadUrl
 
@@ -6300,13 +5937,15 @@ function getFile(...)
 function getFileDownloadUrl(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイルダウンロードURL取得
+
 
 *定義場所: apps/web/src/lib/api/files.ts:64*
 
 ---
+
 
 ### deleteFile
 
@@ -6317,13 +5956,15 @@ function getFileDownloadUrl(...)
 function deleteFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル削除
+
 
 *定義場所: apps/web/src/lib/api/files.ts:71*
 
 ---
+
 
 ### linkFileToNote
 
@@ -6334,13 +5975,15 @@ function deleteFile(...)
 function linkFileToNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートにファイルを関連付け
+
 
 *定義場所: apps/web/src/lib/api/files.ts:80*
 
 ---
+
 
 ### unlinkFileFromNote
 
@@ -6351,13 +5994,15 @@ function linkFileToNote(...)
 function unlinkFileFromNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートからファイルの関連を解除
+
 
 *定義場所: apps/web/src/lib/api/files.ts:90*
 
 ---
+
 
 ### getFilesByNote
 
@@ -6368,13 +6013,15 @@ function unlinkFileFromNote(...)
 function getFilesByNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートに紐づくファイル一覧取得
+
 
 *定義場所: apps/web/src/lib/api/files.ts:99*
 
 ---
+
 
 ### updateFile
 
@@ -6385,16 +6032,19 @@ function getFilesByNote(...)
 function updateFile(...)
 ```
 
-**説明**:
 
+**説明**:
 ファイル更新
+
 
 *定義場所: apps/web/src/lib/api/files.ts:106*
 
 ---
 
 
+
 ## apps/web/src/lib/api/graph.ts
+
 
 ### getGraphData
 
@@ -6405,8 +6055,8 @@ function updateFile(...)
 function getGraphData(...)
 ```
 
-**説明**:
 
+**説明**:
 グラフ関連API
 /
 
@@ -6422,27 +6072,15 @@ import { apiRequest } from "./base.js";
 @returns グラフデータ（ノードとエッジ）
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/graph.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/api/graph.ts:31*
-
----
 
 
 ## apps/web/src/lib/api/llm.ts
+
 
 ### getLLMConfig
 
@@ -6453,8 +6091,8 @@ function if(...)
 function getLLMConfig()
 ```
 
-**説明**:
 
+**説明**:
 LLM関連API
 /
 
@@ -6471,9 +6109,11 @@ import { apiRequest } from "./base.js";
 /**
 LLM設定取得（互換性のため残す）
 
+
 *定義場所: apps/web/src/lib/api/llm.ts:1*
 
 ---
+
 
 ### getLLMSettings
 
@@ -6484,13 +6124,15 @@ LLM設定取得（互換性のため残す）
 function getLLMSettings()
 ```
 
-**説明**:
 
+**説明**:
 LLM設定取得（設定ページ用）
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:22*
 
 ---
+
 
 ### saveLLMSettings
 
@@ -6501,13 +6143,15 @@ LLM設定取得（設定ページ用）
 function saveLLMSettings(...)
 ```
 
-**説明**:
 
+**説明**:
 LLM設定保存
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:29*
 
 ---
+
 
 ### deleteLLMSettings
 
@@ -6518,13 +6162,15 @@ LLM設定保存
 function deleteLLMSettings()
 ```
 
-**説明**:
 
+**説明**:
 LLM設定削除
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:39*
 
 ---
+
 
 ### summarizeNote
 
@@ -6535,13 +6181,15 @@ LLM設定削除
 function summarizeNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート要約
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:48*
 
 ---
+
 
 ### summarizeRSSArticle
 
@@ -6552,13 +6200,15 @@ function summarizeNote(...)
 function summarizeRSSArticle(...)
 ```
 
-**説明**:
 
+**説明**:
 RSS記事要約
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:57*
 
 ---
+
 
 ### extractKeyPoints
 
@@ -6569,16 +6219,19 @@ RSS記事要約
 function extractKeyPoints(...)
 ```
 
-**説明**:
 
+**説明**:
 要点抽出
+
 
 *定義場所: apps/web/src/lib/api/llm.ts:66*
 
 ---
 
 
+
 ## apps/web/src/lib/api/notes.ts
+
 
 ### getNotes
 
@@ -6589,8 +6242,8 @@ function extractKeyPoints(...)
 function getNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート関連API
 /
 
@@ -6613,9 +6266,11 @@ import { apiCache } from "./cache.js";
 @returns ノート一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:1*
 
 ---
+
 
 ### getNote
 
@@ -6626,16 +6281,18 @@ import { apiCache } from "./cache.js";
 function getNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート取得
 @param id ノートID
 @returns ノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:41*
 
 ---
+
 
 ### createNote
 
@@ -6646,16 +6303,18 @@ function getNote(...)
 function createNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート作成
 @param note ノート情報
 @returns 作成されたノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:54*
 
 ---
+
 
 ### updateNote
 
@@ -6666,17 +6325,19 @@ function createNote(...)
 function updateNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート更新
 @param id ノートID
 @param note 更新するノート情報
 @returns 更新されたノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:70*
 
 ---
+
 
 ### deleteNote
 
@@ -6687,15 +6348,17 @@ function updateNote(...)
 function deleteNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート削除
 @param id ノートID
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:88*
 
 ---
+
 
 ### deleteNotesBatch
 
@@ -6706,30 +6369,17 @@ function deleteNote(...)
 function deleteNotesBatch(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一括削除
 @param noteIds ノートIDの配列
 @throws {Error} APIエラーが発生した場合
+
 
 *定義場所: apps/web/src/lib/api/notes.ts:102*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/api/notes.ts:108*
-
----
 
 ### createNoteMD
 
@@ -6740,16 +6390,18 @@ function if(...)
 function createNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノート作成
 @param data ノート作成データ
 @returns 作成されたMarkdownノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:124*
 
 ---
+
 
 ### getNoteMD
 
@@ -6760,16 +6412,18 @@ Markdownノート作成
 function getNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノート取得
 @param noteId ノートID
 @returns Markdownノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:140*
 
 ---
+
 
 ### updateNoteMD
 
@@ -6780,17 +6434,19 @@ Markdownノート取得
 function updateNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノート更新
 @param id ノートID
 @param data 更新データ
 @returns 更新されたMarkdownノート情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:153*
 
 ---
+
 
 ### getNoteLinks
 
@@ -6801,16 +6457,18 @@ Markdownノート更新
 function getNoteLinks(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートのリンク取得
 @param noteId ノートID
 @returns ノートのリンク一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:171*
 
 ---
+
 
 ### getNotesByTags
 
@@ -6821,8 +6479,8 @@ function getNoteLinks(...)
 function getNotesByTags(...)
 ```
 
-**説明**:
 
+**説明**:
 タグでフィルタリングされたノート一覧取得
 @param options 取得オプション
 @param options.tagNames タグ名の配列
@@ -6832,9 +6490,11 @@ function getNotesByTags(...)
 @returns ノート一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:181*
 
 ---
+
 
 ### getNotesWithTags
 
@@ -6845,8 +6505,8 @@ function getNotesByTags(...)
 function getNotesWithTags(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧とタグ情報を一度に取得（最適化版）
 @param options 取得オプション
 @param options.tagNames タグ名の配列
@@ -6856,12 +6516,15 @@ function getNotesWithTags(...)
 @returns ノート一覧とタグマップ
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/notes.ts:212*
 
 ---
 
 
+
 ## apps/web/src/lib/api/rss.ts
+
 
 ### getRSSFeeds
 
@@ -6872,8 +6535,8 @@ function getNotesWithTags(...)
 function getRSSFeeds()
 ```
 
-**説明**:
 
+**説明**:
 RSS関連API
 /
 
@@ -6884,9 +6547,11 @@ import { apiRequest } from "./base.js";
 /**
 RSSフィード一覧取得
 
+
 *定義場所: apps/web/src/lib/api/rss.ts:1*
 
 ---
+
 
 ### createRSSFeed
 
@@ -6897,13 +6562,15 @@ RSSフィード一覧取得
 function createRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィード登録
+
 
 *定義場所: apps/web/src/lib/api/rss.ts:16*
 
 ---
+
 
 ### deleteRSSFeed
 
@@ -6914,13 +6581,15 @@ RSSフィード登録
 function deleteRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィード削除
+
 
 *定義場所: apps/web/src/lib/api/rss.ts:26*
 
 ---
+
 
 ### fetchRSSFeed
 
@@ -6931,13 +6600,15 @@ RSSフィード削除
 function fetchRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィード取得・更新
+
 
 *定義場所: apps/web/src/lib/api/rss.ts:35*
 
 ---
+
 
 ### getRSSItem
 
@@ -6948,13 +6619,15 @@ RSSフィード取得・更新
 function getRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテム取得（ノートIDで取得）
+
 
 *定義場所: apps/web/src/lib/api/rss.ts:45*
 
 ---
+
 
 ### updateRSSItem
 
@@ -6965,16 +6638,19 @@ RSSアイテム取得（ノートIDで取得）
 function updateRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテムのコンテンツを更新
+
 
 *定義場所: apps/web/src/lib/api/rss.ts:52*
 
 ---
 
 
+
 ## apps/web/src/lib/api/search.ts
+
 
 ### searchNotes
 
@@ -6985,8 +6661,8 @@ RSSアイテムのコンテンツを更新
 function searchNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 検索関連API
 /
 
@@ -7002,12 +6678,15 @@ import { apiRequest } from "./base.js";
 @returns 検索結果のノート一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/search.ts:1*
 
 ---
 
 
+
 ## apps/web/src/lib/api/sync.ts
+
 
 ### syncPull
 
@@ -7018,8 +6697,8 @@ import { apiRequest } from "./base.js";
 function syncPull(...)
 ```
 
-**説明**:
 
+**説明**:
 同期関連API
 /
 
@@ -7030,9 +6709,11 @@ import { apiRequest } from "./base.js";
 /**
 同期プル
 
+
 *定義場所: apps/web/src/lib/api/sync.ts:1*
 
 ---
+
 
 ### syncPush
 
@@ -7043,16 +6724,19 @@ import { apiRequest } from "./base.js";
 function syncPush(...)
 ```
 
-**説明**:
 
+**説明**:
 同期プッシュ
+
 
 *定義場所: apps/web/src/lib/api/sync.ts:16*
 
 ---
 
 
+
 ## apps/web/src/lib/api/tags.ts
+
 
 ### getTags
 
@@ -7063,8 +6747,8 @@ function syncPush(...)
 function getTags()
 ```
 
-**説明**:
 
+**説明**:
 タグ関連API
 /
 
@@ -7077,9 +6761,11 @@ import { apiRequest } from "./base.js";
 @returns タグ一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:1*
 
 ---
+
 
 ### createTag
 
@@ -7090,16 +6776,18 @@ import { apiRequest } from "./base.js";
 function createTag(...)
 ```
 
-**説明**:
 
+**説明**:
 タグ作成
 @param tag タグ作成データ
 @returns 作成されたタグ情報
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:21*
 
 ---
+
 
 ### addTagToNote
 
@@ -7110,16 +6798,18 @@ function createTag(...)
 function addTagToNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートにタグ追加
 @param noteId ノートID
 @param tagId タグID
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:34*
 
 ---
+
 
 ### getTagsByNote
 
@@ -7130,16 +6820,18 @@ function addTagToNote(...)
 function getTagsByNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートに紐づくタグ一覧取得
 @param noteId ノートID
 @returns タグ一覧
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:47*
 
 ---
+
 
 ### removeTagFromNote
 
@@ -7150,16 +6842,18 @@ function getTagsByNote(...)
 function removeTagFromNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートからタグ削除
 @param noteId ノートID
 @param tagId タグID
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:57*
 
 ---
+
 
 ### deleteTag
 
@@ -7170,15 +6864,17 @@ function removeTagFromNote(...)
 function deleteTag(...)
 ```
 
-**説明**:
 
+**説明**:
 タグ削除
 @param tagId タグID
 @throws {Error} APIエラーが発生した場合
 
+
 *定義場所: apps/web/src/lib/api/tags.ts:69*
 
 ---
+
 
 ### generateTagSuggestions
 
@@ -7189,19 +6885,22 @@ function deleteTag(...)
 function generateTagSuggestions(...)
 ```
 
-**説明**:
 
+**説明**:
 タグ候補生成
 @param noteId ノートID
 @returns タグ候補一覧
 @throws {Error} APIエラーが発生した場合
+
 
 *定義場所: apps/web/src/lib/api/tags.ts:80*
 
 ---
 
 
+
 ## apps/web/src/lib/api/web-clips.ts
+
 
 ### createWebClip
 
@@ -7212,8 +6911,8 @@ function generateTagSuggestions(...)
 function createWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ関連API
 /
 
@@ -7223,9 +6922,11 @@ import { apiRequest } from "./base.js";
 /**
 Webクリップ作成
 
+
 *定義場所: apps/web/src/lib/api/web-clips.ts:1*
 
 ---
+
 
 ### getWebClips
 
@@ -7236,13 +6937,15 @@ Webクリップ作成
 function getWebClips(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ一覧取得
+
 
 *定義場所: apps/web/src/lib/api/web-clips.ts:18*
 
 ---
+
 
 ### getWebClip
 
@@ -7253,13 +6956,15 @@ Webクリップ一覧取得
 function getWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ取得
+
 
 *定義場所: apps/web/src/lib/api/web-clips.ts:33*
 
 ---
+
 
 ### refetchWebClip
 
@@ -7270,13 +6975,15 @@ Webクリップ取得
 function refetchWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ更新（再取得）
+
 
 *定義場所: apps/web/src/lib/api/web-clips.ts:40*
 
 ---
+
 
 ### deleteWebClip
 
@@ -7287,16 +6994,19 @@ Webクリップ更新（再取得）
 function deleteWebClip(...)
 ```
 
-**説明**:
 
+**説明**:
 Webクリップ削除
+
 
 *定義場所: apps/web/src/lib/api/web-clips.ts:49*
 
 ---
 
 
+
 ## apps/web/src/lib/hooks/useAutoSave.ts
+
 
 ### AutoSaveManager
 
@@ -7307,8 +7017,8 @@ Webクリップ削除
 class AutoSaveManager
 ```
 
-**説明**:
 
+**説明**:
 自動保存カスタムフック
 /
 
@@ -7330,9 +7040,11 @@ skipIfUnchanged: true,
 /**
 自動保存マネージャー
 
+
 *定義場所: apps/web/src/lib/hooks/useAutoSave.ts:1*
 
 ---
+
 
 ### constructor
 
@@ -7343,44 +7055,72 @@ skipIfUnchanged: true,
 function constructor(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/web/src/lib/hooks/useAutoSave.ts:29*
 
 ---
 
-### onSave
+
+### updateSavedState
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function onSave(...)
+function updateSavedState(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:39*
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:66*
 
 ---
 
-### if
+
+### clear
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function clear(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:51*
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:74*
 
 ---
+
+
+### destroy
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function destroy(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/hooks/useAutoSave.ts:84*
+
+---
+
 
 
 ## apps/web/src/lib/hooks/useNote.ts
+
 
 ### loadNoteData
 
@@ -7391,8 +7131,8 @@ function if(...)
 function loadNoteData(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート管理カスタムフック
 
 このフックは、ノートの読み込み、保存、削除のロジックを提供します。
@@ -7421,39 +7161,11 @@ webClip: WebClip | null;
 /**
 ノートを読み込む
 
+
 *定義場所: apps/web/src/lib/hooks/useNote.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/hooks/useNote.ts:33*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/hooks/useNote.ts:62*
-
----
 
 ### saveNoteData
 
@@ -7464,16 +7176,19 @@ function catch(...)
 function saveNoteData(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを保存する
+
 
 *定義場所: apps/web/src/lib/hooks/useNote.ts:73*
 
 ---
 
 
+
 ## apps/web/src/lib/hooks/useNoteSummary.ts
+
 
 ### generateNoteSummary
 
@@ -7484,8 +7199,8 @@ function saveNoteData(...)
 function generateNoteSummary(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート要約カスタムフック
 /
 
@@ -7495,27 +7210,15 @@ import type { NoteCore } from "$lib/types";
 /**
 ノートの要約を生成
 
+
 *定義場所: apps/web/src/lib/hooks/useNoteSummary.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/hooks/useNoteSummary.ts:17*
-
----
 
 
 ## apps/web/src/lib/services/filtering.ts
+
 
 ### filterNotes
 
@@ -7526,8 +7229,8 @@ function if(...)
 function filterNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 フィルタリングサービス
 
 ノートのフィルタリングロジックを提供します。
@@ -7543,24 +7246,11 @@ export type FilterType = "all" | "md" | "rss" | "web_clip";
 @param filterType フィルタタイプ
 @returns フィルタリングされたノート一覧
 
+
 *定義場所: apps/web/src/lib/services/filtering.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/services/filtering.ts:18*
-
----
 
 ### getFilteredCount
 
@@ -7571,19 +7261,22 @@ function if(...)
 function getFilteredCount(...)
 ```
 
-**説明**:
 
+**説明**:
 フィルタリングされたノートの数を取得する
 @param notes ノート一覧
 @param filterType フィルタタイプ
 @returns フィルタリングされたノートの数
+
 
 *定義場所: apps/web/src/lib/services/filtering.ts:24*
 
 ---
 
 
+
 ## apps/web/src/lib/services/notes.ts
+
 
 ### NotesService
 
@@ -7594,8 +7287,8 @@ function getFilteredCount(...)
 class NotesService
 ```
 
-**説明**:
 
+**説明**:
 ノートサービス
 
 ノート関連のビジネスロジックを提供します。
@@ -7623,27 +7316,105 @@ total: number;
 /**
 ノートサービス
 
+
 *定義場所: apps/web/src/lib/services/notes.ts:1*
 
 ---
 
-### if
+
+### getNotes
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function getNotes(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/services/notes.ts:39*
+
+*定義場所: apps/web/src/lib/services/notes.ts:33*
 
 ---
 
 
+### getNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function getNote(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/services/notes.ts:52*
+
+---
+
+
+### createNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function createNote(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/services/notes.ts:59*
+
+---
+
+
+### updateNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function updateNote(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/services/notes.ts:66*
+
+---
+
+
+### deleteNote
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function deleteNote(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/services/notes.ts:73*
+
+---
+
+
+
 ## apps/web/src/lib/services/pagination.ts
+
 
 ### paginate
 
@@ -7654,8 +7425,8 @@ function if(...)
 function paginate(...)
 ```
 
-**説明**:
 
+**説明**:
 ページネーションサービス
 
 配列のページネーションロジックを提供します。
@@ -7668,9 +7439,11 @@ function paginate(...)
 @param itemsPerPage 1ページあたりのアイテム数
 @returns ページネーションされたアイテム一覧
 
+
 *定義場所: apps/web/src/lib/services/pagination.ts:1*
 
 ---
+
 
 ### calculateTotalPages
 
@@ -7681,19 +7454,22 @@ function paginate(...)
 function calculateTotalPages(...)
 ```
 
-**説明**:
 
+**説明**:
 総ページ数を計算する
 @param totalItems 総アイテム数
 @param itemsPerPage 1ページあたりのアイテム数
 @returns 総ページ数
+
 
 *定義場所: apps/web/src/lib/services/pagination.ts:20*
 
 ---
 
 
+
 ## apps/web/src/lib/services/sorting.ts
+
 
 ### sortNotes
 
@@ -7704,8 +7480,8 @@ function calculateTotalPages(...)
 function sortNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 ソートサービス
 
 ノートのソートロジックを提供します。
@@ -7724,27 +7500,15 @@ export type SortOrder = "desc" | "asc";
 @param noteTagsMap ノートID -> タグ名の配列のマップ（タグソート時に使用）
 @returns ソートされたノート一覧
 
+
 *定義場所: apps/web/src/lib/services/sorting.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/services/sorting.ts:29*
-
----
 
 
 ## apps/web/src/lib/services/tags.ts
+
 
 ### TagsService
 
@@ -7755,8 +7519,8 @@ function if(...)
 class TagsService
 ```
 
-**説明**:
 
+**説明**:
 タグサービス
 
 タグ関連のビジネスロジックを提供します。
@@ -7768,9 +7532,11 @@ import type { CreateTagRequest } from "$lib/types/api";
 /**
 タグサービス
 
+
 *定義場所: apps/web/src/lib/services/tags.ts:1*
 
 ---
+
 
 ### getTags
 
@@ -7781,13 +7547,14 @@ import type { CreateTagRequest } from "$lib/types/api";
 function getTags(...)
 ```
 
-**説明**:
 
-タグ一覧を取得する
+*説明なし*
 
-*定義場所: apps/web/src/lib/services/tags.ts:14*
+
+*定義場所: apps/web/src/lib/services/tags.ts:17*
 
 ---
+
 
 ### createTag
 
@@ -7798,16 +7565,36 @@ function getTags(...)
 function createTag(...)
 ```
 
-**説明**:
 
-タグを作成する
+*説明なし*
 
-*定義場所: apps/web/src/lib/services/tags.ts:21*
+
+*定義場所: apps/web/src/lib/services/tags.ts:24*
 
 ---
 
 
+### deleteTag
+
+**型**: `method`
+
+**シグネチャ**:
+```
+function deleteTag(...)
+```
+
+
+*説明なし*
+
+
+*定義場所: apps/web/src/lib/services/tags.ts:31*
+
+---
+
+
+
 ## apps/web/src/lib/storage.ts
+
 
 ### getDB
 
@@ -7818,43 +7605,15 @@ function createTag(...)
 function getDB()
 ```
 
-**説明**:
 
+**説明**:
 IndexedDBを開く
+
 
 *定義場所: apps/web/src/lib/storage.ts:37*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/storage.ts:41*
-
----
-
-### upgrade
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function upgrade(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/storage.ts:46*
-
----
 
 ### saveNote
 
@@ -7865,13 +7624,15 @@ function upgrade(...)
 function saveNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:85*
 
 ---
+
 
 ### getNote
 
@@ -7882,13 +7643,15 @@ function saveNote(...)
 function getNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:93*
 
 ---
+
 
 ### getAllNotes
 
@@ -7899,13 +7662,15 @@ function getNote(...)
 function getAllNotes()
 ```
 
-**説明**:
 
+**説明**:
 すべてのノートを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:101*
 
 ---
+
 
 ### saveNoteMD
 
@@ -7916,13 +7681,15 @@ function getAllNotes()
 function saveNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノートを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:109*
 
 ---
+
 
 ### getNoteMD
 
@@ -7933,13 +7700,15 @@ Markdownノートを保存
 function getNoteMD(...)
 ```
 
-**説明**:
 
+**説明**:
 Markdownノートを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:117*
 
 ---
+
 
 ### saveRSSItem
 
@@ -7950,13 +7719,15 @@ Markdownノートを取得
 function saveRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテムを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:125*
 
 ---
+
 
 ### getRSSItem
 
@@ -7967,13 +7738,15 @@ RSSアイテムを保存
 function getRSSItem(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSアイテムを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:133*
 
 ---
+
 
 ### saveTag
 
@@ -7984,13 +7757,15 @@ RSSアイテムを取得
 function saveTag(tag: Tag)
 ```
 
-**説明**:
 
+**説明**:
 タグを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:141*
 
 ---
+
 
 ### getAllTags
 
@@ -8001,13 +7776,15 @@ function saveTag(tag: Tag)
 function getAllTags()
 ```
 
-**説明**:
 
+**説明**:
 すべてのタグを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:149*
 
 ---
+
 
 ### saveLink
 
@@ -8018,13 +7795,15 @@ function getAllTags()
 function saveLink(...)
 ```
 
-**説明**:
 
+**説明**:
 リンクを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:157*
 
 ---
+
 
 ### getAllLinks
 
@@ -8035,13 +7814,15 @@ function saveLink(...)
 function getAllLinks()
 ```
 
-**説明**:
 
+**説明**:
 すべてのリンクを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:165*
 
 ---
+
 
 ### saveFeed
 
@@ -8052,13 +7833,15 @@ function getAllLinks()
 function saveFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 フィードを保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:173*
 
 ---
+
 
 ### getAllFeeds
 
@@ -8069,13 +7852,15 @@ function saveFeed(...)
 function getAllFeeds()
 ```
 
-**説明**:
 
+**説明**:
 すべてのフィードを取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:181*
 
 ---
+
 
 ### saveLastSync
 
@@ -8086,13 +7871,15 @@ function getAllFeeds()
 function saveLastSync(...)
 ```
 
-**説明**:
 
+**説明**:
 最終同期時刻を保存
+
 
 *定義場所: apps/web/src/lib/storage.ts:189*
 
 ---
+
 
 ### getLastSync
 
@@ -8103,13 +7890,15 @@ function saveLastSync(...)
 function getLastSync()
 ```
 
-**説明**:
 
+**説明**:
 最終同期時刻を取得
+
 
 *定義場所: apps/web/src/lib/storage.ts:197*
 
 ---
+
 
 ### clearAll
 
@@ -8120,28 +7909,31 @@ function getLastSync()
 function clearAll()
 ```
 
-**説明**:
 
+**説明**:
 すべてのデータをクリア（デバッグ用）
+
 
 *定義場所: apps/web/src/lib/storage.ts:206*
 
 ---
 
 
+
 ## apps/web/src/lib/stores/notes.ts
 
-### loadNotes
 
-**型**: `method`
+### fileToNoteCore
+
+**型**: `function`
 
 **シグネチャ**:
 ```
-function loadNotes(...)
+function fileToNoteCore(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートストア
 
 ノート一覧の状態管理を行います。
@@ -8195,10 +7987,122 @@ return {
 subscribe,
 /**
 ノートを読み込む（最適化版：N+1クエリを解消）
+/
+async loadNotes() {
+update((state) => ({ ...state, loading: true, error: null }));
+try {
+const currentState = get(store);
+
+// ノート一覧とタグ情報を一度に取得（最適化版APIを使用）
+const { notes, tagsMap: tagsMapObj } = await getNotesWithTags({
+tagNames: currentState.filterTags.length > 0 ? currentState.filterTags : undefined,
+type: currentState.filterType !== "all" ? currentState.filterType : undefined,
+limit: 10000,
+});
+
+// オブジェクトからMapに変換（タグ名をソート）
+const tagsMap = new Map<string, string[]>();
+for (const [noteId, tags] of Object.entries(tagsMapObj)) {
+tagsMap.set(noteId, tags.sort());
+}
+// タグがないノートもマップに含める（空配列）
+for (const note of notes) {
+if (!tagsMap.has(note.id)) {
+tagsMap.set(note.id, []);
+}
+}
+
+// ノート一覧に表示するファイルを取得
+const allFiles = await getFiles({ limit: 10000 });
+const filesForNotes = allFiles.filter((file) => file.show_in_notes);
+
+update((state) => ({
+...state,
+allNotes: notes,
+allFiles: filesForNotes,
+noteTagsMap: tagsMap,
+loading: false,
+}));
+} catch (error) {
+update((state) => ({ ...state, error, loading: false }));
+}
+},
+/**
+フィルタを設定
+/
+setFilter(filterType: FilterType) {
+update((state) => ({ ...state, filterType, currentPage: 1 }));
+},
+/**
+タグフィルターを設定
+/
+setTagFilter(tagNames: string[]) {
+update((state) => ({ ...state, filterTags: tagNames, currentPage: 1 }));
+},
+/**
+ソートを設定
+/
+setSort(sortBy: SortBy, sortOrder: SortOrder) {
+update((state) => ({ ...state, sortBy, sortOrder }));
+},
+/**
+ページを設定
+/
+setPage(page: number) {
+update((state) => ({ ...state, currentPage: page }));
+},
+/**
+1ページあたりのアイテム数を設定
+/
+setItemsPerPage(itemsPerPage: number) {
+update((state) => ({ ...state, itemsPerPage, currentPage: 1 }));
+},
+/**
+ノートを追加（新規作成時など）
+/
+addNote(note: NoteCore) {
+update((state) => ({
+...state,
+allNotes: [note, ...state.allNotes],
+}));
+},
+/**
+ノートを更新
+/
+updateNote(note: NoteCore) {
+update((state) => ({
+...state,
+allNotes: state.allNotes.map((n) => (n.id === note.id ? note : n)),
+}));
+},
+/**
+ノートを削除
+/
+removeNote(noteId: string) {
+update((state) => ({
+...state,
+allNotes: state.allNotes.filter((n) => n.id !== noteId),
+}));
+},
+/**
+リセット
+/
+reset() {
+set(initialState);
+},
+};
+}
+
+export const notesStore = createNotesStore();
+
+/**
+ファイルをNoteCore形式に変換（ノート一覧表示用）
+
 
 *定義場所: apps/web/src/lib/stores/notes.ts:1*
 
 ---
+
 
 ### createNotesStore
 
@@ -8206,347 +8110,21 @@ subscribe,
 
 **シグネチャ**:
 ```
-function createNotesStore()
+function createNotesStore(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/web/src/lib/stores/notes.ts:47*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/stores/notes.ts:74*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/stores/notes.ts:91*
-
----
-
-### setFilter
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function setFilter(...)
-```
-
-**説明**:
-
-フィルタを設定
-
-*定義場所: apps/web/src/lib/stores/notes.ts:95*
-
----
-
-### setTagFilter
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function setTagFilter(...)
-```
-
-**説明**:
-
-タグフィルターを設定
-
-*定義場所: apps/web/src/lib/stores/notes.ts:101*
-
----
-
-### setSort
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function setSort(...)
-```
-
-**説明**:
-
-ソートを設定
-
-*定義場所: apps/web/src/lib/stores/notes.ts:107*
-
----
-
-### setPage
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function setPage(...)
-```
-
-**説明**:
-
-ページを設定
-
-*定義場所: apps/web/src/lib/stores/notes.ts:113*
-
----
-
-### setItemsPerPage
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function setItemsPerPage(...)
-```
-
-**説明**:
-
-1ページあたりのアイテム数を設定
-
-*定義場所: apps/web/src/lib/stores/notes.ts:119*
-
----
-
-### addNote
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function addNote(...)
-```
-
-**説明**:
-
-ノートを追加（新規作成時など）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:125*
-
----
-
-### updateNote
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function updateNote(...)
-```
-
-**説明**:
-
-ノートを更新
-
-*定義場所: apps/web/src/lib/stores/notes.ts:134*
-
----
-
-### removeNote
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function removeNote(...)
-```
-
-**説明**:
-
-ノートを削除
-
-*定義場所: apps/web/src/lib/stores/notes.ts:143*
-
----
-
-### reset
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function reset(...)
-```
-
-**説明**:
-
-リセット
-
-*定義場所: apps/web/src/lib/stores/notes.ts:152*
-
----
-
-### fileToNoteCore
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function fileToNoteCore(...)
-```
-
-**説明**:
-
-ファイルをNoteCore形式に変換（ノート一覧表示用）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:163*
-
----
-
-### allItems
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function allItems(...)
-```
-
-**説明**:
-
-ノートとファイルを結合した全アイテムを導出（最適化：allNotes と allFiles が変更された場合のみ再計算）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:178*
-
----
-
-### filteredItems
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function filteredItems(...)
-```
-
-**説明**:
-
-フィルタリングされたノートを導出（最適化：filterType が変更された場合のみ再計算）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:187*
-
----
-
-### filteredNotes
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function filteredNotes(...)
-```
-
-**説明**:
-
-フィルタリング・ソート・ページネーションされたノートを導出
-（最適化：sortBy, sortOrder, currentPage, itemsPerPage が変更された場合のみ再計算）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:195*
-
----
-
-### totalPages
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function totalPages(...)
-```
-
-**説明**:
-
-総ページ数を導出（最適化：filteredItems の長さと itemsPerPage が変更された場合のみ再計算）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:205*
-
----
-
-### filteredCount
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function filteredCount(...)
-```
-
-**説明**:
-
-フィルタリングされたノートの総数を導出（最適化：filteredItems の長さが変更された場合のみ再計算）
-
-*定義場所: apps/web/src/lib/stores/notes.ts:212*
-
----
 
 
 ## apps/web/src/lib/stores/tags.ts
 
-### loadTags
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function loadTags(...)
-```
-
-**説明**:
-
-タグストア
-
-タグ一覧の状態管理を行います。
-/
-
-import { getTags } from "$lib/api";
-import type { Tag } from "$lib/types";
-import { writable } from "svelte/store";
-
-export interface TagsState {
-tags: Tag[];
-loading: boolean;
-error: unknown | null;
-}
-
-const initialState: TagsState = {
-tags: [],
-loading: false,
-error: null,
-};
-
-function createTagsStore() {
-const { subscribe, set, update } = writable<TagsState>(initialState);
-
-return {
-subscribe,
-/**
-タグを読み込む
-
-*定義場所: apps/web/src/lib/stores/tags.ts:1*
-
----
 
 ### createTagsStore
 
@@ -8554,100 +8132,21 @@ subscribe,
 
 **シグネチャ**:
 ```
-function createTagsStore()
+function createTagsStore(...)
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/web/src/lib/stores/tags.ts:23*
 
 ---
 
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/stores/tags.ts:36*
-
----
-
-### addTag
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function addTag(...)
-```
-
-**説明**:
-
-タグを追加
-
-*定義場所: apps/web/src/lib/stores/tags.ts:40*
-
----
-
-### updateTag
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function updateTag(...)
-```
-
-**説明**:
-
-タグを更新
-
-*定義場所: apps/web/src/lib/stores/tags.ts:49*
-
----
-
-### removeTag
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function removeTag(...)
-```
-
-**説明**:
-
-タグを削除
-
-*定義場所: apps/web/src/lib/stores/tags.ts:58*
-
----
-
-### reset
-
-**型**: `method`
-
-**シグネチャ**:
-```
-function reset(...)
-```
-
-**説明**:
-
-リセット
-
-*定義場所: apps/web/src/lib/stores/tags.ts:67*
-
----
 
 
 ## apps/web/src/lib/sync.ts
+
 
 ### pullSync
 
@@ -8658,43 +8157,15 @@ function reset(...)
 function pullSync()
 ```
 
-**説明**:
 
+**説明**:
 サーバーから差分を取得してローカルストレージに保存
+
 
 *定義場所: apps/web/src/lib/sync.ts:5*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/sync.ts:25*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/sync.ts:27*
-
----
 
 ### pushSync
 
@@ -8705,13 +8176,15 @@ function if(...)
 function pushSync()
 ```
 
-**説明**:
 
+**説明**:
 ローカルストレージから差分を取得してサーバーに送信
+
 
 *定義場所: apps/web/src/lib/sync.ts:73*
 
 ---
+
 
 ### sync
 
@@ -8722,16 +8195,19 @@ function pushSync()
 function sync()
 ```
 
-**説明**:
 
+**説明**:
 双方向同期（pull → push）
+
 
 *定義場所: apps/web/src/lib/sync.ts:126*
 
 ---
 
 
+
 ## apps/web/src/lib/utils.ts
+
 
 ### timestampToDate
 
@@ -8742,8 +8218,8 @@ function sync()
 function timestampToDate(...)
 ```
 
-**説明**:
 
+**説明**:
 ユーティリティ関数
 /
 
@@ -8752,9 +8228,11 @@ Unix timestamp（秒）をDateオブジェクトに変換
 @param timestamp Unix timestamp（秒）
 @returns Dateオブジェクト
 
+
 *定義場所: apps/web/src/lib/utils.ts:1*
 
 ---
+
 
 ### dateToTimestamp
 
@@ -8765,15 +8243,17 @@ Unix timestamp（秒）をDateオブジェクトに変換
 function dateToTimestamp(...)
 ```
 
-**説明**:
 
+**説明**:
 DateオブジェクトをUnix timestamp（秒）に変換
 @param date Dateオブジェクト
 @returns Unix timestamp（秒）
 
+
 *定義場所: apps/web/src/lib/utils.ts:14*
 
 ---
+
 
 ### nowTimestamp
 
@@ -8784,14 +8264,16 @@ DateオブジェクトをUnix timestamp（秒）に変換
 function nowTimestamp()
 ```
 
-**説明**:
 
+**説明**:
 現在のUnix timestamp（秒）を取得
 @returns 現在のUnix timestamp（秒）
+
 
 *定義場所: apps/web/src/lib/utils.ts:23*
 
 ---
+
 
 ### generateId
 
@@ -8802,14 +8284,16 @@ function nowTimestamp()
 function generateId()
 ```
 
-**説明**:
 
+**説明**:
 UUID v4を生成
 @returns UUID v4文字列
+
 
 *定義場所: apps/web/src/lib/utils.ts:31*
 
 ---
+
 
 ### formatDate
 
@@ -8820,33 +8304,21 @@ UUID v4を生成
 function formatDate(...)
 ```
 
-**説明**:
 
+**説明**:
 日時をフォーマット
 @param timestamp Unix timestamp（秒）、またはnull
 @param defaultValue nullの場合に返すデフォルト値（デフォルト: ""）
+
 
 *定義場所: apps/web/src/lib/utils.ts:39*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/utils.ts:45*
-
----
 
 
 ## apps/web/src/lib/utils/error-handling.ts
+
 
 ### handleApiError
 
@@ -8857,8 +8329,8 @@ function if(...)
 function handleApiError(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーハンドリングユーティリティ
 /
 
@@ -8871,24 +8343,11 @@ APIエラーを処理し、ユーザーフレンドリーなメッセージを�
 @param defaultMessage デフォルトのエラーメッセージ（エラーメッセージマッピングが使用できない場合）
 @returns エラーメッセージ文字列
 
+
 *定義場所: apps/web/src/lib/utils/error-handling.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/utils/error-handling.ts:25*
-
----
 
 ### getErrorMessage
 
@@ -8899,15 +8358,17 @@ function if(...)
 function getErrorMessage(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーメッセージを取得（簡易版）
 @param error エラーオブジェクト
 @returns エラーメッセージ文字列
 
+
 *定義場所: apps/web/src/lib/utils/error-handling.ts:32*
 
 ---
+
 
 ### getErrorType
 
@@ -8918,8 +8379,8 @@ function getErrorMessage(...)
 function getErrorType(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーの種類を判定
 /
 export type ErrorType = "api" | "network" | "validation" | "unknown";
@@ -8929,12 +8390,15 @@ export type ErrorType = "api" | "network" | "validation" | "unknown";
 @param error エラーオブジェクト
 @returns エラーの種類
 
+
 *定義場所: apps/web/src/lib/utils/error-handling.ts:41*
 
 ---
 
 
+
 ## apps/web/src/lib/utils/error-messages.ts
+
 
 ### getErrorMessage
 
@@ -8945,8 +8409,8 @@ export type ErrorType = "api" | "network" | "validation" | "unknown";
 function getErrorMessage(...)
 ```
 
-**説明**:
 
+**説明**:
 エラーメッセージマッピング
 
 エラーの種類に応じたユーザーフレンドリーなメッセージを提供します。
@@ -8989,27 +8453,15 @@ default: "予期しないエラーが発生しました。",
 @param errorType エラーの種類
 @returns エラーメッセージ文字列
 
+
 *定義場所: apps/web/src/lib/utils/error-messages.ts:1*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/src/lib/utils/error-messages.ts:45*
-
----
 
 
 ## apps/web/src/lib/utils/logger.ts
+
 
 ### isDev
 
@@ -9020,8 +8472,8 @@ function if(...)
 function isDev()
 ```
 
-**説明**:
 
+**説明**:
 ロガーユーティリティ
 
 エラーログの記録と管理を行います。
@@ -9033,9 +8485,11 @@ function isDev()
 SvelteKitが利用可能な場合は$app/environmentから取得し、
 そうでない場合は環境変数から判定する
 
+
 *定義場所: apps/web/src/lib/utils/logger.ts:1*
 
 ---
+
 
 ### Logger
 
@@ -9046,11 +8500,14 @@ SvelteKitが利用可能な場合は$app/environmentから取得し、
 class Logger
 ```
 
+
 *説明なし*
+
 
 *定義場所: apps/web/src/lib/utils/logger.ts:33*
 
 ---
+
 
 ### logError
 
@@ -9061,8 +8518,8 @@ class Logger
 function logError(...)
 ```
 
-**説明**:
 
+**説明**:
 ログを記録する
 /
 private log(level: LogLevel, message: string, context?: LogContext): void {
@@ -9145,108 +8602,105 @@ export const logger = new Logger();
 @param error エラーオブジェクト
 @param context 追加のコンテキスト情報
 
+
 *定義場所: apps/web/src/lib/utils/logger.ts:34*
 
 ---
 
-### switch
+
+### log
 
 **型**: `method`
 
 **シグネチャ**:
 ```
-function switch(...)
+function log(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/src/lib/utils/logger.ts:51*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:37*
 
 ---
 
 
-## apps/web/static/sw.js
+### debug
 
-### if
-
-**型**: `function`
+**型**: `method`
 
 **シグネチャ**:
 ```
-function if(...)
+function debug(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/static/sw.js:19*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:72*
 
 ---
 
 
-## apps/web/vite.config.ts
+### info
 
-### manualChunks
-
-**型**: `function`
+**型**: `method`
 
 **シグネチャ**:
 ```
-function manualChunks(...)
+function info(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:9*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:79*
 
 ---
 
-### rewrite
 
-**型**: `function`
+### warn
+
+**型**: `method`
 
 **シグネチャ**:
 ```
-function rewrite(...)
+function warn(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:33*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:86*
 
 ---
 
-### configure
 
-**型**: `function`
+### error
+
+**型**: `method`
 
 **シグネチャ**:
 ```
-function configure(...)
+function error(...)
 ```
+
 
 *説明なし*
 
-*定義場所: apps/web/vite.config.ts:35*
+
+*定義場所: apps/web/src/lib/utils/logger.ts:93*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: apps/web/vite.config.ts:42*
-
----
 
 
 ## e2e/helpers.ts
+
 
 ### goToNotesList
 
@@ -9257,17 +8711,19 @@ function if(...)
 function goToNotesList(...)
 ```
 
-**説明**:
 
+**説明**:
 E2Eテスト用のヘルパー関数
 /
 
 /**
 ノート一覧ページに移動
 
+
 *定義場所: e2e/helpers.ts:3*
 
 ---
+
 
 ### goToNewNote
 
@@ -9278,13 +8734,15 @@ E2Eテスト用のヘルパー関数
 function goToNewNote(...)
 ```
 
-**説明**:
 
+**説明**:
 新規ノート作成ページに移動
+
 
 *定義場所: e2e/helpers.ts:15*
 
 ---
+
 
 ### goToNoteDetail
 
@@ -9295,13 +8753,15 @@ function goToNewNote(...)
 function goToNoteDetail(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート詳細ページに移動
+
 
 *定義場所: e2e/helpers.ts:23*
 
 ---
+
 
 ### goToSearch
 
@@ -9312,13 +8772,15 @@ function goToNoteDetail(...)
 function goToSearch(...)
 ```
 
-**説明**:
 
+**説明**:
 検索ページに移動
+
 
 *定義場所: e2e/helpers.ts:31*
 
 ---
+
 
 ### goToRSS
 
@@ -9329,13 +8791,15 @@ function goToSearch(...)
 function goToRSS(...)
 ```
 
-**説明**:
 
+**説明**:
 RSS管理ページに移動
+
 
 *定義場所: e2e/helpers.ts:39*
 
 ---
+
 
 ### goToTags
 
@@ -9346,13 +8810,15 @@ RSS管理ページに移動
 function goToTags(...)
 ```
 
-**説明**:
 
+**説明**:
 タグ管理ページに移動
+
 
 *定義場所: e2e/helpers.ts:47*
 
 ---
+
 
 ### createNote
 
@@ -9363,28 +8829,15 @@ function goToTags(...)
 function createNote(...)
 ```
 
-**説明**:
 
+**説明**:
 新規ノートを作成
+
 
 *定義場所: e2e/helpers.ts:55*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: e2e/helpers.ts:79*
-
----
 
 ### editNote
 
@@ -9395,13 +8848,15 @@ function if(...)
 function editNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを編集
+
 
 *定義場所: e2e/helpers.ts:85*
 
 ---
+
 
 ### deleteNote
 
@@ -9412,13 +8867,15 @@ function editNote(...)
 function deleteNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートを削除
+
 
 *定義場所: e2e/helpers.ts:125*
 
 ---
+
 
 ### addTagToNote
 
@@ -9429,14 +8886,16 @@ function deleteNote(...)
 function addTagToNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートにタグを追加
 注意: タグは事前に作成されている必要があります
+
 
 *定義場所: e2e/helpers.ts:142*
 
 ---
+
 
 ### removeTagFromNote
 
@@ -9447,13 +8906,15 @@ function addTagToNote(...)
 function removeTagFromNote(...)
 ```
 
-**説明**:
 
+**説明**:
 ノートからタグを削除
+
 
 *定義場所: e2e/helpers.ts:174*
 
 ---
+
 
 ### searchNotes
 
@@ -9464,13 +8925,15 @@ function removeTagFromNote(...)
 function searchNotes(...)
 ```
 
-**説明**:
 
+**説明**:
 検索を実行
+
 
 *定義場所: e2e/helpers.ts:192*
 
 ---
+
 
 ### createRSSFeed
 
@@ -9481,13 +8944,15 @@ function searchNotes(...)
 function createRSSFeed(...)
 ```
 
-**説明**:
 
+**説明**:
 RSSフィードを登録
+
 
 *定義場所: e2e/helpers.ts:220*
 
 ---
+
 
 ### expectNoteInList
 
@@ -9498,13 +8963,15 @@ RSSフィードを登録
 function expectNoteInList(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧でノートが表示されているか確認
+
 
 *定義場所: e2e/helpers.ts:250*
 
 ---
+
 
 ### expectNoteNotInList
 
@@ -9515,49 +8982,19 @@ function expectNoteInList(...)
 function expectNoteNotInList(...)
 ```
 
-**説明**:
 
+**説明**:
 ノート一覧でノートが表示されていないか確認
+
 
 *定義場所: e2e/helpers.ts:259*
 
 ---
 
 
-## e2e/search.spec.ts
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: e2e/search.spec.ts:32*
-
----
-
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: e2e/search.spec.ts:47*
-
----
-
 
 ## scripts/deploy-public-site.ts
+
 
 ### deployPublicSite
 
@@ -9568,61 +9005,19 @@ function for(...)
 function deployPublicSite()
 ```
 
-**説明**:
 
+**説明**:
 公開サイトをデプロイ用ディレクトリに生成
+
 
 *定義場所: scripts/deploy-public-site.ts:5*
 
 ---
 
-### for
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/deploy-public-site.ts:23*
-
----
-
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/deploy-public-site.ts:38*
-
----
-
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/deploy-public-site.ts:44*
-
----
 
 
 ## scripts/migrate.ts
+
 
 ### parseSQL
 
@@ -9633,28 +9028,15 @@ function if(...)
 function parseSQL(...)
 ```
 
-**説明**:
 
+**説明**:
 SQLステートメントを解析して実行可能なステートメントの配列に分割
+
 
 *定義場所: scripts/migrate.ts:5*
 
 ---
 
-### if
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function if(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/migrate.ts:14*
-
----
 
 ### getAppliedMigrations
 
@@ -9665,28 +9047,15 @@ function if(...)
 function getAppliedMigrations(...)
 ```
 
-**説明**:
 
+**説明**:
 実行済みマイグレーションのバージョン一覧を取得
+
 
 *定義場所: scripts/migrate.ts:25*
 
 ---
 
-### catch
-
-**型**: `function`
-
-**シグネチャ**:
-```
-function catch(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/migrate.ts:32*
-
----
 
 ### recordMigration
 
@@ -9697,13 +9066,15 @@ function catch(...)
 function recordMigration(...)
 ```
 
-**説明**:
 
+**説明**:
 マイグレーションを実行済みとして記録
+
 
 *定義場所: scripts/migrate.ts:38*
 
 ---
+
 
 ### columnExists
 
@@ -9714,13 +9085,15 @@ function recordMigration(...)
 function columnExists(...)
 ```
 
-**説明**:
 
+**説明**:
 テーブルにカラムが存在するかチェック
+
 
 *定義場所: scripts/migrate.ts:49*
 
 ---
+
 
 ### safeAddColumn
 
@@ -9731,14 +9104,16 @@ function columnExists(...)
 function safeAddColumn(...)
 ```
 
-**説明**:
 
+**説明**:
 ALTER TABLE ADD COLUMN文を安全に実行
 カラムが既に存在する場合はスキップ
+
 
 *定義場所: scripts/migrate.ts:63*
 
 ---
+
 
 ### migrate
 
@@ -9749,25 +9124,14 @@ ALTER TABLE ADD COLUMN文を安全に実行
 function migrate()
 ```
 
-**説明**:
 
+**説明**:
 データベースマイグレーションを実行する
+
 
 *定義場所: scripts/migrate.ts:84*
 
 ---
 
-### for
 
-**型**: `function`
 
-**シグネチャ**:
-```
-function for(...)
-```
-
-*説明なし*
-
-*定義場所: scripts/migrate.ts:114*
-
----

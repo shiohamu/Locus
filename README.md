@@ -9,25 +9,26 @@
 Locus は「ローカルファースト」をモットーに設計された個人知識管理システムです。
 ノートは Markdown で書き、すべてのデータ（Markdown ファイル、メタ情報、リンク構造）はユーザー自身が所有するローカルストレージに保存されます。そのためインターネット接続不要・外部サービスへの依存なしに知識を蓄積できるほか、プライバシーやデータセキュリティも担保します。
 <!-- MANUAL_END:description -->
-Locus は、ノートや RSS フィードを同一の知識空間に統合しつつ、**ローカルファースト**で動作する個人向け情報管理システムです。  
-- **Markdown ノート**：マークダウン形式で書かれたメモはそのままテキストとして保存されますが、内部リンク（bidirectional links）を自動解析し、相互参照や関連性の可視化を行います。Obsidian や Logseq に似た編集体験を提供します。  
-- **RSS フィード統合**：指定したフィード URL を定期的に取得し、HTML の内容は cheerio でパースしてマークダウンへ変換。結果として「記事ノート」が自動生成されるため、情報収集と知識構築を同時進行できます。  
-- **統一された検索・ナビゲーション**：ファイルシステム上に散在する Markdown と RSS ノードは全て単一のインデックスで管理し、キーワードやタグによる高速検索が可能です。また、jszip を使ったアーカイブ機能により、一括エクスポート・バックアップも簡易的に実行できます。  
-- **ローカルファースト**：すべてのデータはユーザー側のディレクトリ（例: `~/Locus/`）に保存され、ネットワーク接続がなくても完全動作します。必要に応じて Git などで同期させるだけです。  
-- **CLI ベース**：シェルスクリプトと Node.js の組み合わせによって、ノートの生成・更新・検索をコマンドラインから行えるよう設計されています。`locus new "タイトル"` や `locus search keyword` など直感的な操作が可能です。  
-- **拡張性**：TypeScript と JavaScript のコードベースにより、プラグインやカスタムスクリプトを簡単に追加できます。既存の RSS プロバイダだけでなく、自前のデータソース（API, JSON など）も取り込めます。  
+Locusは、ローカルファーストで構築されたパーソナルナレッジシステムです。MarkdownノートとRSSフィードを一元管理し、双方向リンク機能により情報同士の関連性が可視化されます。
 
-**技術構成**
+- **データストア**：すべてのノートはローカルファイル（`.md`）として保存されるため、オフライン時でも完全なアクセスと編集が可能です。  
+- **RSS統合**：外部情報を取り込みたい場合、指定したフィードURLから記事を取得し、自動的にMarkdownノートへ変換します。Cheerio（HTMLパーサ）で構造化データを抽出し、jszipでアーカイブ形式のインポート/エクスポートも実装しています。  
+- **双方向リンク**：`[[ページ名]]` のようなシンタックスでノード間に相互参照を作成できるため、知識グラフとして自然に拡張できます。  
+- **開発スタック**：TypeScriptベースのNode.js CLIと補助的なShellスクリプトから構成されます。依存ライブラリは `cheerio@^1.1.2` と `jszip@^3.10.1` を中心に、npmで管理されています。
 
-| 層 | 主な役割 |
-|---|-----------|
-| **UI/CLI** | シェルスクリプトと Node.js の `readline` インターフェイスを使用し、ユーザー操作を受け付ける。 |
-| **コアエンジン** | Markdown パーサ（markdown-it など）＋ bidirectional link 検出ロジックでノート間の関係性を構築。 |
-| **データ取得層** | `cheerio` を用いた RSS フィードパース、`jszip` によるアーカイブ処理。 |
-| **ストレージ層** | ファイルベース（JSON/MD）＋ SQLite 等の軽量 DB でメタ情報を管理し、高速検索に対応。 |
+簡単な利用例  
+```bash
+# プロジェクトを初期化
+npx locus init
 
-Locus はオープンソース（MIT ライセンス）として GitHub 上で公開されており、誰でも自由にカスタマイズ・拡張できます。  
-本プロジェクトは「**知識の一元化とローカルコントロールを両立したい人」向け」に設計されていますので、自分だけの情報エコシステムを構築したい開発者やリサーチャーに最適です。<!-- MANUAL_START:architecture -->
+# RSSフィードからノートを取得
+locus import-rss https://example.com/feed.xml
+
+# ノート間のリンクを確認
+locus graph
+```
+
+Locusは、個人が情報を整理しつつも外部データと連携できる柔軟な知識ベースとして設計されています。<!-- MANUAL_START:architecture -->
 
 <!-- MANUAL_END:architecture -->
 ```mermaid
@@ -36,24 +37,62 @@ graph TB
 
     subgraph locus [fa:fa-cube locus]
         direction TB
-        subgraph apps [apps]
+        subgraph at_locus_api [&#64;locus/api]
             direction TB
-            subgraph apps_api [api]
+            subgraph at_locus_api_src [src]
                 direction TB
-                apps_api_src["src"]:::moduleStyle
+                subgraph at_locus_api_src_db [db]
+                    direction TB
+                    at_locus_api_src_db_utils["utils"]:::moduleStyle
+                end
+                class at_locus_api_src_db moduleStyle
+                at_locus_api_src_utils["utils"]:::moduleStyle
+                at_locus_api_src_middleware["middleware"]:::moduleStyle
+                at_locus_api_src_routes["routes"]:::moduleStyle
+                subgraph at_locus_api_src_services [services]
+                    direction TB
+                    at_locus_api_src_services_utils["utils"]:::moduleStyle
+                    at_locus_api_src_services_export["export"]:::moduleStyle
+                    at_locus_api_src_services_llm["llm"]:::moduleStyle
+                end
+                class at_locus_api_src_services moduleStyle
             end
-            class apps_api moduleStyle
-            subgraph apps_web [web]
-                direction TB
-                apps_web_src["src"]:::moduleStyle
-            end
-            class apps_web moduleStyle
+            class at_locus_api_src moduleStyle
         end
-        class apps moduleStyle
-        e2e["e2e"]:::moduleStyle
-        scripts["scripts"]:::moduleStyle
+        class at_locus_api moduleStyle
+        subgraph at_locus_web [&#64;locus/web]
+            direction TB
+            subgraph at_locus_web_src [src]
+                direction TB
+                subgraph at_locus_web_src_lib [lib]
+                    direction TB
+                    at_locus_web_src_lib_utils["utils"]:::moduleStyle
+                    at_locus_web_src_lib_services["services"]:::moduleStyle
+                    at_locus_web_src_lib_stores["stores"]:::moduleStyle
+                    at_locus_web_src_lib_hooks["hooks"]:::moduleStyle
+                    at_locus_web_src_lib_types["types"]:::moduleStyle
+                    at_locus_web_src_lib_api["api"]:::moduleStyle
+                    at_locus_web_src_lib_components["components"]:::moduleStyle
+                end
+                class at_locus_web_src_lib moduleStyle
+            end
+            class at_locus_web_src moduleStyle
+        end
+        class at_locus_web moduleStyle
+        subgraph at_locus_shared [&#64;locus/shared]
+            direction TB
+            subgraph at_locus_shared_src [src]
+                direction TB
+                at_locus_shared_src_types["types"]:::moduleStyle
+            end
+            class at_locus_shared_src moduleStyle
+        end
+        class at_locus_shared moduleStyle
     end
 
+    at_locus_api --> at_locus_shared
+    at_locus_web --> at_locus_api
+    at_locus_web --> at_locus_shared
 
     classDef pythonStyle fill:#3776ab,stroke:#ffd43b,stroke-width:2px,color:#fff
     classDef dockerStyle fill:#2496ed,stroke:#1d63ed,stroke-width:2px,color:#fff
@@ -66,7 +105,7 @@ graph TB
 ### locus
 - **Type**: typescript
 - **Description**: Locus is a local-first personal knowledge system that integrates Markdown notes, RSS feeds, and bidirectional links into a unified knowledge space.
-- **Dependencies**: @biomejs/biome, @libsql/client, @playwright/test, @types/bun, @types/cheerio, @types/jszip, cheerio, jszip
+- **Dependencies**: &#64;biomejs/biome, &#64;libsql/client, &#64;playwright/test, &#64;types/bun, &#64;types/cheerio, &#64;types/jszip, cheerio, jszip
 
 ## 使用技術
 
@@ -170,4 +209,4 @@ npm test
 
 ---
 
-*このREADME.mdは自動生成されています。最終更新: 2025-12-31 14:47:29*
+*このREADME.mdは自動生成されています。最終更新: 2026-01-01 05:54:45*
