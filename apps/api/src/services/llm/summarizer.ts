@@ -33,6 +33,9 @@ export class SummarizerService {
 
   /**
    * ノートを要約
+   * @param {string} content - 要約するノートのコンテンツ
+   * @returns {Promise<string>} 要約されたテキスト
+   * @description コンテンツが8000文字を超える場合は自動的に切り詰めます
    */
   async summarizeNote(content: string): Promise<string> {
     // コンテンツが長すぎる場合は切り詰める（約8000文字まで）
@@ -52,6 +55,10 @@ export class SummarizerService {
 
   /**
    * RSS記事を要約
+   * @param {string} title - RSS記事のタイトル
+   * @param {string} content - RSS記事のコンテンツ
+   * @returns {Promise<string>} 要約されたテキスト
+   * @description コンテンツが8000文字を超える場合は自動的に切り詰めます
    */
   async summarizeRSSArticle(title: string, content: string): Promise<string> {
     // コンテンツが長すぎる場合は切り詰める（約8000文字まで）
@@ -73,6 +80,9 @@ export class SummarizerService {
 
   /**
    * 要点を抽出
+   * @param {string} content - 要点を抽出するコンテンツ
+   * @returns {Promise<string>} 抽出された要点（箇条書き）
+   * @description コンテンツが8000文字を超える場合は自動的に切り詰めます
    */
   async extractKeyPoints(content: string): Promise<string> {
     // コンテンツが長すぎる場合は切り詰める（約8000文字まで）

@@ -11,6 +11,9 @@ const app = new Hono();
 /**
  * Markdownノート取得
  * GET /notes/md/:id
+ * @param {string} id - ノートID
+ * @returns {Promise<NoteMD>} Markdownノート情報
+ * @throws {Error} Markdownノートが見つからない場合（404）
  */
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
@@ -26,6 +29,9 @@ app.get("/:id", async (c) => {
 /**
  * Markdownノート作成
  * POST /notes/md
+ * @param {{core: NoteCore, md: NoteMD}} body - ノートコアとMarkdownノート情報
+ * @returns {Promise<{core: NoteCore, md: NoteMD}>} 作成されたノート情報
+ * @description ノートコア、Markdownノート、FTSインデックス、リンクを自動的に作成・更新します
  */
 app.post("/", async (c) => {
   const body = await c.req.json<{
@@ -61,6 +67,11 @@ app.post("/", async (c) => {
 /**
  * Markdownノート更新
  * PUT /notes/md/:id
+ * @param {string} id - ノートID
+ * @param {{core?: Partial<NoteCore>, md?: Partial<NoteMD>}} body - 更新するノート情報
+ * @returns {Promise<{core: NoteCore, md: NoteMD}>} 更新されたノート情報
+ * @throws {Error} ノートが見つからない場合（404）
+ * @description ノートコア、Markdownノート、FTSインデックス、リンクを自動的に更新します
  */
 app.put("/:id", async (c) => {
   const id = c.req.param("id");

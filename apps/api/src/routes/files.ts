@@ -17,7 +17,9 @@ const app = new Hono();
 /**
  * ファイルアップロード
  * POST /files
- * multipart/form-data: { file: File }
+ * @param {File} file - アップロードするファイル（multipart/form-data）
+ * @returns {Promise<File>} アップロードされたファイル情報
+ * @throws {ValidationError} ファイルが指定されていない場合
  */
 app.post("/", async (c) => {
   const formData = await c.req.formData();
@@ -55,7 +57,11 @@ app.post("/", async (c) => {
 
 /**
  * ファイル一覧取得
- * GET /files?note_id=xxx
+ * GET /files?note_id=xxx&limit=100&offset=0
+ * @param {string} [note_id] - ノートID（指定した場合、そのノートに紐づくファイルのみ取得）
+ * @param {number} [limit] - 取得件数の上限
+ * @param {number} [offset] - 取得開始位置
+ * @returns {Promise<File[]>} ファイル一覧
  */
 app.get("/", async (c) => {
   const noteId = getQueryString(c, "note_id");
@@ -76,6 +82,9 @@ app.get("/", async (c) => {
 /**
  * ファイルメタデータ取得
  * GET /files/:id
+ * @param {string} id - ファイルID
+ * @returns {Promise<File>} ファイル情報
+ * @throws {NotFoundError} ファイルが見つからない場合
  */
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
@@ -91,6 +100,9 @@ app.get("/:id", async (c) => {
 /**
  * ファイルダウンロード
  * GET /files/:id/download
+ * @param {string} id - ファイルID
+ * @returns {Promise<Response>} ファイルデータ（Content-TypeとContent-Dispositionヘッダー付き）
+ * @throws {NotFoundError} ファイルが見つからない場合
  */
 app.get("/:id/download", async (c) => {
   const id = c.req.param("id");
@@ -112,6 +124,9 @@ app.get("/:id/download", async (c) => {
 /**
  * ファイル削除
  * DELETE /files/:id
+ * @param {string} id - ファイルID
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
+ * @throws {NotFoundError} ファイルが見つからない場合
  */
 app.delete("/:id", async (c) => {
   const id = c.req.param("id");
@@ -133,7 +148,11 @@ app.delete("/:id", async (c) => {
 /**
  * ノートとファイルの関連付け
  * POST /files/:id/notes
- * リクエストボディ: { note_id: string }
+ * @param {string} id - ファイルID
+ * @param {{note_id: string}} body - 関連付けるノートID
+ * @returns {Promise<FileNote>} 関連付け情報
+ * @throws {NotFoundError} ファイルが見つからない場合
+ * @throws {ValidationError} バリデーションエラー
  */
 app.post("/:id/notes", async (c) => {
   const fileId = c.req.param("id");
@@ -153,6 +172,10 @@ app.post("/:id/notes", async (c) => {
 /**
  * ノートとファイルの関連解除
  * DELETE /files/:id/notes/:noteId
+ * @param {string} id - ファイルID
+ * @param {string} noteId - ノートID
+ * @returns {Promise<{message: string}>} 関連解除成功メッセージ
+ * @throws {NotFoundError} ファイルが見つからない場合
  */
 app.delete("/:id/notes/:noteId", async (c) => {
   const fileId = c.req.param("id");
@@ -170,7 +193,10 @@ app.delete("/:id/notes/:noteId", async (c) => {
 /**
  * ファイル更新
  * PUT /files/:id
- * リクエストボディ: { filename?: string, show_in_notes?: boolean }
+ * @param {string} id - ファイルID
+ * @param {{filename?: string, show_in_notes?: boolean}} body - 更新するファイル情報
+ * @returns {Promise<File>} 更新されたファイル情報
+ * @throws {NotFoundError} ファイルが見つからない場合
  */
 app.put("/:id", async (c) => {
   const id = c.req.param("id");

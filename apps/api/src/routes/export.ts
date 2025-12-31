@@ -9,6 +9,13 @@ const app = new Hono();
 /**
  * Markdownエクスポート
  * GET /export/markdown?type=md&tags=tag1,tag2&dateFrom=1234567890&dateTo=1234567890&includeFiles=true
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {string[]} [tags] - タグ名の配列（カンマ区切り）
+ * @param {number} [dateFrom] - 開始日時（Unixタイムスタンプ）
+ * @param {number} [dateTo] - 終了日時（Unixタイムスタンプ）
+ * @param {boolean} [includeFiles] - ファイルを含めるかどうか
+ * @returns {Promise<Response>} ZIPファイル（Content-Type: application/zip）
+ * @throws {Error} エクスポートに失敗した場合
  */
 app.get("/markdown", async (c) => {
   try {
@@ -50,6 +57,13 @@ app.get("/markdown", async (c) => {
 /**
  * JSONエクスポート
  * GET /export/json?includeFiles=true&type=md&tags=tag1,tag2&dateFrom=1234567890&dateTo=1234567890
+ * @param {boolean} [includeFiles] - ファイルを含めるかどうか（デフォルト: true）
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {string[]} [tags] - タグ名の配列（カンマ区切り）
+ * @param {number} [dateFrom] - 開始日時（Unixタイムスタンプ）
+ * @param {number} [dateTo] - 終了日時（Unixタイムスタンプ）
+ * @returns {Promise<Response>} JSONファイル（Content-Type: application/json）
+ * @throws {Error} エクスポートに失敗した場合
  */
 app.get("/json", async (c) => {
   try {
@@ -92,6 +106,8 @@ app.get("/json", async (c) => {
 /**
  * 静的HTMLエクスポート（公開ノート用）
  * GET /export/static-html
+ * @returns {Promise<Response>} ZIPファイル（Content-Type: application/zip、公開ノートの静的HTMLサイトを含む）
+ * @throws {Error} エクスポートに失敗した場合
  */
 app.get("/static-html", async (c) => {
   try {

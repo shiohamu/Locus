@@ -60,6 +60,12 @@ export class TagSuggestionService {
 
   /**
    * ノートのタグ候補を生成
+   * @param {string} title - ノートのタイトル
+   * @param {string} content - ノートのコンテンツ
+   * @param {Tag[]} [existingTags=[]] - 既存のタグ（このノートに既に紐づいているタグ）
+   * @param {Tag[]} [allTags=[]] - すべてのタグ（既存タグの優先使用のため）
+   * @returns {Promise<TagSuggestion[]>} タグ候補の配列（信頼度順にソート済み）
+   * @description ルールベースとLLMベースの両方でタグ候補を生成し、既存タグを優先的に使用します
    */
   async generateSuggestions(
     title: string,

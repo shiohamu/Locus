@@ -28,6 +28,10 @@ async function getLLMProvider() {
 /**
  * ノート要約
  * POST /llm/notes/:id/summarize
+ * @param {string} id - ノートID
+ * @returns {Promise<{summary: string}>} ノートの要約
+ * @throws {Error} ノートが見つからない場合（404）、コンテンツが見つからない場合（404）、LLMが設定されていない場合、タイムアウト（504）
+ * @description MarkdownノートまたはWebクリップの要約を生成します（タイムアウト: 3分）
  */
 app.post("/notes/:id/summarize", async (c) => {
   try {
@@ -93,6 +97,10 @@ app.post("/notes/:id/summarize", async (c) => {
 /**
  * RSS記事要約
  * POST /llm/rss/:id/summarize
+ * @param {string} id - ノートID（RSSアイテムのノートID）
+ * @returns {Promise<{summary: string}>} RSS記事の要約
+ * @throws {Error} RSSアイテムが見つからない場合（404）、ノートが見つからない場合（404）、LLMが設定されていない場合、タイムアウト（504）
+ * @description RSS記事の要約を生成します（タイムアウト: 3分）
  */
 app.post("/rss/:id/summarize", async (c) => {
   try {
@@ -140,6 +148,10 @@ app.post("/rss/:id/summarize", async (c) => {
 /**
  * 要点抽出
  * POST /llm/extract-key-points
+ * @param {{content: string}} body - 抽出するコンテンツ
+ * @returns {Promise<{keyPoints: string[]}>} 抽出された要点の配列
+ * @throws {Error} コンテンツが指定されていない場合（400）、LLMが設定されていない場合、タイムアウト（504）
+ * @description コンテンツから要点を抽出します（タイムアウト: 3分）
  */
 app.post("/extract-key-points", async (c) => {
   try {
@@ -181,6 +193,9 @@ app.post("/extract-key-points", async (c) => {
 /**
  * LLM設定取得
  * GET /llm/config
+ * @returns {Promise<{config: Omit<LLMConfig, 'apiKey'> & {apiKey?: boolean}, available: boolean}>} LLM設定と利用可能性
+ * @throws {Error} LLM設定が見つからない場合（404）、取得に失敗した場合（500）
+ * @description LLM設定とLLMプロバイダーの利用可能性を取得します
  */
 app.get("/config", async (c) => {
   try {

@@ -27,6 +27,9 @@ export class RSSFetcherService {
 
   /**
    * RSSフィードを取得し、ノートとして保存する
+   * @param {RSSFeed} feed - 取得するRSSフィード
+   * @returns {Promise<{created: number, updated: number}>} 作成されたアイテム数と更新されたアイテム数
+   * @throws {ExternalServiceError} RSSフィードの取得・パースに失敗した場合
    */
   async fetchRSSFeed(feed: RSSFeed): Promise<{
     created: number;

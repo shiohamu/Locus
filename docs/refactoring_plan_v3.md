@@ -607,18 +607,26 @@
     - カバレッジレポートのアップロード設定（Codecov）
     - テスト、リント、フォーマットチェックの自動実行
   - 目標達成: テストカバレッジ80%以上（関数84.29%、行86.51%）✅
-- Phase 11: 🟦 進行中（2025-12-30）
+- Phase 11: ✅ 完了（2025-12-30）
   - データベース層のJSDocコメント充実完了
     - `db/notes.ts`: すべての関数にパラメータと戻り値の説明を追加 ✅
     - `db/files.ts`: すべての関数にパラメータと戻り値の説明を追加 ✅
     - `db/rss.ts`: すべての関数にパラメータと戻り値の説明を追加 ✅
   - READMEの更新完了
     - 開発ガイドラインセクションを追加（コードスタイル、テスト、JSDoc、エラーハンドリング、バリデーション）✅
-  - 残りのタスク:
-    - ルート層のJSDocコメント充実
-    - サービス層のJSDocコメント充実
-    - APIドキュメントの整備
-    - アーキテクチャドキュメントの更新
+  - ルート層のJSDocコメント充実完了
+    - すべてのルートファイル（notes.ts, files.ts, tags.ts, web-clips.ts, rss.ts, export.ts, sync.ts, search.ts, graph.ts, links.ts, settings.ts, notes_md.ts, public.ts, llm.ts）にパラメータ、戻り値、エラーレスポンスの説明を追加 ✅
+  - サービス層のJSDocコメント充実完了
+    - `services/rss-fetcher.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+    - `services/web-clip-fetcher.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+    - `services/file-uploader.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+    - `services/export/json.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+    - `services/tag-suggestions.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+    - `services/llm/summarizer.ts`: メソッドにパラメータと戻り値の説明を追加 ✅
+  - APIドキュメントの整備完了
+    - `docs/api.md` を作成し、すべてのAPIエンドポイントの一覧と説明を追加 ✅
+  - アーキテクチャドキュメントの更新
+    - AGENTS.mdにアーキテクチャ情報が既に含まれているため、追加の更新は不要 ✅
 
 ---
 

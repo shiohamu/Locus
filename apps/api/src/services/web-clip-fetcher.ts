@@ -26,6 +26,10 @@ export class WebClipFetcherService {
 
   /**
    * URLからHTMLを取得する
+   * @param {string} url - 取得するURL
+   * @returns {Promise<string>} HTMLコンテンツ
+   * @throws {ExternalServiceError} HTTPエラー、タイムアウト、コンテンツサイズ超過の場合
+   * @throws {ValidationError} コンテンツサイズが10MBを超える場合
    */
   private async fetchHTML(url: string): Promise<string> {
     return handleServiceOperation(`fetchHTML(${url})`, async () => {
@@ -75,6 +79,9 @@ export class WebClipFetcherService {
 
   /**
    * HTMLからメインコンテンツを抽出し、Markdownに変換する
+   * @param {string} html - HTMLコンテンツ
+   * @param {string} url - 元のURL（メタデータ用）
+   * @returns {{title: string, content: string}} 抽出されたタイトルとMarkdownコンテンツ
    */
   private extractAndConvertToMarkdown(
     html: string,
@@ -151,6 +158,10 @@ export class WebClipFetcherService {
 
   /**
    * Webクリップを取得し、ノートとして保存する
+   * @param {string} url - WebクリップするURL
+   * @returns {Promise<{note: NoteCore, webClip: WebClip}>} 作成されたノートとWebクリップ情報
+   * @throws {ValidationError} URLが無効な場合
+   * @throws {ExternalServiceError} HTMLの取得に失敗した場合
    */
   async fetchWebClip(url: string): Promise<{
     note: NoteCore;
@@ -207,6 +218,10 @@ export class WebClipFetcherService {
 
   /**
    * Webクリップを再取得して更新する
+   * @param {string} noteId - ノートID（WebクリップIDと同じ）
+   * @returns {Promise<{note: NoteCore, webClip: WebClip}>} 更新されたノートとWebクリップ情報
+   * @throws {NotFoundError} Webクリップまたはノートが見つからない場合
+   * @throws {ExternalServiceError} HTMLの再取得に失敗した場合
    */
   async refetchWebClip(noteId: string): Promise<{
     note: NoteCore;

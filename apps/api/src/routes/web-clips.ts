@@ -16,7 +16,9 @@ const app = new Hono();
 /**
  * Webクリップを作成
  * POST /web-clips
- * リクエストボディ: { url: string }
+ * @param {{url: string}} body - WebクリップするURL
+ * @returns {Promise<{note: NoteCore, webClip: WebClip}>} 作成されたノートとWebクリップ情報
+ * @throws {ValidationError} URLが指定されていない場合
  */
 app.post("/", async (c) => {
   const body = await getJsonBody<{ url: string }>(c);
@@ -29,7 +31,10 @@ app.post("/", async (c) => {
 
 /**
  * Webクリップ一覧を取得
- * GET /web-clips
+ * GET /web-clips?limit=100&offset=0
+ * @param {number} [limit] - 取得件数の上限
+ * @param {number} [offset] - 取得開始位置
+ * @returns {Promise<(WebClip & {note?: NoteCore})[]>} Webクリップ一覧（ノート情報付き）
  */
 app.get("/", async (c) => {
   const limit = getQueryInt(c, "limit");
@@ -54,6 +59,9 @@ app.get("/", async (c) => {
 /**
  * Webクリップを取得
  * GET /web-clips/:id
+ * @param {string} id - WebクリップID（ノートIDと同じ）
+ * @returns {Promise<WebClip & {note?: NoteCore}>} Webクリップ情報（ノート情報付き）
+ * @throws {NotFoundError} Webクリップが見つからない場合
  */
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
@@ -73,6 +81,8 @@ app.get("/:id", async (c) => {
 /**
  * Webクリップを更新（再取得）
  * PUT /web-clips/:id
+ * @param {string} id - WebクリップID（ノートIDと同じ）
+ * @returns {Promise<{note: NoteCore, webClip: WebClip}>} 更新されたノートとWebクリップ情報
  */
 app.put("/:id", async (c) => {
   const id = c.req.param("id");
@@ -83,6 +93,9 @@ app.put("/:id", async (c) => {
 /**
  * Webクリップを削除
  * DELETE /web-clips/:id
+ * @param {string} id - WebクリップID（ノートIDと同じ）
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
+ * @throws {NotFoundError} Webクリップが見つからない場合
  */
 app.delete("/:id", async (c) => {
   const id = c.req.param("id");

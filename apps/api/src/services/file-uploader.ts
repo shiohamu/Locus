@@ -77,6 +77,10 @@ export class FileUploaderService {
 
   /**
    * ファイルをアップロードして保存する
+   * @param {File} file - ファイルメタデータ
+   * @param {ArrayBuffer} fileData - ファイルデータ
+   * @returns {Promise<File>} 保存されたファイル情報
+   * @throws {ValidationError} ファイルサイズが上限を超える場合、MIMEタイプが無効な場合
    */
   async uploadFile(file: File, fileData: ArrayBuffer): Promise<File> {
     return handleServiceOperation(`uploadFile(${file.id})`, async () => {
@@ -123,6 +127,10 @@ export class FileUploaderService {
 
   /**
    * ファイルを読み込む
+   * @param {string} fileId - ファイルID
+   * @param {string} filename - ファイル名
+   * @returns {Promise<Buffer>} ファイルデータ
+   * @throws {NotFoundError} ファイルが見つからない場合
    */
   async readFile(fileId: string, filename: string): Promise<Buffer> {
     return handleServiceOperation(`readFile(${fileId})`, async () => {
@@ -138,6 +146,10 @@ export class FileUploaderService {
 
   /**
    * ファイルを削除する
+   * @param {string} fileId - ファイルID
+   * @param {string} filename - ファイル名
+   * @returns {Promise<void>}
+   * @description ファイルシステムからファイルを削除し、空のディレクトリも削除します
    */
   async deleteFileFromDisk(fileId: string, filename: string): Promise<void> {
     return handleServiceOperation(`deleteFileFromDisk(${fileId})`, async () => {

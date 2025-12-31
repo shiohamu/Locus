@@ -13,6 +13,9 @@ const app = new Hono();
 /**
  * サーバーから差分取得
  * GET /sync/pull?since=1234567890
+ * @param {number} since - 取得開始日時（Unixタイムスタンプ、必須）
+ * @returns {Promise<SyncPullResponse>} 同期データ（ノート、タグ、リンク、フィード）
+ * @throws {Error} sinceパラメータが指定されていない場合、無効な場合
  */
 app.get("/pull", async (c) => {
   const sinceParam = c.req.query("since");
@@ -71,6 +74,9 @@ app.get("/pull", async (c) => {
 /**
  * クライアントから差分送信
  * POST /sync/push
+ * @param {SyncPushRequest} body - 同期データ（ノート、タグ、リンク、フィード）
+ * @returns {Promise<{message: string}>} 同期完了メッセージ
+ * @description 最終更新優先（LWW: Last Write Wins）でマージされます
  */
 app.post("/push", async (c) => {
   const body = await c.req.json<SyncPushRequest>();

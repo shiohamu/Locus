@@ -11,6 +11,11 @@ const app = new Hono();
 /**
  * 公開ノート一覧を取得
  * GET /public/notes?type=md&limit=20&offset=0
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {number} [limit] - 取得件数の上限
+ * @param {number} [offset] - 取得開始位置
+ * @returns {Promise<NoteCore[]>} 公開ノート一覧
+ * @throws {Error} 取得に失敗した場合（500）
  */
 app.get("/notes", async (c) => {
   try {
@@ -34,6 +39,9 @@ app.get("/notes", async (c) => {
 /**
  * 公開ノートを取得（詳細情報付き）
  * GET /public/notes/:id
+ * @param {string} id - ノートID
+ * @returns {Promise<{note: NoteCore, content: string | null, tags: Tag[], links: {outgoing: Link[], incoming: Link[]}, metadata: Record<string, unknown>}>} 公開ノートの詳細情報
+ * @throws {Error} ノートが見つからない場合（404）、ノートが公開されていない場合（403）、取得に失敗した場合（500）
  */
 app.get("/notes/:id", async (c) => {
   try {

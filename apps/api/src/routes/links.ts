@@ -6,6 +6,8 @@ const app = new Hono();
 /**
  * ノートのリンク取得（双方向）
  * GET /notes/:id/links
+ * @param {string} id - ノートID
+ * @returns {Promise<{outgoing: Link[], incoming: Link[]}>} 双方向のリンク情報
  */
 app.get("/:id/links", async (c) => {
   const noteId = c.req.param("id");

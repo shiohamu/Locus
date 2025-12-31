@@ -8,7 +8,12 @@ const app = new Hono();
 
 /**
  * グラフデータを取得
- * GET /graph?type=md&tags=tag1,tag2
+ * GET /graph?type=md&tags=tag1,tag2&limit=100
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {string[]} [tags] - タグ名の配列（カンマ区切り）
+ * @param {number} [limit] - 取得件数の上限（デフォルト: 100）
+ * @returns {Promise<GraphData>} グラフデータ（ノードとエッジ）
+ * @throws {Error} グラフデータの生成に失敗した場合
  */
 app.get("/", async (c) => {
   try {

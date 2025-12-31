@@ -16,6 +16,11 @@ const app = new Hono();
 /**
  * ノート一覧取得
  * GET /notes?type=md&tags=tag1,tag2&limit=100&offset=0
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {string[]} [tags] - タグ名の配列（カンマ区切り）
+ * @param {number} [limit] - 取得件数の上限
+ * @param {number} [offset] - 取得開始位置
+ * @returns {Promise<NoteCore[]>} ノート一覧
  */
 app.get("/", async (c) => {
   const type = getQueryString(c, "type") as NoteType | undefined;
@@ -35,6 +40,9 @@ app.get("/", async (c) => {
 /**
  * ノート作成
  * POST /notes
+ * @param {NoteCore} body - 作成するノートの情報
+ * @returns {Promise<NoteCore>} 作成されたノート
+ * @throws {ValidationError} バリデーションエラー
  */
 app.post("/", async (c) => {
   const body = await getJsonBody<NoteCore>(c);
@@ -45,6 +53,11 @@ app.post("/", async (c) => {
 /**
  * ノート一覧とタグ情報を一度に取得（最適化版）
  * GET /notes/with-tags?type=md&tags=tag1,tag2&limit=100&offset=0
+ * @param {string} [type] - ノートタイプ（'md' | 'rss' | 'web_clip'）
+ * @param {string[]} [tags] - タグ名の配列（カンマ区切り）
+ * @param {number} [limit] - 取得件数の上限
+ * @param {number} [offset] - 取得開始位置
+ * @returns {Promise<{notes: NoteCore[], tagsMap: Record<string, string[]>}>} ノート一覧とタグマップ
  */
 app.get("/with-tags", async (c) => {
   const type = getQueryString(c, "type") as NoteType | undefined;
@@ -74,6 +87,9 @@ app.get("/with-tags", async (c) => {
 /**
  * ノート取得
  * GET /notes/:id
+ * @param {string} id - ノートID
+ * @returns {Promise<NoteCore>} ノート情報
+ * @throws {NotFoundError} ノートが見つからない場合
  */
 app.get("/:id", async (c) => {
   const id = c.req.param("id");
@@ -89,6 +105,10 @@ app.get("/:id", async (c) => {
 /**
  * ノート更新
  * PUT /notes/:id
+ * @param {string} id - ノートID
+ * @param {Partial<NoteCore>} body - 更新するノートの情報
+ * @returns {Promise<NoteCore>} 更新されたノート
+ * @throws {NotFoundError} ノートが見つからない場合
  */
 app.put("/:id", async (c) => {
   const id = c.req.param("id");
@@ -113,6 +133,9 @@ app.put("/:id", async (c) => {
 /**
  * ノート削除（論理削除）
  * DELETE /notes/:id
+ * @param {string} id - ノートID
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
+ * @throws {NotFoundError} ノートが見つからない場合
  */
 app.delete("/:id", async (c) => {
   const id = c.req.param("id");
@@ -130,7 +153,9 @@ app.delete("/:id", async (c) => {
 /**
  * ノート一括削除（論理削除）
  * DELETE /notes/batch
- * リクエストボディ: { note_ids: string[] }
+ * @param {{note_ids: string[]}} body - 削除するノートIDの配列
+ * @returns {Promise<{message: string, deleted_count: number}>} 削除結果
+ * @throws {ValidationError} バリデーションエラー（note_idsが空の場合など）
  */
 app.delete("/batch", async (c) => {
   const body = await getJsonBody<{ note_ids: string[] }>(c);

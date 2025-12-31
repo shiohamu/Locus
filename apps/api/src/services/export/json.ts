@@ -38,6 +38,13 @@ export class JSONExportService {
 
   /**
    * JSONエクスポートを生成
+   * @param {Object} [options] - エクスポートオプション
+   * @param {boolean} [options.includeFiles] - ファイルを含めるかどうか（デフォルト: true）
+   * @param {string} [options.type] - ノートタイプでフィルタリング（'md' | 'rss' | 'web_clip'）
+   * @param {string[]} [options.tags] - タグでフィルタリング
+   * @param {number} [options.dateFrom] - 開始日時でフィルタリング（Unixタイムスタンプ）
+   * @param {number} [options.dateTo] - 終了日時でフィルタリング（Unixタイムスタンプ）
+   * @returns {Promise<{version: string, exported_at: number, notes: NoteCore[], notes_md: NoteMD[], tags: Tag[], links: Link[], rss_feeds: RSSFeed[], rss_items: RSSItem[], web_clips: WebClip[], files?: FileType[]}>} エクスポートデータ
    */
   async exportJSON(options?: {
     includeFiles?: boolean;

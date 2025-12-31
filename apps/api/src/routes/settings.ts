@@ -9,6 +9,8 @@ const app = new Hono();
 /**
  * LLM設定取得
  * GET /settings/llm
+ * @returns {Promise<Omit<LLMConfig, 'apiKey'> & {apiKey?: boolean}>} LLM設定（APIキーは機密情報のため除外）
+ * @throws {NotFoundError} LLM設定が見つからない場合
  */
 app.get("/llm", async (c) => {
   const config = await settingsDb.getLLMConfig();
@@ -28,6 +30,9 @@ app.get("/llm", async (c) => {
 /**
  * LLM設定保存
  * PUT /settings/llm
+ * @param {LLMConfig} body - LLM設定
+ * @returns {Promise<{message: string}>} 保存成功メッセージ
+ * @throws {ValidationError} バリデーションエラー（プロバイダーが無効、必須項目が不足など）
  */
 app.put("/llm", async (c) => {
   const body = await getJsonBody<LLMConfig>(c);
@@ -64,6 +69,7 @@ app.put("/llm", async (c) => {
 /**
  * LLM設定削除
  * DELETE /settings/llm
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
  */
 app.delete("/llm", async (c) => {
   await settingsDb.deleteSetting("llm_config");

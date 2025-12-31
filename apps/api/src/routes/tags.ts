@@ -13,6 +13,8 @@ const app = new Hono();
 /**
  * ノートに紐づくタグ一覧取得
  * GET /notes/:id/tags
+ * @param {string} id - ノートID
+ * @returns {Promise<Tag[]>} タグ一覧
  */
 app.get("/:id/tags", async (c) => {
   const noteId = c.req.param("id");
@@ -23,6 +25,9 @@ app.get("/:id/tags", async (c) => {
 /**
  * ノートにタグ追加
  * POST /notes/:id/tags
+ * @param {string} id - ノートID
+ * @param {{tag_id: string}} body - 追加するタグID
+ * @returns {Promise<{message: string}>} 追加成功メッセージ
  */
 app.post("/:id/tags", async (c) => {
   const noteId = c.req.param("id");
@@ -40,6 +45,9 @@ app.post("/:id/tags", async (c) => {
 /**
  * ノートからタグ削除
  * DELETE /notes/:id/tags/:tag
+ * @param {string} id - ノートID
+ * @param {string} tag - タグID
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
  */
 app.delete("/:id/tags/:tag", async (c) => {
   const noteId = c.req.param("id");
@@ -52,6 +60,9 @@ app.delete("/:id/tags/:tag", async (c) => {
 /**
  * タグ候補生成
  * POST /notes/:id/tags/suggestions
+ * @param {string} id - ノートID
+ * @returns {Promise<{suggestions: TagSuggestion[]}>} タグ候補一覧
+ * @throws {Error} ノートが見つからない場合、コンテンツが見つからない場合
  */
 app.post("/:id/tags/suggestions", async (c) => {
   try {

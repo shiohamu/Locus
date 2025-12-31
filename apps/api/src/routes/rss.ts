@@ -8,6 +8,8 @@ const app = new Hono();
 /**
  * RSSフィード登録
  * POST /rss/feeds
+ * @param {Omit<RSSFeed, 'id' | 'last_fetched_at'> & {id?: string}} body - RSSフィード情報
+ * @returns {Promise<RSSFeed>} 作成されたRSSフィード
  */
 app.post("/feeds", async (c) => {
   const body = await c.req.json<
@@ -30,6 +32,7 @@ app.post("/feeds", async (c) => {
 /**
  * RSSフィード一覧取得
  * GET /rss/feeds
+ * @returns {Promise<RSSFeed[]>} RSSフィード一覧
  */
 app.get("/feeds", async (c) => {
   const feeds = await rssDb.listFeeds();
@@ -39,6 +42,8 @@ app.get("/feeds", async (c) => {
 /**
  * RSSフィード削除
  * DELETE /rss/feeds/:id
+ * @param {string} id - RSSフィードID
+ * @returns {Promise<{message: string}>} 削除成功メッセージ
  */
 app.delete("/feeds/:id", async (c) => {
   const id = c.req.param("id");
@@ -49,6 +54,9 @@ app.delete("/feeds/:id", async (c) => {
 /**
  * RSSアイテム取得（ノートIDで取得）
  * GET /rss/items/:noteId
+ * @param {string} noteId - ノートID
+ * @returns {Promise<RSSItem>} RSSアイテム情報
+ * @throws {Error} RSSアイテムが見つからない場合（404）
  */
 app.get("/items/:noteId", async (c) => {
   const noteId = c.req.param("noteId");
@@ -62,8 +70,9 @@ app.get("/items/:noteId", async (c) => {
 /**
  * RSSフィード取得・更新
  * POST /rss/fetch
- * リクエストボディ: { feed_id?: string }
- * feed_idが指定されない場合は、すべてのフィードを更新
+ * @param {{feed_id?: string}} [body] - フィードID（指定しない場合はすべてのフィードを更新）
+ * @returns {Promise<{created: number, updated: number}> | {total: number, success: number, failed: number}} 取得結果
+ * @throws {Error} フィードが見つからない場合、取得に失敗した場合
  */
 app.post("/fetch", async (c) => {
   const body = await c.req.json<{ feed_id?: string }>().catch(() => ({}));
@@ -104,7 +113,10 @@ app.post("/fetch", async (c) => {
 /**
  * RSSアイテムのコンテンツを更新
  * PUT /rss/items/:noteId
- * リクエストボディ: { content: string }
+ * @param {string} noteId - ノートID
+ * @param {{content: string}} body - 更新するコンテンツ
+ * @returns {Promise<RSSItem>} 更新されたRSSアイテム
+ * @throws {Error} コンテンツが指定されていない場合、RSSアイテムが見つからない場合
  */
 app.put("/items/:noteId", async (c) => {
   const noteId = c.req.param("noteId");
